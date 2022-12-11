@@ -40,11 +40,11 @@ router.post('/login', async (req, res) => {
 
 router.post('/signup', (req, res) => {
   const {
-    username, password, first_name, last_name, pronouns, location,
+    emailAddress, username, password, firstName, lastName, pronouns, location,
   } = req.body
   // console.log(req.body)
-  const sql = `INSERT INTO User (username, password, first_name, last_name, pronouns, location)
-               VALUES ('${username}', '${password}', '${first_name}', '${last_name}', '${pronouns}', '${location}')`
+  const sql = `INSERT INTO User (emailAddress, username, password, first_name, last_name, pronouns, location)
+               VALUES ('${emailAddress}', '${username}', '${password}', '${firstName}', '${lastName}', '${pronouns}', '${location}')`
   connection.query(sql, (error, results) => {
     if (error) {
       res.json({ error })
@@ -57,13 +57,13 @@ router.post('/signup', (req, res) => {
 
 router.post('/federated-signup', (req, res) => {
   const {
-    first_name, last_name, pronouns, location,
+    firstName, lastName, pronouns, location,
   } = req.body
   const { username } = req.session
   // console.log(req.session)
   const password = crypto.pbkdf2Sync(username, 'joeisunhackable', 100000, 64, 'sha512').toString('hex')
   const sql = `INSERT INTO User (username, password, first_name, last_name, pronouns, location)
-               VALUES ('${username}', '${password}', '${first_name}', '${last_name}', '${pronouns}', '${location}')`
+               VALUES ('${username}', '${password}', '${firstName}', '${lastName}', '${pronouns}', '${location}')`
   connection.query(sql, (error, results) => {
     if (error) {
       res.json({ error })
@@ -117,13 +117,13 @@ const verify = async (issuer, profile, cb) => {
   )
 }
 
-
 router.get('/login/federated/google', passport.authenticate('google'))
 
 passport.use(new GoogleStrategy(
   {
     clientID: process.env.GOOGLE_CLIENT_ID ? process.env.GOOGLE_CLIENT_ID : config.google_client_id,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET ? process.env.GOOGLE_CLIENT_SECRET : config.google_client_secret,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET
+      ? process.env.GOOGLE_CLIENT_SECRET : config.google_client_secret,
     callbackURL: '/oauth2/redirect/google',
     scope: ['profile'],
   },
