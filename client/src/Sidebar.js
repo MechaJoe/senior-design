@@ -1,4 +1,5 @@
-import { useState } from 'react'
+/* eslint-disable react/prop-types */
+// import { useState } from 'react'
 import axios from 'axios'
 import config from './config.json'
 
@@ -20,11 +21,20 @@ function Sidebar({ classCode }) {
   }
 
   return (
-    <h1>
-      {' '}
-      {className}
-      {' '}
-    </h1>
+    <div>
+      <h1>
+        {' '}
+        {className}
+        {' '}
+      </h1>
+      {
+        instructorInfo.map((instructor) => (
+          <h2>
+            {instructor.name}
+          </h2>
+        ))
+      }
+    </div>
   )
 }
 

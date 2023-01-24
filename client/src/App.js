@@ -5,7 +5,8 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
-import Login from './pages/Login'
+// import Login from './pages/Login'
+import Sidebar from './Sidebar'
 
 const router = createBrowserRouter([
   {
@@ -14,7 +15,11 @@ const router = createBrowserRouter([
   },
   {
     path: 'login',
-    element: <Login />,
+    // element: <Login />,
+  },
+  {
+    path: '/assignments',
+    element: <Sidebar />,
   },
 ])
 
