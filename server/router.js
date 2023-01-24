@@ -68,8 +68,8 @@ router.get('/class/:classCode/assignments', async (req, res) => {
 router.get('/class/:classCode/instructor', async (req, res) => {
   const { classCode } = req.params
   connection.query(
-    `SELECT Class.className, Instructor.emailAddress, Instructor.firstName, Instructor.lastName, Instructor.emailAddress
-    FROM InstructorOf JOIN Class ON InstructorOf.classCode = Class.classCode JOIN Instructor ON InstructorOf.emailAddress = Instructor.emailAddress
+    `SELECT Class.className, Instructor.emailAddress, Instructor.firstName, Instructor.lastName, Instructor.username
+    FROM InstructorOf JOIN Class ON InstructorOf.classCode = Class.classCode JOIN Instructor ON InstructorOf.username = Instructor.username
     WHERE InstructorOf.classCode = '${classCode}';`,
     (error, results) => {
       if (error) {
