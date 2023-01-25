@@ -75,7 +75,9 @@ router.get('/class/:classCode/instructor', async (req, res) => {
       if (error) {
         res.json({ error })
       } else if (results) {
+        console.log(`Backend results: ${results[0].username}`)
         res.json({ results })
+        // res.json(results)
       }
     },
   )

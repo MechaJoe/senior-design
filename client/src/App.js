@@ -19,7 +19,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/assignments',
-    element: <Sidebar />,
+    element: <Sidebar classCode="CIS 4000" />,
   },
 ])
 
