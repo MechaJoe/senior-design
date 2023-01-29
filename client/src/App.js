@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 // import Login from './pages/Login'
-import Sidebar from './Sidebar'
+import AssignmentDashboard from './AssignmentDashboard'
 
 const router = createBrowserRouter([
   {
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/assignments',
-    element: <Sidebar classCode="CIS 4000" />,
+    element: <AssignmentDashboard classCode="CIS 4000" />,
   },
 ])
 

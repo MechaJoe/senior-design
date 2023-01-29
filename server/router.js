@@ -51,14 +51,15 @@ router.get('/user/:username/classes', async (req, res) => {
 router.get('/class/:classCode/assignments', async (req, res) => {
   const { classCode } = req.params
   connection.query(
-    `SELECT Class.className, Assignment.assignmentId
+    `SELECT Assignment.assignmentId, Assignment.deadline
     FROM Assignment JOIN Class ON Assignment.classCode = Class.classCode
     WHERE Assignment.classCode = '${classCode}';`,
     (error, results) => {
       if (error) {
         res.json({ error })
       } else if (results) {
-        res.json({ results })
+        // res.json({ results })
+        res.json(results)
       }
     },
   )
@@ -75,9 +76,8 @@ router.get('/class/:classCode/instructor', async (req, res) => {
       if (error) {
         res.json({ error })
       } else if (results) {
-        console.log(`Backend results: ${results[0].username}`)
-        res.json({ results })
-        // res.json(results)
+        // res.json({ results })
+        res.json(results)
       }
     },
   )
@@ -113,7 +113,9 @@ router.get('/class/:classCode', async (req, res) => {
       if (error) {
         res.json({ error })
       } else if (results) {
-        res.json({ results })
+        // console.log(`Class name: ${results[0].className}`)
+        // res.json({ results })
+        res.json(results[0].className)
       }
     },
   )
@@ -292,6 +294,35 @@ router.get('/class/:classCode/assignments/:assignmentId/groups/:groupId', async 
     },
   )
 })
+
+// // [GET] the group members for the group that the user belongs to
+router.get(
+  '/class/:classCode/assignments/:assignmentId/groups/my-group-info',
+  async (req, res) => {
+    const { classCode, assignmentId } = req.params
+    const { username } = req.session
+    connection.query(
+      `With GId AS (SELECT groupId, assignmentId FROM BelongsToGroup WHERE username = '${username}'
+    AND assignmentId = ${assignmentId}
+    AND classCode = '${classCode}'),
+   GroupMembers AS (
+       SELECT username, assignmentId
+       FROM BelongsToGroup
+       WHERE groupId IN (SELECT * FROM GId)
+   )
+SELECT firstName, lastName
+From GroupMembers JOIN Student ON GroupMembers.username = Student.username;`,
+      (error, results) => {
+        if (error) {
+          res.json({ error })
+        } else if (results) {
+          console.log(results)
+          res.json(results)
+        }
+      },
+    )
+  },
+)
 
 // [GET] the group the user belongs to
 router.get('/class/:classCode/assignments/:assignmentId/groups/my-group', async (req, res) => {
