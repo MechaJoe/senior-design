@@ -187,9 +187,42 @@ router.get('/users/:user', async (req, res) => {
 })
 
 // [PUT] update profile for a user
-// router.put('/users/:user', async (req, res) => {
-
-// })
+router.post('/profile/edit', async (req, res) => {
+  const {
+    emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
+  } = req.body
+  if (!req.session.isInstructor) {
+    connection.query(
+      `UPDATE Instructor
+SET profileImageUrl = '${profileImageUrl}', firstName= '${firstName}' // change based 
+on what to edit
+WHERE emailAddress = ‘ ${emailAddress}’;`
+      ,
+      (error, results) => {
+        if (error) {
+          res.json({ error })
+        } else if (results) {
+          res.json({ results })
+        }
+      },
+    )
+  } else {
+    connection.query(
+      `UPDATE Student
+SET profileImageUrl = '${profileImageUrl}', majors= '${majors}' // change based 
+  on what to edit
+WHERE emailAddress = ‘ ${emailAddress}’;`
+      ,
+      (error, results) => {
+        if (error) {
+          res.json({ error })
+        } else if (results) {
+          res.json({ results })
+        }
+      },
+    )
+  }
+})
 
 /* ASSIGNMENT ROUTES */
 
