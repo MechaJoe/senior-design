@@ -11,7 +11,7 @@ const ProfileForm = ({ userObj }) => {
     const [school, setSchool] = useState([])
 
     const handleSave = async () => {
-        if (!year || !majors || !school) {
+        if (!year || majors.length == 0 || school.length == 0) {
             alert('Please complete all fields')
             return
         }
@@ -19,8 +19,8 @@ const ProfileForm = ({ userObj }) => {
             emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
         })
         if (data === 'success') {
-            window.location.reload()
-            // navigate('/dashboard', { replace: true })
+            // window.location.reload()
+            navigate('/dashboard', { replace: true })
         }
     }
     return (
@@ -89,39 +89,7 @@ const ProfileForm = ({ userObj }) => {
                 <FormHelperText>Select your school(s)</FormHelperText>
             </FormControl>
 
-            <p style={{ color: '#8C55AA' }}>Name</p>
-            <div className="input-group mb-3">
-                <input type="text" value={name} className="form-control" onChange={e => setName(e.target.value)} placeholder="Enter name" />
-            </div>
-            <p style={{ color: '#8C55AA' }}>Bio</p>
-            <div className="input-group mb-3">
-                <input type="text" value={bio} className="form-control" onChange={e => setBio(e.target.value)} placeholder="Enter Bio" />
-            </div>
-            <p style={{ color: '#8C55AA' }}>Img1</p>
-            <div className="input-group mb-3">
-                <input type="text" value={img1} className="form-control" onChange={e => setImg1(e.target.value)} placeholder="Enter image URL" />
-            </div>
-            <p style={{ color: '#8C55AA' }}>Caption 1</p>
-            <div className="input-group mb-3">
-                <input type="text" value={caption1} className="form-control" onChange={e => setCaption1(e.target.value)} placeholder="Caption the image above" />
-            </div>
-            <p style={{ color: '#8C55AA' }}>Img2</p>
-            <div className="input-group mb-3">
-                <input type="text" value={img2} className="form-control" onChange={e => setImg2(e.target.value)} placeholder="Enter image URL" />
-            </div>
-            <p style={{ color: '#8C55AA' }}>Caption 2</p>
-            <div className="input-group mb-3">
-                <input type="text" value={caption2} className="form-control" onChange={e => setCaption2(e.target.value)} placeholder="Caption the image above" />
-            </div>
-            <p style={{ color: '#8C55AA' }}>Img3</p>
-            <div className="input-group mb-3">
-                <input type="text" value={img3} className="form-control" onChange={e => setImg3(e.target.value)} placeholder="Enter image URL" />
-            </div>
-            <p style={{ color: '#8C55AA' }}>Caption 3</p>
-            <div className="input-group mb-3">
-                <input type="text" value={caption3} className="form-control" onChange={e => setCaption3(e.target.value)} placeholder="Caption the image above" />
-            </div>
-            <button type="button" className="btn btn-primary" onClick={handleSave}> Save </button>
+            <button type="button" className="btn btn-primary" onClick={handleSave}> Next </button>
         </>
     )
 }
