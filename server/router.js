@@ -121,7 +121,7 @@ router.get('/class/:classCode', async (req, res) => {
 /* PROFILE ROUTES */
 
 // POST creates profile for a user
-router.post('/users', async (req, res) => {
+router.post('/profile', async (req, res) => {
   const {
     emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
   } = req.body
