@@ -1,28 +1,36 @@
-import logo from './logo.svg'
-import './App.css'
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from 'react-router-dom'
+import Assignments from './pages/Assignments'
+import Login from './pages/Login'
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element:
+  <div className="container mx-auto bg-gray-200 rounded-xl shadow border p-8 m-10">
+    <p className="text-3xl text-gray-700 font-bold mb-5">
+      Welcome!
+    </p>
+    <p className="text-gray-500 text-lg">
+      React and Tailwind CSS in action
+    </p>
+  </div>,
+  },
+  {
+    path: 'login',
+    element: <Login />,
+  },
+  {
+    path: 'assignments',
+    element: <Assignments />,
+  },
+])
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit
-          {' '}
-          <code>src/App.js</code>
-          {' '}
-          and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RouterProvider router={router} />
   )
 }
 

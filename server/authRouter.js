@@ -55,6 +55,7 @@ router.post('/signup', (req, res) => {
   })
 })
 
+// Profile creation route
 router.post('/federated-signup', (req, res) => {
   const {
     firstName, lastName, pronouns, location,

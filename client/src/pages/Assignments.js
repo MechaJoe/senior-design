@@ -2,15 +2,16 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { redirect } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
-import GoogleButton from '../assets/google-button.png'
 
 export default function LoginPage() {
+  const history = useNavigate()
+
   const getUser = async () => {
     const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
     if (data) {
-      redirect('/me')
+      history.push('/me')
     }
     return data
   }
@@ -27,18 +28,16 @@ export default function LoginPage() {
         alignItems: 'center',
       }}
     >
-      <Grid className="" container spacing={2} justifyContent="center" alignItems="center" direction="column" style={{ minHeight: '100vh' }}>
-        <Grid item xs={12}>
+      <Grid className="" container spacing={2} justifyContent="center" alignItems="center" style={{ minHeight: '100vh', margin: 2 }}>
+        <Grid item xs={3}>
           <Typography variant="h2" component="h1">
-            Login to Socius
+            Sidebar
           </Typography>
         </Grid>
-        <Grid item xs={12}>
-          <a href="http://localhost:8080/login/federated/google">
-            <button type="button">
-              <img className="max-w-full h-auto" src={GoogleButton} alt="google sign-in" />
-            </button>
-          </a>
+        <Grid item xs={9}>
+          <Typography variant="h2" component="h1">
+            Assignments
+          </Typography>
         </Grid>
       </Grid>
     </Box>
