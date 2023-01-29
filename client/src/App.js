@@ -5,16 +5,21 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
-import Login from './pages/Login'
+// import Login from './pages/Login'
+import CoursesPage from './CoursesPage'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <div>Hello world!</div>,
   },
+  // {
+  //   path: 'login',
+  //   element: <Login />,
+  // },
   {
-    path: 'login',
-    element: <Login />,
+    path: '/courses',
+    element: <CoursesPage />,
   },
 ])
 
