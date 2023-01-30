@@ -10,7 +10,13 @@ const config = require('./config.json')
 const app = express()
 
 // whitelist localhost 3000
-app.use(cors({ credentials: true, origin: [`http://${config.server_host}:${config.frontend_server_port}`, 'http://localhost:3000'], exposedHeaders: ['set-cookie'] }))
+app.use(cors({
+  credentials: true,
+  origin: [
+    `http://${config.server_host}:${config.frontend_server_port}`,
+    `http://localhost:${config.frontend_server_port}`],
+  exposedHeaders: ['set-cookie'],
+}))
 
 app.use(express.json())
 app.use(session({
@@ -19,6 +25,7 @@ app.use(session({
   secret: 'mySecret123',
   resave: false,
   unset: 'destroy',
+  saveUninitialized: false,
 }))
 app.use(passport.initialize())
 app.use(passport.session())

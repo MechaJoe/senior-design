@@ -5,7 +5,7 @@ const GoogleStrategy = require('passport-google-oidc')
 const crypto = require('node:crypto')
 const config = require('./config.json')
 
-const frontendServer = `${config.frontend_server_host}:${config.frontend_server_port}`
+const frontendServer = `http://${config.server_host}:${config.frontend_server_port}`
 
 const connection = mysql.createPool({
   connectionLimit: 10,
