@@ -10,7 +10,7 @@ const config = require('./config.json')
 const app = express()
 
 // whitelist localhost 3000
-app.use(cors({ credentials: true, origin: ['http://localhost:3000'], exposedHeaders: ['set-cookie'] }))
+app.use(cors({ credentials: true, origin: [`http://${config.server_host}:${config.frontend_server_port}`, 'http://localhost:3000'], exposedHeaders: ['set-cookie'] }))
 
 app.use(express.json())
 app.use(session({
@@ -26,8 +26,8 @@ app.use(passport.session())
 app.use('/', Router)
 app.use('/', AuthRouter)
 
-app.listen(config.server_port, () => {
-  console.log(`Server running at http://${config.server_host}:${config.server_port}/`)
+app.listen(config.backend_server_port, () => {
+  console.log(`Server running at http://${config.server_host}:${config.backend_server_port}/`)
 })
 
 module.exports = app
