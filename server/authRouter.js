@@ -5,6 +5,8 @@ const GoogleStrategy = require('passport-google-oidc')
 const crypto = require('node:crypto')
 const config = require('./config.json')
 
+const frontendServer = `http://${config.server_host}:${config.frontend_server_port}`
+
 const connection = mysql.createPool({
   connectionLimit: 10,
   host: process.env.RDS_HOST ? process.env.RDS_HOST : config.rds_host,
@@ -38,23 +40,24 @@ router.post('/login', async (req, res) => {
   })
 })
 
-router.post('/signup', (req, res) => {
-  const {
-    emailAddress, username, password, firstName, lastName, pronouns, location,
-  } = req.body
-  // console.log(req.body)
-  const sql = `INSERT INTO User (emailAddress, username, password, first_name, last_name, pronouns, location)
-               VALUES ('${emailAddress}', '${username}', '${password}', '${firstName}', '${lastName}', '${pronouns}', '${location}')`
-  connection.query(sql, (error, results) => {
-    if (error) {
-      res.json({ error })
-    } else if (results) {
-      req.session.username = username
-      res.send('Successful signup')
-    }
-  })
-})
+// router.post('/signup', (req, res) => {
+//   const {
+//     emailAddress, username, password, firstName, lastName, pronouns, location,
+//   } = req.body
+//   // console.log(req.body)
+//   const sql = `INSERT INTO User (emailAddress, username, password, first_name, last_name, pronouns, location)
+//                VALUES ('${emailAddress}', '${username}', '${password}', '${firstName}', '${lastName}', '${pronouns}', '${location}')`
+//   connection.query(sql, (error, results) => {
+//     if (error) {
+//       res.json({ error })
+//     } else if (results) {
+//       req.session.username = username
+//       res.send('Successful signup')
+//     }
+//   })
+// })
 
+// Profile creation route
 router.post('/federated-signup', (req, res) => {
   const {
     firstName, lastName, pronouns, location,
@@ -138,13 +141,13 @@ router.get(
       (err, user) => {
         if (user && user.create) {
           req.session.username = user.id
-          return res.redirect('http://localhost:3000/federated-signup')
+          return res.redirect(`${frontendServer}/signup`)
         }
         if (user) {
           req.session.username = user.id
-          return res.redirect('http://localhost:3000/')
+          return res.redirect(`${frontendServer}`)
         }
-        return res.redirect('http://localhost:3000/login')
+        return res.redirect(`${frontendServer}/login`)
       },
     )(req, res, next)
   },

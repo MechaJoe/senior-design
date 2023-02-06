@@ -1,17 +1,16 @@
-// import logo from './logo.svg'
-// import ReactDOM from 'react-dom/client'
-import './App.css'
 import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
-// import Login from './pages/Login'
 import CoursesPage from './CoursesPage'
+import Home from './pages/Home'
+import Login from './pages/Login'
+import ProfileForm from './ProfileForm'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>Hello world!</div>,
+    element: <Home />,
   },
   // {
   //   path: 'login',
@@ -20,6 +19,14 @@ const router = createBrowserRouter([
   {
     path: '/courses',
     element: <CoursesPage />,
+  },
+  {
+    path: 'signup',
+    element: <ProfileForm />,
+  },
+  {
+    path: 'assignments',
+    element: <div>hello world</div>,
   },
 ])
 
