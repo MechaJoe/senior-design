@@ -1,25 +1,35 @@
-// import logo from './logo.svg'
-// import ReactDOM from 'react-dom/client'
-import './App.css'
 import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
-// import Login from './pages/Login'
 import AssignmentDashboard from './AssignmentDashboard'
+import Assignments from './pages/Assignments'
+import Login from './pages/Login'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>Hello world!</div>,
+    element:
+  <div className="container mx-auto bg-gray-200 rounded-xl shadow border p-8 m-10">
+    <p className="text-3xl text-gray-700 font-bold mb-5">
+      Welcome!
+    </p>
+    <p className="text-gray-500 text-lg">
+      React and Tailwind CSS in action
+    </p>
+  </div>,
   },
   {
     path: 'login',
-    // element: <Login />,
+    element: <Login />,
   },
   {
     path: '/assignments',
     element: <AssignmentDashboard classCode="CIS 4000" />,
+  },
+  {
+    path: 'assignments',
+    element: <Assignments />,
   },
 ])
 
