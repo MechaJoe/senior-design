@@ -196,8 +196,7 @@ router.post('/profile/edit', async (req, res) => {
       `UPDATE Instructor
 SET profileImageUrl = '${profileImageUrl}', firstName= '${firstName}' // change based 
 on what to edit
-WHERE emailAddress = ‘ ${emailAddress}’;`
-      ,
+WHERE emailAddress = '${emailAddress}';`,
       (error, results) => {
         if (error) {
           res.json({ error })
@@ -211,8 +210,7 @@ WHERE emailAddress = ‘ ${emailAddress}’;`
       `UPDATE Student
 SET profileImageUrl = '${profileImageUrl}', majors= '${majors}' // change based 
   on what to edit
-WHERE emailAddress = ‘ ${emailAddress}’;`
-      ,
+WHERE emailAddress = '${emailAddress}';`,
       (error, results) => {
         if (error) {
           res.json({ error })

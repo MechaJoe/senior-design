@@ -2,15 +2,16 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { redirect } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
 import GoogleButton from '../assets/google-button.png'
 
 export default function LoginPage() {
+  const navigate = useNavigate()
   const getUser = async () => {
     const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
     if (data) {
-      redirect('/me')
+      navigate('/')
     }
     return data
   }
