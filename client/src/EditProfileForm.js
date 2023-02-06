@@ -15,7 +15,7 @@ const EditProfileForm = ({ userObj }) => {
             return
         }
         const { data } = await axios.post('/profile/edit', {
-            emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
+            emailAddress, username, firstName, lastName, year, majors, school,
         })
         if (data === 'success') {
             window.location.reload()

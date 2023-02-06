@@ -123,11 +123,12 @@ router.get('/class/:classCode', async (req, res) => {
 // POST creates profile for a user
 router.post('/profile', async (req, res) => {
   const {
-    emailAddress, username, firstName, lastName, year, majors, school,
+    emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school,
   } = req.body
-  if (req.session.isInstructor) {
+  req.session.isInstructor = false // TODO: delete hardcoding
+  if (!req.session.isInstructor) {
     connection.query(
-      `INSERT INTO Student (emailAddress, username, firstName, lastName, year, majors, school)
+      `INSERT INTO Student (emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school)
       VALUES ('${emailAddress}', '${username}', '${firstName}', '${lastName}', '${year}', '${majors}', '${school}');
       `,
       (error, results) => {
