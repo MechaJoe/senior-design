@@ -34,7 +34,7 @@ router.get('/users', async (req, res) => {
 router.get('/user/:username/classes', async (req, res) => {
   const { username } = req.params
   connection.query(
-    `SELECT classCode, className
+    `SELECT Class.classCode, className
      FROM StudentOf JOIN Class ON StudentOf.classCode = Class.classCode
      WHERE username = '${username}';`,
     (error, results) => {
