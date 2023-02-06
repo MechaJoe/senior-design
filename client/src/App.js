@@ -5,16 +5,21 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
-import Login from './pages/Login'
+// import Login from './pages/Login'
+import ProfileForm from './ProfileForm'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <div>Hello world!</div>,
   },
+  // {
+  //   path: 'login',
+  //   element: <Login />,
+  // },
   {
-    path: 'login',
-    element: <Login />,
+    path: 'signup',
+    element: <ProfileForm />,
   },
 ])
 
