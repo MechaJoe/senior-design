@@ -12,7 +12,7 @@ export default function courseCard(props) {
 
   // take in id later
   const EnterCourse = () => {
-    window.location.href = '/'
+    window.location.href = `/courses/${courseId}/assignments`
   }
 
   useEffect(() => {

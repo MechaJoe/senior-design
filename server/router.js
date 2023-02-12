@@ -113,7 +113,7 @@ router.get('/class/:classCode', async (req, res) => {
       if (error) {
         res.json({ error })
       } else if (results) {
-        res.json(results[0].className)
+        res.json({ results })
       }
     },
   )
@@ -123,7 +123,7 @@ router.get('/class/:classCode', async (req, res) => {
 /* PROFILE ROUTES */
 
 // POST creates profile for a user
-router.post('/profile', async (req, res) => {
+router.post('/users', async (req, res) => {
   const {
     emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
   } = req.body
@@ -189,40 +189,9 @@ router.get('/users/:user', async (req, res) => {
 })
 
 // [PUT] update profile for a user
-router.post('/profile/edit', async (req, res) => {
-  const {
-    emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
-  } = req.body
-  if (!req.session.isInstructor) {
-    connection.query(
-      `UPDATE Instructor
-SET profileImageUrl = '${profileImageUrl}', firstName= '${firstName}' // change based 
-on what to edit
-WHERE emailAddress = '${emailAddress}';`,
-      (error, results) => {
-        if (error) {
-          res.json({ error })
-        } else if (results) {
-          res.json({ results })
-        }
-      },
-    )
-  } else {
-    connection.query(
-      `UPDATE Student
-SET profileImageUrl = '${profileImageUrl}', majors= '${majors}' // change based 
-  on what to edit
-WHERE emailAddress = '${emailAddress}';`,
-      (error, results) => {
-        if (error) {
-          res.json({ error })
-        } else if (results) {
-          res.json({ results })
-        }
-      },
-    )
-  }
-})
+// router.put('/users/:user', async (req, res) => {
+
+// })
 
 /* ASSIGNMENT ROUTES */
 
@@ -285,6 +254,23 @@ router.put('/class/:classCode/assignments/:assignmentId', async (req, res) => {
   )
 })
 
+router.get('/class/:classCode/assignments/:assignmentId/groupSize', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  connection.query(
+    `SELECT minGroupSize, maxGroupSize
+    FROM Assignment
+    WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        console.log(results)
+        res.json(results[0])
+      }
+    },
+  )
+})
+
 /* GROUP ROUTES */
 
 // GET all the groups for a specific assignment
@@ -328,8 +314,11 @@ router.get('/class/:classCode/assignments/:assignmentId/groups/:groupId', async 
 router.get(
   '/class/:classCode/assignments/:assignmentId/my-group-info',
   async (req, res) => {
-    const { classCode, assignmentId } = req.params
-    const { username } = req.session
+    // const { classCode, assignmentId } = req.params
+    // const { username } = req.session
+    const username = 'jasonhom'
+    const classCode = 'CIS 4000'
+    const assignmentId = 2
     connection.query(
       `With GId AS (SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
       AND assignmentId = '${assignmentId}'
@@ -345,6 +334,7 @@ router.get(
         if (error) {
           res.json({ error })
         } else if (results) {
+          console.log(results)
           res.json(results)
         }
       },
