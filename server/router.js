@@ -65,18 +65,17 @@ router.get('/class/:classCode/assignments', async (req, res) => {
   )
 })
 
-// GETs instructors (email address, first name, last name) for a class
+// GETs instructors (className, email address, first name, last name) for a class
 router.get('/class/:classCode/instructor', async (req, res) => {
   const { classCode } = req.params
   connection.query(
-    `SELECT Class.className, Instructor.emailAddress, Instructor.firstName, Instructor.lastName, Instructor.username
+    `SELECT Class.className, Instructor.username, Instructor.firstName, Instructor.lastName, Instructor.username
     FROM InstructorOf JOIN Class ON InstructorOf.classCode = Class.classCode JOIN Instructor ON InstructorOf.username = Instructor.username
     WHERE InstructorOf.classCode = '${classCode}';`,
     (error, results) => {
       if (error) {
-        res.json({ error })
+        res.json(error)
       } else if (results) {
-        // res.json({ results })
         res.json(results)
       }
     },
@@ -125,18 +124,20 @@ router.get('/class/:classCode', async (req, res) => {
 // POST creates profile for a user
 router.post('/users', async (req, res) => {
   const {
-    emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
+    emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school,
   } = req.body
-  if (req.session.isInstructor) {
+  req.session.isInstructor = false // TODO: delete hardcoding
+  if (!req.session.isInstructor) {
     connection.query(
-      `INSERT INTO Student (emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school)
-      VALUES ('${emailAddress}', '${username}', '${firstName}', '${lastName}', '${year}', '${profileImageUrl}', '${majors}', '${school}');
+      `INSERT INTO Student (emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school)
+      VALUES ('${emailAddress}', '${username}', '${firstName}', '${lastName}', '${year}', '${majors}', '${school}');
       `,
       (error, results) => {
         if (error) {
           res.json({ error })
         } else if (results) {
-          res.json({ results })
+          // res.json({ results })
+          res.json('success')
         }
       },
     )
@@ -149,7 +150,8 @@ router.post('/users', async (req, res) => {
         if (error) {
           res.json({ error })
         } else if (results) {
-          res.json({ results })
+          // res.json({ results })
+          res.json('success')
         }
       },
     )
@@ -188,10 +190,41 @@ router.get('/users/:user', async (req, res) => {
   }
 })
 
-// [PUT] update profile for a user
-// router.put('/users/:user', async (req, res) => {
-
-// })
+// [POST] update profile for a user
+router.post('/profile/edit', async (req, res) => {
+  const {
+    emailAddress, firstName, lastName, year, profileImageUrl, majors, school,
+  } = req.body
+  if (!req.session.isInstructor) {
+    connection.query(
+      `UPDATE Instructor
+SET profileImageUrl = '${profileImageUrl}', firstName= '${firstName}' // change based 
+on what to edit
+WHERE emailAddress = '${emailAddress}';`,
+      (error, results) => {
+        if (error) {
+          res.json({ error })
+        } else if (results) {
+          res.json({ results })
+        }
+      },
+    )
+  } else {
+    connection.query(
+      // TODO: Change these fields based on what to edit
+      `UPDATE Student
+SET profileImageUrl = '${profileImageUrl}', majors= '${majors}'
+WHERE emailAddress = '${emailAddress}';`,
+      (error, results) => {
+        if (error) {
+          res.json({ error })
+        } else if (results) {
+          res.json({ results })
+        }
+      },
+    )
+  }
+})
 
 /* ASSIGNMENT ROUTES */
 
@@ -278,7 +311,7 @@ router.get('/class/:classCode/assignments/:assignmentId/groups', async (req, res
   const { classCode, assignmentId } = req.params
   connection.query(
     `SELECT groupId
-    FROM Group
+    FROM GroupAss
     WHERE assignmentId = '${assignmentId}' AND 
     classCode = '${classCode}';
     `,
@@ -292,19 +325,20 @@ router.get('/class/:classCode/assignments/:assignmentId/groups', async (req, res
   )
 })
 
-// GET the group information for a particular group
-router.get('/class/:classCode/assignments/:assignmentId/groups/:groupId', async (req, res) => {
+// GET metadata for a particular group
+router.get('/class/:classCode/assignments/:assignmentId/group/:groupId', async (req, res) => {
   const { classCode, assignmentId, groupId } = req.params
   connection.query(
     `SELECT *
-    FROM Group
-    WHERE groupId = '${groupId}' AND assignmentId = '${assignmentId}' AND classCode = '${classCode}';  
-    `,
+    FROM GroupAss
+    WHERE groupId = '${groupId}' AND assignmentId = '${assignmentId}' AND classCode = '${classCode}';`,
     (error, results) => {
       if (error) {
-        res.json({ error })
+        res.json(error)
+        console.log(error)
       } else if (results) {
-        res.json({ results })
+        res.json(results)
+        console.log(results)
       }
     },
   )
@@ -343,9 +377,14 @@ router.get(
 )
 
 // [GET] the group the user belongs to
-router.get('/class/:classCode/assignments/:assignmentId/groups/my-group', async (req, res) => {
+router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, res) => {
   const { classCode, assignmentId } = req.params
-  const { username } = req.session
+  // TODO: Uncomment when done testing
+  // const { username } = req.session
+
+  // TODO: Delete after testing
+  const username = 'yuanb'
+
   connection.query(
     `SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
      AND assignmentId = '${assignmentId}' 
@@ -354,9 +393,31 @@ router.get('/class/:classCode/assignments/:assignmentId/groups/my-group', async 
       if (error) {
         res.json({ error })
       } else if (results) {
-        res.json({ results })
+        console.log(results)
+        res.json(results)
       }
     },
   )
 })
+
+// [GET] the usernames of the members of a group
+router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members', async (req, res) => {
+  const { classCode, assignmentId, groupId } = req.params
+  connection.query(
+    `SELECT username FROM BelongsToGroup
+    JOIN GroupAss ON GroupAss.classCode = BelongsToGroup.classCode AND BelongsToGroup.groupId = GroupAss.groupId AND BelongsToGroup.assignmentId = GroupAss.assignmentId
+      AND GroupAss.classCode = '${classCode}'
+      AND GroupAss.assignmentId = '${assignmentId}'
+      AND GroupAss.groupId = '${groupId}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        console.log(results)
+        res.json(results)
+      }
+    },
+  )
+})
+
 module.exports = router

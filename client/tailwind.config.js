@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
   content: [
@@ -11,6 +12,9 @@ module.exports = {
         pearl: '#E6DCC7',
         parchment: '#EFEBD1',
         rust: '#D87731',
+      },
+      fontFamily: {
+        sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
       },
     },
   },

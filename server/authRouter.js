@@ -40,23 +40,6 @@ router.post('/login', async (req, res) => {
   })
 })
 
-// router.post('/signup', (req, res) => {
-//   const {
-//     emailAddress, username, password, firstName, lastName, pronouns, location,
-//   } = req.body
-//   // console.log(req.body)
-//   const sql = `INSERT INTO User (emailAddress, username, password, first_name, last_name, pronouns, location)
-//                VALUES ('${emailAddress}', '${username}', '${password}', '${firstName}', '${lastName}', '${pronouns}', '${location}')`
-//   connection.query(sql, (error, results) => {
-//     if (error) {
-//       res.json({ error })
-//     } else if (results) {
-//       req.session.username = username
-//       res.send('Successful signup')
-//     }
-//   })
-// })
-
 // Profile creation route
 router.post('/federated-signup', (req, res) => {
   const {
@@ -128,7 +111,7 @@ passport.use(new GoogleStrategy(
     clientSecret: process.env.GOOGLE_CLIENT_SECRET
       ? process.env.GOOGLE_CLIENT_SECRET : config.google_client_secret,
     callbackURL: '/oauth2/redirect/google',
-    scope: ['profile'],
+    scope: ['email', 'profile'],
   },
   verify,
 ))
@@ -141,6 +124,7 @@ router.get(
       (err, user) => {
         if (user && user.create) {
           req.session.username = user.id
+          // TODO: Any other fields that need to be stored in the session?
           return res.redirect(`${frontendServer}/signup`)
         }
         if (user) {

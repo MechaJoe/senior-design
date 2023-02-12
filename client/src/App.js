@@ -4,18 +4,23 @@ import {
 } from 'react-router-dom'
 import AssignmentDashboard from './AssignmentDashboard'
 import CoursesPage from './CoursesPage'
-import Home from './pages/Home'
-import Login from './pages/Login'
+import HomePage from './pages/HomePage'
+import GroupsPage from './pages/GroupsPage'
+import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: <HomePage />,
   },
   {
     path: 'login',
-    element: <Login />,
+    element: <LoginPage />,
+  },
+  {
+    path: 'signup',
+    element: <ProfileForm />,
   },
   {
     path: '/courses',
@@ -28,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: 'signup',
     element: <ProfileForm />,
+  },
+  {
+    path: 'courses/:classCode/assignments/:assignmentId',
+    element: <GroupsPage />,
   },
 ])
 
