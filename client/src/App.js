@@ -27,8 +27,8 @@ const router = createBrowserRouter([
     element: <CoursesPage />,
   },
   {
-    path: 'courses/:classCode/assignments',
-    element: <AssignmentDashboard classCode="CIS 4000" />,
+    path: '/courses/:classCode/assignments',
+    element: <AssignmentDashboard />,
   },
   {
     path: 'signup',

@@ -5,7 +5,10 @@ import Sidebar from './Sidebar'
 import AssignmentCard from './AssignmentCard'
 import config from './config.json'
 
-function AssignmentsDashboard({ classCode }) {
+function AssignmentsDashboard() {
+  let classCode = window.location.href.split('/')[4]
+  classCode = decodeURI(classCode)
+  console.log(classCode)
   const [instructors, setInstructors] = useState([])
   const [className, setClassName] = useState('')
   const [assignments, setAssignments] = useState([])
@@ -39,31 +42,34 @@ function AssignmentsDashboard({ classCode }) {
       setInstructors(res)
     })
     getClassName().then((res) => {
-      setClassName(res)
+      setClassName(res[0].className)
     })
     getAssignmentInfo().then((res) => {
       setAssignments(res)
     })
   }, [])
-
+  console.log(assignments)
   return (
-    <>
+    <div className="h-screen">
       <Sidebar
         classCode={classCode}
         className={className}
         instructors={instructors}
       />
-      {
-        assignments.length ? assignments.map((assignment) => (
-          <AssignmentCard
-            classCode={classCode}
-            assignmentId={assignment.assignmentId}
-            deadline={assignment.deadline}
-          // groupInfo={assignmentGroupInfo}
-          />
-        )) : null
-      }
-    </>
+      <div className="sticky">
+        {
+          assignments.length ? assignments.map((assignment) => (
+            <AssignmentCard
+              classCode={classCode}
+              assignmentId={assignment.assignmentId}
+              deadline={assignment.deadline}
+            // groupInfo={assignmentGroupInfo}
+            />
+          )) : null
+        }
+      </div>
+    </div>
+
   )
 }
 
