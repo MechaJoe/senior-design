@@ -7,12 +7,15 @@ import {
 } from '@mui/material'
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import ControlPointDuplicateRoundedIcon from '@mui/icons-material/ControlPointDuplicateRounded'
 import config from './config.json'
 
 function AssignmentCard({
   classCode, assignmentId, deadline,
 }) {
   const [groupInfo, setGroupInfo] = useState([])
+  const [groupSize, setGroupSize] = useState({})
   const options = {
     weekday: 'long',
     year: 'numeric',
@@ -34,6 +37,14 @@ function AssignmentCard({
     return data
   }
 
+  const getGroupSize = async () => {
+    const { data } = await axios.get(
+      `http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assignmentId}/groupSize`,
+      { withCredentials: true },
+    )
+    return data
+  }
+
   useEffect(() => {
     getGroupInfo().then((res) => {
       if (!res.length) {
@@ -41,23 +52,55 @@ function AssignmentCard({
       }
       setGroupInfo(res)
     })
+    getGroupSize().then((res) => {
+      setGroupSize(res)
+    })
   }, [])
 
   return (
-    <Card sx={{ width: 600, display: 'flex', justifyContent: 'left' }}>
+    // <div className="bg-rust-500">
+    <Card
+      className="bg-rust-500"
+      sx={{
+        // NOTE: it doesn't use tailwind css's defined color
+        width: 600, display: 'flex', justifyContent: 'left', backgroundColor: '#E6DCC720', border: 6, borderColor: '#212D3B', borderRadius: 8,
+      }}
+    >
       <Box sx={{ justifyContent: 'left' }}>
+        {
+          groupInfo.length >= groupSize.minGroupSize
+            ? <CheckCircleOutlineRoundedIcon /> : <ControlPointDuplicateRoundedIcon />
+        }
         <ButtonBase onClick={enterAssignment}>
           <CardContent sx={{ width: 500 }}>
-            <Typography gutterBottom variant="h5" component="div">
+            <h1 className="font-bold text-2xl">
+              {`Assignment ${assignmentId}`}
+            </h1>
+            {/* <Typography gutterBottom variant="h5" component="div">
               (
-              <span style={{ fontSize: '28px' }}>{`Assignment ${assignmentId}`}</span>
+              {`Assignment ${assignmentId}`}
               )
-            </Typography>
+            </Typography> */}
+            {/* <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+              {groupInfo ? groupInfo.map((member) => (
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <AccountCircleOutlinedIcon />
+                  <h3>
+                    &nbsp;
+                    {member.firstName}
+                    &nbsp;
+                    {member.lastName}
+                  </h3>
+                </div>
+              )) : null}
+
+            </div> */}
             {
               groupInfo ? groupInfo.map((member) => (
                 <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                   <AccountCircleOutlinedIcon />
                   <h3>
+                    &nbsp;
                     {member.firstName}
                     &nbsp;
                     {member.lastName}
@@ -66,13 +109,25 @@ function AssignmentCard({
               )) : null
             }
             <Button variant="outlined" startIcon={<ChatOutlinedIcon />}> Open Chat </Button>
+            <p>
+              Needs
+              &nbsp;
+              {groupSize.minGroupSize - groupInfo.length}
+              -
+              {groupSize.maxGroupSize - groupInfo.length}
+              &nbsp;
+              more teammates!
+            </p>
             <Typography variant="body2" color="text.secondary">
+              Due:
+              &nbsp;
               {deadlineString}
             </Typography>
           </CardContent>
         </ButtonBase>
       </Box>
     </Card>
+    // </div>
   )
 }
 
