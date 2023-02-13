@@ -34,12 +34,12 @@ export default function FullCard(props) {
         </div>
       </div>
       <div className="px-6 pt-2 pb-2">
-        <span className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetalDark mr-2 mb-2">{year}</span>
+        <span className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{year}</span>
         {schoolList.map((school) => (
-          <span key={school} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetalDark mr-2 mb-2">{school}</span>
+          <span key={school} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{school}</span>
         ))}
         {majorList.map((major) => (
-          <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetalDark mr-2 mb-2">{major}</span>
+          <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
         ))}
       </div>
     </div>
