@@ -327,7 +327,7 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId', async (
   )
 })
 
-// // [GET] the group members for the group that the user belongs to
+// [GET] the group members for the group that the user belongs to
 router.get(
   '/class/:classCode/assignments/:assignmentId/my-group-info',
   async (req, res) => {
@@ -355,7 +355,7 @@ router.get(
   },
 )
 
-// [GET] the group the user belongs to
+// [GET] the group ID the user belongs to
 router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, res) => {
   const { classCode, assignmentId } = req.params
   // TODO: Uncomment when done testing
@@ -363,10 +363,9 @@ router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, r
 
   // TODO: Delete after testing
   const username = 'yuanb'
-
   connection.query(
     `SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
-     AND assignmentId = '${assignmentId}' 
+     AND assignmentId = '${assignmentId}'
      AND classCode = '${classCode}';`,
     (error, results) => {
       if (error) {
@@ -379,15 +378,20 @@ router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, r
   )
 })
 
-// [GET] the usernames of the members of a group
+// [GET] the members of a group
 router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members', async (req, res) => {
   const { classCode, assignmentId, groupId } = req.params
   connection.query(
-    `SELECT username FROM BelongsToGroup
-    JOIN GroupAss ON GroupAss.classCode = BelongsToGroup.classCode AND BelongsToGroup.groupId = GroupAss.groupId AND BelongsToGroup.assignmentId = GroupAss.assignmentId
-      AND GroupAss.classCode = '${classCode}'
-      AND GroupAss.assignmentId = '${assignmentId}'
-      AND GroupAss.groupId = '${groupId}';`,
+    `SELECT S.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools
+      FROM BelongsToGroup
+      JOIN GroupAss ON GroupAss.classCode = BelongsToGroup.classCode
+        AND BelongsToGroup.groupId = GroupAss.groupId
+        AND BelongsToGroup.assignmentId = GroupAss.assignmentId
+      JOIN Student S on BelongsToGroup.username = S.username
+      WHERE GroupAss.classCode = '${classCode}'
+        AND GroupAss.assignmentId = '${assignmentId}'
+        AND GroupAss.groupId = '${groupId}';
+    `,
     (error, results) => {
       if (error) {
         res.json({ error })

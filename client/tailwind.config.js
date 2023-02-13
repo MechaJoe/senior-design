@@ -8,7 +8,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gunmetal: '#03254e',
+        gunmetal: '#03254E',
+        gunmetalDark: '#212D38',
+        tan: '#CCB98E',
+        bronze: '#D87731',
       },
       fontFamily: {
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
