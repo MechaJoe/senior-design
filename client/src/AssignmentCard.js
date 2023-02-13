@@ -16,6 +16,8 @@ function AssignmentCard({
 }) {
   const [groupInfo, setGroupInfo] = useState([])
   const [groupSize, setGroupSize] = useState({})
+  const [shadow, setShadow] = useState(1)
+
   const options = {
     weekday: 'long',
     year: 'numeric',
@@ -45,6 +47,9 @@ function AssignmentCard({
     return data
   }
 
+  const onMouseOver = () => setShadow(20)
+  const onMouseOut = () => setShadow(1)
+
   useEffect(() => {
     getGroupInfo().then((res) => {
       if (!res.length) {
@@ -63,19 +68,24 @@ function AssignmentCard({
       className="bg-rust-500"
       sx={{
         // NOTE: it doesn't use tailwind css's defined color
-        width: 600, display: 'flex', justifyContent: 'left', backgroundColor: '#E6DCC720', border: 6, borderColor: '#212D3B', borderRadius: 8,
+        width: 350, height: 400, display: 'flex', justifyContent: 'center', backgroundColor: '#E6DCC740', border: 6, borderColor: '#212D3B', borderRadius: 8, margin: '30px',
       }}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
+      zDepth={shadow}
     >
-      <Box sx={{ justifyContent: 'left' }}>
-        {
-          groupInfo.length >= groupSize.minGroupSize
-            ? <CheckCircleOutlineRoundedIcon /> : <ControlPointDuplicateRoundedIcon />
-        }
+      <Box sx={{ justifyContent: 'left', width: 350, height: 400 }}>
         <ButtonBase onClick={enterAssignment}>
-          <CardContent sx={{ width: 500 }}>
-            <h1 className="font-bold text-2xl">
+          <CardContent sx={{ width: 350, height: 400 }}>
+            <h1 className="font-bold text-2xl p-4" style={{ display: 'inline-block' }}>
               {`Assignment ${assignmentId}`}
             </h1>
+            <div className="text-2xl" style={{ display: 'inline-block' }}>
+              {
+                groupInfo.length >= groupSize.minGroupSize
+                  ? <CheckCircleOutlineRoundedIcon fontSize="large" style={{ color: '#10981D' }} /> : <ControlPointDuplicateRoundedIcon fontSize="large" style={{ color: '#FBBC02' }} />
+              }
+            </div>
             {/* <Typography gutterBottom variant="h5" component="div">
               (
               {`Assignment ${assignmentId}`}
@@ -97,7 +107,7 @@ function AssignmentCard({
             </div> */}
             {
               groupInfo ? groupInfo.map((member) => (
-                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div className="pl-8 pt-2 pb-2 pr-2" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                   <AccountCircleOutlinedIcon />
                   <h3>
                     &nbsp;
@@ -108,15 +118,11 @@ function AssignmentCard({
                 </div>
               )) : null
             }
-            <Button variant="outlined" startIcon={<ChatOutlinedIcon />}> Open Chat </Button>
+            <Button variant="contained" startIcon={<ChatOutlinedIcon />} style={{ margin: '15px', backgroundColor: 'white', color: 'black' }}> Open Chat </Button>
             <p>
-              Needs
-              &nbsp;
-              {groupSize.minGroupSize - groupInfo.length}
-              -
               {groupSize.maxGroupSize - groupInfo.length}
               &nbsp;
-              more teammates!
+              slot(s) available!
             </p>
             <Typography variant="body2" color="text.secondary">
               Due:

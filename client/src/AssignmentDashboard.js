@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Stack from '@mui/material/Stack'
 import Sidebar from './Sidebar'
 import AssignmentCard from './AssignmentCard'
 import config from './config.json'
@@ -50,13 +51,14 @@ function AssignmentsDashboard() {
   }, [])
   console.log(assignments)
   return (
-    <div className="h-screen">
+    // <div className="h-screen">
+    <Stack direction="row" spacing={2}>
       <Sidebar
         classCode={classCode}
         className={className}
         instructors={instructors}
       />
-      <div className="sticky">
+      <div className="sticky inline-block">
         {
           assignments.length ? assignments.map((assignment) => (
             <AssignmentCard
@@ -68,7 +70,8 @@ function AssignmentsDashboard() {
           )) : null
         }
       </div>
-    </div>
+    </Stack>
+    // </div>
 
   )
 }
