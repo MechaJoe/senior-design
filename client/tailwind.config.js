@@ -8,7 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gunmetal: '#212D3B',
+        gunmetal: '#212D38',
+        tan: '#CCB98E',
         pearl: '#E6DCC7',
         parchment: '#EFEBD1',
         rust: '#D87731',

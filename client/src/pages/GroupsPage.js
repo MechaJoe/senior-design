@@ -1,13 +1,12 @@
 import axios from 'axios'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 // import { useState, useEffect } from 'react'
 import { useEffect, useState } from 'react'
 // import { useNavigate, useParams } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import config from '../config.json'
-import FullCard from '../components/FullCard'
+import GroupsPageTabs from '../components/GroupsPageTabs'
 
 export default function GroupsPage() {
   // TODO: Uncomment this to enable redirect when user is not logged in
@@ -25,10 +24,41 @@ export default function GroupsPage() {
   //   getUser()
   // }, [])
 
-  // get group members of logged in user
   const { classCode, assignmentId } = useParams()
+
+  // populate sidebar with class info
+  const [classTitle, setClassTitle] = useState('')
+  const [instructors, setInstructors] = useState([])
+
+  const getInstructors = async () => {
+    const { data: instructorData } = await axios.get(
+      encodeURI(`${config.server_domain}/class/${classCode}/instructor`),
+    )
+    if (instructorData) {
+      setInstructors(instructorData)
+    } else {
+      console.log('no instructors found')
+    }
+  }
+
+  const getClassTitle = async () => {
+    const { data: classData } = await axios.get(
+      encodeURI(`${config.server_domain}/class/${classCode}`),
+    )
+    if (classData) {
+      setClassTitle(classData)
+    } else {
+      console.log('no class found')
+    }
+  }
+
+  useEffect(() => {
+    getInstructors()
+    getClassTitle()
+  }, [])
+
+  // get group members of logged in user
   const [groupMembers, setGroupMembers] = useState([])
-  // const [viewMode, setViewMode] = useState('myGroup') // myGroup, individuals, or allGroups
 
   const getMyGroup = async () => {
     const { data: [{ groupId }] } = await axios.get(
@@ -38,8 +68,8 @@ export default function GroupsPage() {
       const { data: members } = await axios.get(
         encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`),
       )
+      console.log(members)
       if (members) {
-        console.log(members)
         setGroupMembers(members)
       } else {
         console.log('empty group')
@@ -51,7 +81,7 @@ export default function GroupsPage() {
   }
   useEffect(() => {
     getMyGroup()
-    // setViewMode('myGroup')
+    getClassTitle()
   }, [])
 
   return (
@@ -59,18 +89,14 @@ export default function GroupsPage() {
       className="container mx-auto min-w-full"
     >
       <div className="flex flex-row min-h-screen">
-        <Sidebar classCode={classCode} />
-        <div className="flex flex-col p-6">
-          <Typography variant="h2">
+        <Sidebar classCode={classCode} className={classTitle} instructors={instructors} />
+        <div className="flex flex-col w-5/6 p-6">
+          <div className="font-sans font-bold text-4xl">
             Assignment
             {' '}
             {assignmentId}
-          </Typography>
-          <div className="flex flex-row">
-            {groupMembers?.map((member) => (
-              <FullCard key={member.username} username={member.username} />
-            ))}
           </div>
+          <GroupsPageTabs groupMembers={groupMembers} />
         </div>
       </div>
     </Box>
