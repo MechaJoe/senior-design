@@ -46,7 +46,7 @@ export default function GroupsPage() {
       encodeURI(`${config.server_domain}/class/${classCode}`),
     )
     if (classData) {
-      setClassTitle(classData)
+      setClassTitle(classData.className)
     } else {
       console.log('no class found')
     }

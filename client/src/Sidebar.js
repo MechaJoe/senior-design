@@ -1,6 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-use-before-define */
-/* eslint-disable react/prop-types */
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 
 function Sidebar({ classCode, className, instructors }) {
