@@ -15,13 +15,28 @@ const router = express.Router()
 
 /* USER ROUTES */
 
-// Get profile for a user
+// Get profile for the currenctly logged-in user
 // TODO: distinguish between Students and Instructors
 router.get('/users', async (req, res) => {
   const { username } = req.session
   connection.query(`SELECT * FROM Student
   WHERE username = '${username}';
    `, (error, results) => {
+    if (error) {
+      res.json({ error })
+    } else if (results) {
+      res.json({ results })
+    }
+  })
+})
+
+// Get profile for a given user
+// TODO: distinguish between Students and Instructors
+router.get('/users/:username', async (req, res) => {
+  const { username } = req.params
+  connection.query(`SELECT * FROM Student
+    WHERE username = '${username}';
+     `, (error, results) => {
     if (error) {
       res.json({ error })
     } else if (results) {
