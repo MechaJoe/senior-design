@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage'
 import GroupsPage from './pages/GroupsPage'
 import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
+import Profile from './Profile'
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: 'signup',
     element: <ProfileForm />,
+  },
+  {
+    path: 'profile',
+    element: <Profile />,
   },
   {
     path: '/courses',
