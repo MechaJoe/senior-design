@@ -127,10 +127,12 @@ router.post('/profile', async (req, res) => {
     emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school,
   } = req.body
   req.session.isInstructor = false // TODO: delete hardcoding
+  const schools = school.join(',')
+  const majorsString = majors.join(',')
   if (!req.session.isInstructor) {
     connection.query(
-      `INSERT INTO Student (emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school)
-      VALUES ('${emailAddress}', '${username}', '${firstName}', '${lastName}', '${year}', '${majors}', '${school}');
+      `INSERT INTO Student (emailAddress, username, firstName, lastName, profileImageUrl, year, majors, schools)
+      VALUES ('${emailAddress}', '${username}', '${firstName}', '${lastName}', '${profileImageUrl}', '${year}', '${majorsString}', '${schools}');
       `,
       (error, results) => {
         if (error) {

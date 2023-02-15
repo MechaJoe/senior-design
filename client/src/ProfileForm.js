@@ -5,11 +5,12 @@
 import axios from 'axios'
 // import S3 from "react-aws-s3"
 import {
-  Select, MenuItem, FormControl, InputLabel, Chip, Button, Stack, Typography,
+  Box, Select, MenuItem, FormControl, InputLabel, Chip, Button, Stack, Typography,
 } from '@mui/material'
 import { useState } from 'react'
 // import { useNavigate } from 'react-router-dom'
-// import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
 const config = require('./config.json')
 // eslint-disable-next-line react/prop-types
 // eslint-disable-next-line no-unused-vars
@@ -19,6 +20,7 @@ function ProfileForm({ userObj }) {
   //   emailAddress, username, firstName, lastName,
   // } = userObj
   // const baseUrl = 'http://localhost:8080'
+  const navigate = useNavigate()
   const [pt1, setPt1] = useState(true)
   const emailAddress = 'gansa@wharton.upenn.edu'
   const username = 'gansa'
@@ -57,12 +59,18 @@ function ProfileForm({ userObj }) {
       return
     }
     console.log('mhm')
+    // navigate('/profile', {
+    //   firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl,
+    // })
     const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile`, {
       emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
     }, { withCredentials: true })
     if (data === 'success') {
       console.log('uploaded successfully')
-      // useNavigate('/courses')
+      const bio = ''
+      navigate('/profile', {
+        firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl, bio,
+      })
       // window.location.reload()
       // useNavigate('/dashboard', { replace: true })
     } else {
@@ -70,19 +78,23 @@ function ProfileForm({ userObj }) {
     }
   }
   return (
+    <Box
+      className="container h-screen mx-auto min-w-full bg-white"
+    >
+      {
     pt1 ?
-      <Stack spacing={2} alignItems="center" justifyContent="center">
+      <Stack spacing={2} alignItems="center" justifyContent="center" paddingTop={10} paddingBottom={10} paddingLeft={50} paddingRight={50}>
         <Typography variant="h3" fullWidth>
-          {' '}
           Welcome,
+          {' '}
           {firstName}
         </Typography>
-        <Typography variant="h5" fullWidth> Start your profile to help you find your team! </Typography>
+        <Typography variant="h5" fullWidth> Let&apos;s start your profile to help you find your team! </Typography>
+        <Stack />
+        <Stack />
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Year</InputLabel>
+          <InputLabel>Year</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
             value={year}
             label="Year"
             onChange={(e) => setYear(e.target.value)}
@@ -96,11 +108,11 @@ function ProfileForm({ userObj }) {
         </FormControl>
 
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label"> Major(s)</InputLabel>
+          <InputLabel> Major(s)</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
             multiple
             value={majors}
+            label="Major(s)"
             onChange={(e) => setMajors(e.target.value)}
             renderValue={(m) => (
               <div>
@@ -125,6 +137,7 @@ function ProfileForm({ userObj }) {
           <Select
             multiple
             value={school}
+            label="School(s)"
             onChange={(e) => setSchool(e.target.value)}
             renderValue={(s) => (
               <div>
@@ -141,15 +154,37 @@ function ProfileForm({ userObj }) {
           </Select>
           {/* <FormHelperText>Select your school(s)</FormHelperText> */}
         </FormControl>
-        <Button fullWidth onClick={() => setPt1(false)}> Next </Button>
+        <Button
+          fullWidth
+          variant="contained"
+          // color="#D87731"
+          onClick={() => setPt1(false)}
+        >
+          {' '}
+          Next
+          {' '}
+
+        </Button>
+        {/* </Box> */}
       </Stack> :
-      <Stack spacing={2} alignItems="center" justifyContent="center">
+      <Stack spacing={2} alignItems="center" justifyContent="center" paddingTop={10} paddingLeft={60} paddingRight={60}>
         <Typography variant="h3" fullWidth>
           Add a profile photo!
         </Typography>
+        <div style={{
+          marginBottom: '20px',
+          height: '250px',
+          width: '250px',
+          backgroundColor: '#E9EFF3',
+          borderRadius: '50%',
+        }}
+        />
+
         <Button
+          fullWidth
           variant="contained"
           component="label"
+        // color="#D87731"
         >
           Add a photo
           <input
@@ -159,7 +194,8 @@ function ProfileForm({ userObj }) {
         </Button>
         <Button fullWidth onClick={handleSave}> Skip </Button>
       </Stack>
-
+}
+    </Box>
   )
 }
 
