@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         tan: '#CCB98E',
         gunmetal: '#03254E',
+        porcelain: '#E9EFF3',
         pearl: '#E6DCC7',
         parchment: '#EFEBD1',
         rust: '#D87731',

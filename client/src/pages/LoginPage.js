@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import Grid from '@mui/material/Grid'
 import GoogleButton from '../assets/google-button.png'
 
 export default function LoginPage() {
@@ -20,22 +19,18 @@ export default function LoginPage() {
 
   return (
     <div
-      className="container mx-auto bg-gunmetal min-w-full pb-4 justify-center items-center"
+      className="flex container mx-auto bg-porcelain min-w-full min-h-screen pb-4 justify-center items-center"
     >
-      <Grid className="" container spacing={0} justifyContent="space-evenly" alignItems="center" direction="column" style={{ minHeight: '100vh' }}>
-        <Grid item xs={6}>
-          <div className="text-white text-4xl font-sans">
-            Login to Concourse
-          </div>
-        </Grid>
-        <Grid item xs={6}>
-          <a href="http://localhost:8080/login/federated/google">
-            <button type="button">
-              <img className="object-scale-down h-16 w-auto" src={GoogleButton} alt="google sign-in" />
-            </button>
-          </a>
-        </Grid>
-      </Grid>
+      <div className="flex flex-col justify-center items-center rounded-lg bg-white max-w-xl p-6 text-center">
+        <div className="text-4xl font-sans p-6 pt-12 pb-12">
+          Log In to Concourse
+        </div>
+        <a className="p-6 pb-12" href="http://localhost:8080/login/federated/google">
+          <button type="button">
+            <img className="object-scale-down h-16 w-auto" src={GoogleButton} alt="google sign-in" />
+          </button>
+        </a>
+      </div>
     </div>
   )
 }
