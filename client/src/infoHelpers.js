@@ -19,3 +19,12 @@ export const getUserAllCourses = async (username) => {
     throw new Error(err.message)
   }
 }
+
+export const getUser = async (username) => {
+  try {
+    const res = await axios.get(`${baseUrl}/user/${username}`)
+    return res.data.results
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}

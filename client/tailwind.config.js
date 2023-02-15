@@ -10,12 +10,16 @@ module.exports = {
       colors: {
         tan: '#CCB98E',
         gunmetal: '#03254E',
+        royal: '#03254E',
         pearl: '#E6DCC7',
         parchment: '#EFEBD1',
         rust: '#D87731',
       },
       fontFamily: {
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
+      },
+      fontWeight: {
+        bold: '1000',
       },
     },
   },
