@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
+import {
+  Stack, Grid,
+} from '@mui/material'
 import CourseCard from './CourseCard'
+import CoursesSideBar from './CoursesSideBar'
 import {
   getUserAllCourses,
 } from './infoHelpers'
@@ -9,7 +13,17 @@ function StudentCourses() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // replace placeholder name with localStorage.getItem('currUsername')
+    // uncomment once localStorage stuff is implemented
+    // if (localStorage.getItem('currUsername')) {
+    //   getUserAllCourses(localStorage.getItem('currUsername'))
+    //     .then((response) => {
+    //       setStudentCourses(response)
+    //       setIsLoading(false)
+    //     })
+    // } else {
+    //   window.location.href = '/'
+    // }
+
     getUserAllCourses('lejiaz')
       .then((response) => {
         setStudentCourses(response)
@@ -19,20 +33,21 @@ function StudentCourses() {
 
   return (
     <div className="container-courses-page">
-      <h2>Student Courses</h2>
-      <div className="container">
+      <h2 className="px-12 pt-12 text-3xl"> Student Courses </h2>
+      <h3 className="px-12 pt-6"> Spring 2023</h3>
+      <div className="px-12 pt-6">
         {!isLoading && (
-        <ul className="no-bullets" style={{ marginTop: 20 }}>
+        <Grid container spacing={20}>
           {studentCourses.map(
-            (item) => (
-              <li key={`my-courses: ${item.classCode}`} style={{ marginTop: 20 }}>
+            (course) => (
+              <Grid item md={4} key={`my-courses: ${course.classCode}`} style={{ marginTop: 20 }}>
                 <CourseCard
-                  courseId={item.classCode}
+                  courseId={course.classCode}
                 />
-              </li>
+              </Grid>
             ),
           )}
-        </ul>
+        </Grid>
         )}
       </div>
     </div>
@@ -41,11 +56,12 @@ function StudentCourses() {
 
 function CoursesPage() {
   return (
-    <div className="container-courses-page">
+    <Stack direction="row" spacing={2}>
+      <CoursesSideBar />
       <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
         {StudentCourses()}
       </div>
-    </div>
+    </Stack>
   )
 }
 

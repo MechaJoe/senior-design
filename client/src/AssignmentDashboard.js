@@ -9,7 +9,6 @@ import config from './config.json'
 function AssignmentsDashboard() {
   let classCode = window.location.href.split('/')[4]
   classCode = decodeURI(classCode)
-  console.log(classCode)
   const [instructors, setInstructors] = useState([])
   const [className, setClassName] = useState('')
   const [assignments, setAssignments] = useState([])
@@ -49,7 +48,6 @@ function AssignmentsDashboard() {
       setAssignments(res)
     })
   }, [])
-  console.log(assignments)
   return (
     // <div className="h-screen">
     <Stack direction="row" spacing={2}>

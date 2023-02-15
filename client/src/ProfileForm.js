@@ -199,4 +199,4 @@ function ProfileForm({ userObj }) {
   )
 }
 
-// export default ProfileForm
+export default ProfileForm

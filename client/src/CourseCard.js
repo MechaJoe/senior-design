@@ -24,16 +24,20 @@ export default function courseCard(props) {
   }, [])
 
   return (
-    <Card sx={{ width: 600, display: 'flex', justifyContent: 'center' }}>
-      <Box sx={{ justifyContent: 'left' }}>
+    <Card
+      sx={{
+        width: 250, display: 'flex', justifyContent: 'center',
+      }}
+    >
+      <Box sx={{ justifyContent: 'center' }}>
         <ButtonBase onClick={() => EnterCourse(courseId)}>
-          <CardContent sx={{ width: 500 }}>
-            <Typography gutterBottom variant="h5" component="div">
-              <span style={{ fontSize: '28px' }}>{courseId}</span>
+          <CardContent sx={{ width: 250 }}>
+            <Typography gutterBottom variant="h4" component="div">
+              <span className="font-sans font-bold" style={{ fontSize: '28px' }}>{courseId}</span>
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {!isNameLoading
-                && (<span>{courseName}</span>)}
+                && (<span className="font-sans">{courseName}</span>)}
             </Typography>
           </CardContent>
         </ButtonBase>
