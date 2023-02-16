@@ -1,21 +1,21 @@
-// import axios from 'axios'
-// import { useEffect } from 'react'
-// import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function HomePage() {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
 
-  // const getUser = async () => {
-  //   const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
-  //   if (!data) {
-  //     navigate('/login')
-  //   }
-  //   return data
-  // }
+  const getUser = async () => {
+    const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
+    if (!data) {
+      navigate('/login')
+    }
+    return data
+  }
 
-  // useEffect(() => {
-  //   getUser()
-  // }, [])
+  useEffect(() => {
+    getUser()
+  }, [])
 
   return (
     <div className="container mx-auto bg-gunmetal rounded-xl shadow border p-8 m-10">

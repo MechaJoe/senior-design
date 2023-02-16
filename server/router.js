@@ -137,7 +137,7 @@ router.get('/class/:classCode', async (req, res) => {
 /* PROFILE ROUTES */
 
 // POST creates profile for a user
-router.post('/users', async (req, res) => {
+router.post('/user', async (req, res) => {
   const {
     emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school,
   } = req.body
@@ -153,7 +153,6 @@ router.post('/users', async (req, res) => {
         if (error) {
           res.json({ error })
         } else if (results) {
-          // res.json({ results })
           res.json('success')
         }
       },
@@ -396,11 +395,7 @@ router.get(
 // [GET] the group ID the user belongs to
 router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, res) => {
   const { classCode, assignmentId } = req.params
-  // TODO: Uncomment when done testing
-  // const { username } = req.session
-
-  // TODO: Delete after testing
-  const username = 'yuanb'
+  const { username } = req.session
   connection.query(
     `SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
      AND assignmentId = '${assignmentId}'
@@ -409,7 +404,6 @@ router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, r
       if (error) {
         res.json({ error })
       } else if (results) {
-        console.log(results)
         res.json(results)
       }
     },
@@ -434,7 +428,6 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members',
       if (error) {
         res.json({ error })
       } else if (results) {
-        console.log(results)
         res.json(results)
       }
     },

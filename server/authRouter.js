@@ -1,8 +1,9 @@
 const express = require('express')
+const crypto = require('node:crypto')
+const GoogleStrategy = require('passport-google-oidc')
 const mysql = require('mysql2')
 const passport = require('passport')
-const GoogleStrategy = require('passport-google-oidc')
-const crypto = require('node:crypto')
+const querystring = require('node:querystring')
 const config = require('./config.json')
 
 const frontendServer = `http://${config.server_host}:${config.frontend_server_port}`
@@ -36,26 +37,6 @@ router.post('/login', async (req, res) => {
       } else {
         res.send('Unsuccessful login')
       }
-    }
-  })
-})
-
-// Profile creation route
-router.post('/federated-signup', (req, res) => {
-  const {
-    firstName, lastName, pronouns, location,
-  } = req.body
-  const { username } = req.session
-  // console.log(req.session)
-  const password = crypto.pbkdf2Sync(username, 'joeisunhackable', 100000, 64, 'sha512').toString('hex')
-  const sql = `INSERT INTO User (username, password, first_name, last_name, pronouns, location)
-               VALUES ('${username}', '${password}', '${firstName}', '${lastName}', '${pronouns}', '${location}')`
-  connection.query(sql, (error, results) => {
-    if (error) {
-      res.json({ error })
-    } else if (results) {
-      req.session.username = username
-      res.send('Successful federated signup')
     }
   })
 })
@@ -122,14 +103,21 @@ router.get(
     passport.authenticate(
       'google',
       (err, user) => {
-        if (user && user.create) {
-          req.session.username = user.id
-          // TODO: Any other fields that need to be stored in the session?
-          return res.redirect(`${frontendServer}/signup`)
-        }
         if (user) {
-          req.session.username = user.id
-          return res.redirect(`${frontendServer}`)
+          const username = user.emails[0].value.split('@')[0]
+          req.session.username = username
+          if (user.create) {
+            const query = querystring.stringify({
+              emailAddress: user.emails[0].value,
+              username,
+              firstName: user.name.givenName,
+              lastName: user.name.familyName,
+            })
+            return res.redirect(
+              `${frontendServer}/signup?${query}`,
+            )
+          }
+          return res.redirect(`${frontendServer}/courses`)
         }
         return res.redirect(`${frontendServer}/login`)
       },
