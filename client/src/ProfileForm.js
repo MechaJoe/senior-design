@@ -189,3 +189,5 @@ function ProfileForm() {
     </Box>
   )
 }
+
+export default ProfileForm

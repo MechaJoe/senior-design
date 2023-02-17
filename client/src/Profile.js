@@ -21,11 +21,10 @@ import ProfileSidebar from './ProfileSidebar'
 //     },
 //   },
 // })
-const config = require('./config.json')
 // eslint-disable-next-line react/prop-types
 // eslint-disable-next-line no-unused-vars
 // function Profile({
-//  firstName, lastName, username, emailAddress, year, 
+//  firstName, lastName, username, emailAddress, year,
 // }) {
 // function Profile({ bio }) {
 function Profile() {
@@ -39,10 +38,10 @@ function Profile() {
   const [year, setYear] = useState('2023')
   const [profileImageUrl, setProfileImageUrl] = useState('')
   const [modal, setModal] = useState(false)
-  const [fields, setFields] = useState({})
-  const {
-    emailAddress, username, firstName, lastName, year, majors, school, // profileImageUrl,
-  } = fields
+  // const [fields, setFields] = useState({})
+  // const {
+  //   emailAddress, username, firstName, lastName, year, majors, school, // profileImageUrl,
+  // } = fields
 
   const fetchData = async () => {
     const { data } = await axios.get(`http://localhost:${config.server_port}/username`)
@@ -51,7 +50,7 @@ function Profile() {
     }
     const { data: { results: [userData] } } = await axios.get(`http://localhost:${config.server_port}/users/${data}`)
     console.log(userData)
-    setFields(userData)
+    // setFields(userData)
   }
 
   useEffect(() => {
@@ -62,20 +61,20 @@ function Profile() {
   const [bio, setBio] = useState('')
   useEffect(() => {
     (async () => {
-    const { data: d } = await axios.get('/profile')
-    console.log(d)
-    // redirect user to splash page if user is not logged in and tries to visit a profile page
-    setEmailAddress(d.emailAddress)
-    setUsername(d.username)
-    setFirstName(d.firstName)
-    setLastName(d.lastName)
-    setProfileImageUrl(d.profileImageUrl)
-    setYear(d.year)
-    setMajors(d.majors.split(','))
-    setSchool(d.schools.split(','))
-    setBio(d.bio)
-  })() 
-}, [])
+      const { data: d } = await axios.get('/profile')
+      console.log(d)
+      // redirect user to splash page if user is not logged in and tries to visit a profile page
+      setEmailAddress(d.emailAddress)
+      setUsername(d.username)
+      setFirstName(d.firstName)
+      setLastName(d.lastName)
+      setProfileImageUrl(d.profileImageUrl)
+      setYear(d.year)
+      setMajors(d.majors.split(','))
+      setSchool(d.schools.split(','))
+      setBio(d.bio)
+    })()
+  }, [])
   const handleEditBio = async () => {
     setBio(bio)
     if (!bio) {
