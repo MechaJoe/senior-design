@@ -21,7 +21,6 @@ function ProfileForm() {
   // const firstName = 'Sam'
   // const lastName = 'Gan'
   const profileImageUrl = ''
-  // const [year, setYear] = useState(userObj.year)
   const [year, setYear] = useState('')
   // const [profileImageUrl, setProfileImageUrl] = useState('')
   const [majors, setMajors] = useState([])
@@ -52,13 +51,9 @@ function ProfileForm() {
       alert('Please complete all fields')
       return
     }
-    console.log('mhm')
-    // navigate('/profile', {
-    //   firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl,
-    // })
-    const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile`, {
+    const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/user`, {
       emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
-    }, { withCredentials: true })
+    })
     if (data === 'success') {
       console.log('uploaded successfully')
       navigate('/profile', {
@@ -194,5 +189,3 @@ function ProfileForm() {
     </Box>
   )
 }
-
-export default ProfileForm

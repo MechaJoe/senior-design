@@ -14,7 +14,8 @@ app.use(cors({
   credentials: true,
   origin: [
     `http://${config.server_host}:${config.frontend_server_port}`,
-    `http://localhost:${config.frontend_server_port}`],
+    `http://localhost:${config.frontend_server_port}`,
+    'http://127.0.0.1:3000'],
   exposedHeaders: ['set-cookie'],
 }))
 
@@ -33,7 +34,7 @@ app.use(passport.session())
 app.use('/', Router)
 app.use('/', AuthRouter)
 
-app.listen(config.backend_server_port, () => {
+app.listen(config.backend_server_port, config.server_host, () => {
   console.log(`Server running at http://${config.server_host}:${config.backend_server_port}/`)
 })
 

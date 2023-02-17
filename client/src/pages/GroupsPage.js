@@ -1,28 +1,22 @@
 import axios from 'axios'
 import Box from '@mui/material/Box'
-// import { useState, useEffect } from 'react'
 import { useEffect, useState } from 'react'
-// import { useNavigate, useParams } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import config from '../config.json'
 import GroupsPageTabs from '../components/GroupsPageTabs'
 
 export default function GroupsPage() {
-  // TODO: Uncomment this to enable redirect when user is not logged in
-  // const [username, setUsername] = useState('')
-  // const navigate = useNavigate()
-  // const getUser = async () => {
-  // eslint-disable-next-line max-len
-  //   const { data } = await axios.get(`${config.server_domain}/username`, { withCredentials: true })
-  //   if (!data) {
-  //     navigate('/login')
-  //   }
-  //   setUsername(data.username)
-  // }
-  // useEffect(() => {
-  //   getUser()
-  // }, [])
+  const navigate = useNavigate()
+  const getUser = async () => {
+    const { data } = await axios.get(`${config.server_domain}/username`)
+    if (!data) {
+      navigate('/login')
+    }
+  }
+  useEffect(() => {
+    getUser()
+  }, [])
 
   const { classCode, assignmentId } = useParams()
 
@@ -68,7 +62,6 @@ export default function GroupsPage() {
       const { data: members } = await axios.get(
         encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`),
       )
-      console.log(members)
       if (members) {
         setGroupMembers(members)
       } else {
