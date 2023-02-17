@@ -21,8 +21,23 @@ import ProfileSidebar from './ProfileSidebar'
 //     },
 //   },
 // })
+const config = require('./config.json')
+// eslint-disable-next-line react/prop-types
+// eslint-disable-next-line no-unused-vars
+// function Profile({
+//  firstName, lastName, username, emailAddress, year, 
+// }) {
+// function Profile({ bio }) {
 function Profile() {
   const navigate = useNavigate()
+  const [emailAddress, setEmailAddress] = useState('gansa@wharton.upenn.edu')
+  const [username, setUsername] = useState('gansa')
+  const [firstName, setFirstName] = useState('Sam')
+  const [lastName, setLastName] = useState('Gan')
+  const [majors, setMajors] = useState(['FNCE'])
+  const [school, setSchool] = useState(['WHARTON'])
+  const [year, setYear] = useState('2023')
+  const [profileImageUrl, setProfileImageUrl] = useState('')
   const [modal, setModal] = useState(false)
   const [fields, setFields] = useState({})
   const {
@@ -45,22 +60,40 @@ function Profile() {
 
   // const [bio, setBio] = useState(bio)
   const [bio, setBio] = useState('')
+  useEffect(() => {
+    (async () => {
+    const { data: d } = await axios.get('/profile')
+    console.log(d)
+    // redirect user to splash page if user is not logged in and tries to visit a profile page
+    setEmailAddress(d.emailAddress)
+    setUsername(d.username)
+    setFirstName(d.firstName)
+    setLastName(d.lastName)
+    setProfileImageUrl(d.profileImageUrl)
+    setYear(d.year)
+    setMajors(d.majors.split(','))
+    setSchool(d.schools.split(','))
+    setBio(d.bio)
+  })() 
+}, [])
   const handleEditBio = async () => {
+    setBio(bio)
     if (!bio) {
       return
     }
-    console.log('mhm')
-    // const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile`, {
-    //   emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
-    // }, { withCredentials: true })
-    // if (data === 'success') {
-    //   console.log('uploaded successfully')
-    //   setModal(false)
-    //   // window.location.reload()
-    //   // useNavigate('/dashboard', { replace: true })
-    // } else {
-    //   console.log(data)
-    // }
+    const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile/edit`, {
+      emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school, bio,
+    }, { withCredentials: true })
+    if (data === 'success') {
+      console.log('uploaded successfully')
+      navigate('/profile', {
+        firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl, bio,
+      })
+      // window.location.reload()
+      // useNavigate('/dashboard', { replace: true })
+    } else {
+      console.log(data)
+    }
   }
 
   return (
@@ -122,16 +155,19 @@ function Profile() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '300px', marginRight: '300px', borderRadius: 25,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '400px', marginRight: '400px',
         }}
+        sx={{ border: 4, borderColor: 'black', borderRadius: 4 }}
       >
-        <Stack fullWidth spacing={4} alignItems="center" justifyContent="center" className="bg-white p-10 mx-auto min-h-full min-w-full rounded-xl">
-          <Typography fullWidth variant="h8">
+        <Stack fullWidth spacing={4} className="bg-white pt-10 min-h-full min-w-full rounded-xl">
+          <Typography fullWidth variant="h8" alignItems="center" justifyContent="center" className="bg-skyblue py-5 text-center w-full">
             Add or modify your profile bio in the text box below
           </Typography>
-          <TextField fullWidth id="outlined-basic" variant="outlined" placeholder="Enter bio here..." />
-          <Button onClick={() => setModal(false)}> Close </Button>
-          <Button onClick={handleEditBio}> Add </Button>
+          <TextField alignItems="center" value={bio} onInput={(e) => setBio(e.target.value)} justifyContent="center" placeholder="Enter bio here..." />
+          <Stack direction="row" alignItems="center" justifyContent="right">
+            <Button onClick={() => setModal(false)} variant="filled" className="text-black"> Close </Button>
+            <Button onClick={handleEditBio} variant="filled"> Add </Button>
+          </Stack>
         </Stack>
       </Modal>
     </Box>
