@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 const config = require('./config.json')
 
-function ProfileForm() {
+export default function ProfileForm() {
   // const fileInput = React.useRef()
   const [searchParams] = useSearchParams()
   const {
@@ -181,5 +181,3 @@ function ProfileForm() {
     </Box>
   )
 }
-
-export default ProfileForm

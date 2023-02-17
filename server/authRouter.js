@@ -42,9 +42,6 @@ router.post('/login', async (req, res) => {
 })
 
 router.get('/username', (req, res) => {
-  if (req.session.passport) {
-    req.session.username = req.session.passport.user.id
-  }
   res.json(req.session.username)
 })
 
@@ -69,13 +66,12 @@ router.post('/logout', (req, res) => {
 })
 
 const verify = async (issuer, profile, cb) => {
-  const username = profile.id
+  const username = profile.emails[0].value.split('@')[0]
   connection.query(
-    `SELECT * FROM User WHERE username = '${username}'`,
+    `SELECT * FROM Student WHERE username = '${username}'`,
     (error, results) => {
       if (error || !results || results.length === 0) {
         const newProfile = profile
-        // console.log(profile)
         newProfile.create = true
         return cb(null, newProfile)
       }
@@ -105,7 +101,6 @@ router.get(
       (err, user) => {
         if (user) {
           const username = user.emails[0].value.split('@')[0]
-          req.session.username = username
           if (user.create) {
             const query = querystring.stringify({
               emailAddress: user.emails[0].value,
@@ -117,6 +112,7 @@ router.get(
               `${frontendServer}/signup?${query}`,
             )
           }
+          req.session.username = username
           return res.redirect(`${frontendServer}/courses`)
         }
         return res.redirect(`${frontendServer}/login`)
@@ -127,7 +123,7 @@ router.get(
 
 passport.serializeUser((user, cb) => {
   process.nextTick(() => {
-    cb(null, { username: user.id })
+    cb(null, { username: user.username })
   })
 })
 

@@ -153,6 +153,7 @@ router.post('/user', async (req, res) => {
         if (error) {
           res.json({ error })
         } else if (results) {
+          req.session.username = username
           res.json('success')
         }
       },
