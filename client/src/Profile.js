@@ -115,16 +115,19 @@ function Profile() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '300px', marginRight: '300px', borderRadius: 25,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '400px', marginRight: '400px',
         }}
+        sx={{ border: 4, borderColor: 'black', borderRadius: 4 }}
       >
-        <Stack fullWidth spacing={4} alignItems="center" justifyContent="center" className="bg-white p-10 mx-auto min-h-full min-w-full rounded-xl">
-          <Typography fullWidth variant="h8">
+        <Stack fullWidth spacing={4} className="bg-white pt-10 min-h-full min-w-full rounded-xl">
+          <Typography fullWidth variant="h8" alignItems="center" justifyContent="center" className="bg-skyblue py-5 text-center w-full">
             Add or modify your profile bio in the text box below
           </Typography>
-          <TextField fullWidth id="outlined-basic" variant="outlined" placeholder="Enter bio here..." />
-          <Button onClick={() => setModal(false)}> Close </Button>
-          <Button onClick={handleEditBio}> Add </Button>
+          <TextField alignItems="center" justifyContent="center" placeholder="Enter bio here..." />
+          <Stack direction="row" alignItems="center" justifyContent="right">
+            <Button onClick={() => setModal(false)} variant="filled" className="text-black"> Close </Button>
+            <Button onClick={handleEditBio} variant="filled"> Add </Button>
+          </Stack>
         </Stack>
       </Modal>
     </Box>
