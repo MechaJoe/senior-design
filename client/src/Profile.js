@@ -45,19 +45,17 @@ function Profile() {
   const [bio, setBio] = useState('')
 
   const fetchData = async () => {
-    console.log('axios-ing')
-    const data = await axios.get(`http://${config.server_host}:${config.server_port}/profile`)
-    console.log(data.data[0])
-    if (data.username) {
-      setEmailAddress(data[0].emailAddress)
-      setUsername(data[0].username)
-      setFirstName(data[0].firstName)
-      setLastName(data[0].lastName)
-      setProfileImageUrl(data[0].profileImageUrl)
-      setYear(data[0].year)
-      setMajors(data[0].majors.split(','))
-      setSchool(data[0].schools.split(','))
-      setBio(data[0].bio)
+    const { data: [data] } = await axios.get(`http://localhost:${config.server_port}/profile`)
+    if (data) {
+      setEmailAddress(data.emailAddress)
+      setUsername(data.username)
+      setFirstName(data.firstName)
+      setLastName(data.lastName)
+      setProfileImageUrl(data.profileImageUrl)
+      setYear(data.year)
+      setMajors(data.majors.split(','))
+      setSchool(data.schools.split(','))
+      setBio(data.bio)
     } else {
       console.log(data)
     }

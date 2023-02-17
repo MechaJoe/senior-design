@@ -34,7 +34,7 @@ app.use(passport.session())
 app.use('/', Router)
 app.use('/', AuthRouter)
 
-app.listen(config.backend_server_port, config.server_host, () => {
+app.listen(config.backend_server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.backend_server_port}/`)
 })
 

@@ -187,7 +187,7 @@ router.get('/profile', async (req, res) => {
         if (error) {
           res.error({ error })
         } else if (data) {
-          res.json({ data })
+          res.json(data)
         }
       },
     )

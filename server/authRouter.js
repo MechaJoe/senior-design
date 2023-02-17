@@ -75,8 +75,9 @@ const verify = async (issuer, profile, cb) => {
         const newProfile = profile
         newProfile.create = true
         return cb(null, newProfile)
+      } else {
+        return cb(null, profile)
       }
-      return cb(null, profile)
     },
   )
 }
