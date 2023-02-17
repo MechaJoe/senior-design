@@ -1,6 +1,6 @@
 import Avatar from '@mui/material/Avatar'
 
-export default function FullCard(props) {
+export default function FullProfileCard(props) {
   const {
     firstName, lastName, emailAddress, profileImageUrl, year, majors, schools,
   } = props
@@ -9,7 +9,7 @@ export default function FullCard(props) {
   const schoolList = schools.split(',')
 
   return (
-    <div className="rounded shadow-lg bg-white max-w-sm p-6 text-center">
+    <div className="rounded-xl bg-tan/5 max-w-sm p-6 text-center border-4 border-gunmetal">
       {profileImageUrl
         ? <img className="w-32 h-32 mx-auto" src={profileImageUrl} alt="profile" />
         : (
@@ -23,6 +23,15 @@ export default function FullCard(props) {
             {firstName[0] + lastName[0]}
           </Avatar>
         )}
+      <div className="px-6 p-6">
+        <span className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{year}</span>
+        {schoolList.map((school) => (
+          <span key={school} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{school}</span>
+        ))}
+        {majorList.map((major) => (
+          <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
+        ))}
+      </div>
       <div className="p-6">
         <div className="font-sans text-xl font-semibold">
           {firstName}
@@ -33,15 +42,7 @@ export default function FullCard(props) {
           {emailAddress}
         </div>
       </div>
-      <div className="px-6 pt-2 pb-2">
-        <span className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{year}</span>
-        {schoolList.map((school) => (
-          <span key={school} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{school}</span>
-        ))}
-        {majorList.map((major) => (
-          <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
-        ))}
-      </div>
+
     </div>
   )
 }
