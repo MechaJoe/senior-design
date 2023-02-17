@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 const express = require('express')
 const crypto = require('node:crypto')
 const GoogleStrategy = require('passport-google-oidc')
@@ -111,11 +112,13 @@ router.get(
             return res.redirect(
               `${frontendServer}/signup?${query}`,
             )
+          } else {
+            req.session.username = username
+            return res.redirect(`${frontendServer}/courses`)
           }
-          req.session.username = username
-          return res.redirect(`${frontendServer}/courses`)
+        } else {
+          return res.redirect(`${frontendServer}/login`)
         }
-        return res.redirect(`${frontendServer}/login`)
       },
     )(req, res, next)
   },

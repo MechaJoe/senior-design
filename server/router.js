@@ -177,17 +177,17 @@ router.post('/profile', async (req, res) => {
 
 // [GET] profile for a user
 router.get('/profile', async (req, res) => {
-  const { username } = req.params
+  const { username } = req.session
   if (!req.session.isInstructor) {
     connection.query(
       `SELECT * 
       FROM Student WHERE username = '${username}';
       `,
-      (error, results) => {
+      (error, data) => {
         if (error) {
-          res.json({ error })
-        } else if (results) {
-          res.json({ results })
+          res.error({ error })
+        } else if (data) {
+          res.json({ data })
         }
       },
     )

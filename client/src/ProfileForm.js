@@ -5,15 +5,19 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 // import { useNavigate } from 'react-router-dom'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+// import { search } from '../../server/authRouter'
 
 const config = require('./config.json')
 // eslint-disable-next-line react/prop-types
 // eslint-disable-next-line no-unused-vars
 function ProfileForm() {
+  const [searchParams] = useSearchParams()
   const {
     emailAddress, username, firstName, lastName,
-  } = useParams()
+  } = Object.fromEntries(searchParams)
+  console.log('email')
+  console.log(emailAddress)
   const navigate = useNavigate()
   const [pt1, setPt1] = useState(true)
   // const emailAddress = 'gansa@wharton.upenn.edu'
@@ -51,7 +55,7 @@ function ProfileForm() {
       alert('Please complete all fields')
       return
     }
-    const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/user`, {
+    const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile`, {
       emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
     })
     if (data === 'success') {

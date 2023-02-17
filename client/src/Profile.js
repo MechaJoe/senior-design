@@ -29,12 +29,12 @@ import ProfileSidebar from './ProfileSidebar'
 // function Profile({ bio }) {
 function Profile() {
   const navigate = useNavigate()
-  const [emailAddress, setEmailAddress] = useState('gansa@wharton.upenn.edu')
-  const [username, setUsername] = useState('gansa')
-  const [firstName, setFirstName] = useState('Sam')
-  const [lastName, setLastName] = useState('Gan')
-  const [majors, setMajors] = useState(['FNCE'])
-  const [school, setSchool] = useState(['WHARTON'])
+  const [emailAddress, setEmailAddress] = useState('yuanb@seas.upenn.edu')
+  const [username, setUsername] = useState('yuanb')
+  const [firstName, setFirstName] = useState('Brandy')
+  const [lastName, setLastName] = useState('Yuan')
+  const [majors, setMajors] = useState(['CIS'])
+  const [school, setSchool] = useState(['SEAS'])
   const [year, setYear] = useState('2023')
   const [profileImageUrl, setProfileImageUrl] = useState('')
   const [modal, setModal] = useState(false)
@@ -42,38 +42,29 @@ function Profile() {
   // const {
   //   emailAddress, username, firstName, lastName, year, majors, school, // profileImageUrl,
   // } = fields
+  const [bio, setBio] = useState('')
 
   const fetchData = async () => {
-    const { data } = await axios.get(`http://localhost:${config.server_port}/username`)
-    if (!data) {
-      navigate('/login')
+    console.log('axios-ing')
+    const data = await axios.get(`http://${config.server_host}:${config.server_port}/profile`)
+    console.log(data.data[0])
+    if (data.username) {
+      setEmailAddress(data[0].emailAddress)
+      setUsername(data[0].username)
+      setFirstName(data[0].firstName)
+      setLastName(data[0].lastName)
+      setProfileImageUrl(data[0].profileImageUrl)
+      setYear(data[0].year)
+      setMajors(data[0].majors.split(','))
+      setSchool(data[0].schools.split(','))
+      setBio(data[0].bio)
+    } else {
+      console.log(data)
     }
-    const { data: { results: [userData] } } = await axios.get(`http://localhost:${config.server_port}/users/${data}`)
-    console.log(userData)
-    // setFields(userData)
   }
 
   useEffect(() => {
     fetchData()
-  }, [])
-
-  // const [bio, setBio] = useState(bio)
-  const [bio, setBio] = useState('')
-  useEffect(() => {
-    (async () => {
-      const { data: d } = await axios.get('/profile')
-      console.log(d)
-      // redirect user to splash page if user is not logged in and tries to visit a profile page
-      setEmailAddress(d.emailAddress)
-      setUsername(d.username)
-      setFirstName(d.firstName)
-      setLastName(d.lastName)
-      setProfileImageUrl(d.profileImageUrl)
-      setYear(d.year)
-      setMajors(d.majors.split(','))
-      setSchool(d.schools.split(','))
-      setBio(d.bio)
-    })()
   }, [])
   const handleEditBio = async () => {
     setBio(bio)
