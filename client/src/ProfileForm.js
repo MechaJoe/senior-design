@@ -3,9 +3,9 @@ import axios from 'axios'
 import {
   Box, Select, MenuItem, FormControl, InputLabel, Chip, Button, Stack, Typography,
 } from '@mui/material'
-import { useState, useParams } from 'react'
+import { useState } from 'react'
 // import { useNavigate } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const config = require('./config.json')
 // eslint-disable-next-line react/prop-types
@@ -61,9 +61,8 @@ function ProfileForm() {
     }, { withCredentials: true })
     if (data === 'success') {
       console.log('uploaded successfully')
-      const bio = ''
       navigate('/profile', {
-        firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl, bio,
+        firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl,
       })
       // window.location.reload()
       // useNavigate('/dashboard', { replace: true })

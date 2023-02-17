@@ -12,7 +12,8 @@ import {
 } from '@mui/material'
 // import { createTheme } from '@mui/material/styles'
 import ModeOutlinedIcon from '@mui/icons-material/ModeOutlined'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ProfileSidebar from './ProfileSidebar'
 // import { createTheme } from '@mui/material/styles'
 // const theme = createTheme({
@@ -27,7 +28,7 @@ import ProfileSidebar from './ProfileSidebar'
 // })
 // import { useNavigate } from 'react-router-dom'
 // import { useNavigate } from 'react-router-dom'
-// const config = require('./config.json')
+const config = require('./config.json')
 // eslint-disable-next-line react/prop-types
 // eslint-disable-next-line no-unused-vars
 // function Profile({
@@ -35,32 +36,52 @@ import ProfileSidebar from './ProfileSidebar'
 // }) {
 // function Profile({ bio }) {
 function Profile() {
-  const emailAddress = 'gansa@wharton.upenn.edu'
-  const username = 'gansa'
-  const firstName = 'Sam'
-  const lastName = 'Gan'
-  const majors = ['FNCE']
-  const school = ['WHARTON']
-  const year = '2023'
+  const navigate = useNavigate()
+  const [emailAddress, setEmailAddress] = useState('gansa@wharton.upenn.edu')
+  const [username, setUsername] = useState('gansa')
+  const [firstName, setFirstName] = useState('Sam')
+  const [lastName, setLastName] = useState('Gan')
+  const [majors, setMajors] = useState(['FNCE'])
+  const [school, setSchool] = useState(['WHARTON'])
+  const [year, setYear] = useState('2023')
+  const [profileImageUrl, setProfileImageUrl] = useState('')
   const [modal, setModal] = useState(false)
   // const [bio, setBio] = useState(bio)
   const [bio, setBio] = useState('')
+  useEffect(() => {
+    (async () => {
+    const { data: d } = await axios.get('/profile')
+    console.log(d)
+    // redirect user to splash page if user is not logged in and tries to visit a profile page
+    setEmailAddress(d.emailAddress)
+    setUsername(d.username)
+    setFirstName(d.firstName)
+    setLastName(d.lastName)
+    setProfileImageUrl(d.profileImageUrl)
+    setYear(d.year)
+    setMajors(d.majors.split(','))
+    setSchool(d.schools.split(','))
+    setBio(d.bio)
+  })() 
+}, [])
   const handleEditBio = async () => {
+    setBio(bio)
     if (!bio) {
       return
     }
-    console.log('mhm')
-    // const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile`, {
-    //   emailAddress, username, firstName, lastName, year, profileImageUrl, majors, school,
-    // }, { withCredentials: true })
-    // if (data === 'success') {
-    //   console.log('uploaded successfully')
-    //   setModal(false)
-    //   // window.location.reload()
-    //   // useNavigate('/dashboard', { replace: true })
-    // } else {
-    //   console.log(data)
-    // }
+    const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile/edit`, {
+      emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school, bio,
+    }, { withCredentials: true })
+    if (data === 'success') {
+      console.log('uploaded successfully')
+      navigate('/profile', {
+        firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl, bio,
+      })
+      // window.location.reload()
+      // useNavigate('/dashboard', { replace: true })
+    } else {
+      console.log(data)
+    }
   }
   return (
     <Box
@@ -123,7 +144,7 @@ function Profile() {
           <Typography fullWidth variant="h8" alignItems="center" justifyContent="center" className="bg-skyblue py-5 text-center w-full">
             Add or modify your profile bio in the text box below
           </Typography>
-          <TextField alignItems="center" justifyContent="center" placeholder="Enter bio here..." />
+          <TextField alignItems="center" value={bio} onInput={(e) => setBio(e.target.value)} justifyContent="center" placeholder="Enter bio here..." />
           <Stack direction="row" alignItems="center" justifyContent="right">
             <Button onClick={() => setModal(false)} variant="filled" className="text-black"> Close </Button>
             <Button onClick={handleEditBio} variant="filled"> Add </Button>
