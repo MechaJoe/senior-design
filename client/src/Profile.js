@@ -1,10 +1,4 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable max-len */
-/* eslint-disable indent */
-/* eslint-disable no-trailing-spaces */
-/* eslint-disable operator-linebreak */
-/* eslint-disable react/jsx-wrap-multilines */
-/* eslint-disable react/prop-types */
 import axios from 'axios'
 // import S3 from "react-aws-s3"
 import {
@@ -12,7 +6,9 @@ import {
 } from '@mui/material'
 // import { createTheme } from '@mui/material/styles'
 import ModeOutlinedIcon from '@mui/icons-material/ModeOutlined'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import config from './config.json'
 import ProfileSidebar from './ProfileSidebar'
 // import { createTheme } from '@mui/material/styles'
 // const theme = createTheme({
@@ -25,24 +21,28 @@ import ProfileSidebar from './ProfileSidebar'
 //     },
 //   },
 // })
-// import { useNavigate } from 'react-router-dom'
-// import { useNavigate } from 'react-router-dom'
-// const config = require('./config.json')
-// eslint-disable-next-line react/prop-types
-// eslint-disable-next-line no-unused-vars
-// function Profile({
-//  firstName, lastName, username, emailAddress, year, 
-// }) {
-// function Profile({ bio }) {
 function Profile() {
-  const emailAddress = 'gansa@wharton.upenn.edu'
-  const username = 'gansa'
-  const firstName = 'Sam'
-  const lastName = 'Gan'
-  const majors = ['FNCE']
-  const school = ['WHARTON']
-  const year = '2023'
+  const navigate = useNavigate()
   const [modal, setModal] = useState(false)
+  const [fields, setFields] = useState({})
+  const {
+    emailAddress, username, firstName, lastName, year, majors, school, // profileImageUrl,
+  } = fields
+
+  const fetchData = async () => {
+    const { data } = await axios.get(`http://localhost:${config.server_port}/username`)
+    if (!data) {
+      navigate('/login')
+    }
+    const { data: { results: [userData] } } = await axios.get(`http://localhost:${config.server_port}/users/${data}`)
+    console.log(userData)
+    setFields(userData)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   // const [bio, setBio] = useState(bio)
   const [bio, setBio] = useState('')
   const handleEditBio = async () => {
@@ -62,13 +62,20 @@ function Profile() {
     //   console.log(data)
     // }
   }
+
   return (
     <Box
       className="container mx-auto min-w-full bg-white"
     >
       {/* // eslint-disable-next-line react/jsx-indent */}
       <div className="flex flex-row min-h-screen">
-        <ProfileSidebar firstName={firstName} lastName={lastName} majors={majors} school={school} year={year} />
+        <ProfileSidebar
+          firstName={firstName}
+          lastName={lastName}
+          majors={majors}
+          school={school}
+          year={year}
+        />
         <Stack marginTop={20} marginLeft={10} spacing={6}>
           <Stack spacing={2}>
             {/* <div className="flex flex-col p-6"> */}
