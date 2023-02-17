@@ -118,7 +118,15 @@ function AssignmentCard({
                 </div>
               )) : null
             }
-            <Button variant="contained" startIcon={<ChatOutlinedIcon />} style={{ margin: '15px', backgroundColor: 'white', color: 'black' }}> Open Chat </Button>
+            <Button
+              variant="contained"
+              startIcon={<ChatOutlinedIcon />}
+              style={{
+                margin: '15px', backgroundColor: 'white', color: 'black',
+              }}
+            >
+              Open Chat
+            </Button>
             <p>
               {groupSize.maxGroupSize - groupInfo.length}
               &nbsp;
