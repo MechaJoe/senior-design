@@ -2,7 +2,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
-import AssignmentDashboard from './AssignmentDashboard'
+import AssignmentsPage from './pages/AssignmentsPage'
 import CoursesPage from './CoursesPage'
 import HomePage from './pages/HomePage'
 import GroupsPage from './pages/GroupsPage'
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/courses/:classCode/assignments',
-    element: <AssignmentDashboard />,
+    element: <AssignmentsPage />,
   },
   {
     path: 'signup',

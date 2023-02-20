@@ -400,11 +400,12 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId', async (
 router.get(
   '/class/:classCode/assignments/:assignmentId/my-group-info',
   async (req, res) => {
-    // const { classCode, assignmentId } = req.params
+    const { classCode, assignmentId } = req.params
     // const { username } = req.session
+    console.log(req.session.username)
     const username = 'jasonhom'
-    const classCode = 'CIS 4000'
-    const assignmentId = 2
+    // const classCode = 'CIS 4000'
+    // const assignmentId = 2
     connection.query(
       `With GId AS (SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
       AND assignmentId = '${assignmentId}'
@@ -412,7 +413,7 @@ router.get(
      GroupMembers AS (
          SELECT username, assignmentId
          FROM BelongsToGroup
-         WHERE groupId IN (SELECT * FROM GId)
+         WHERE groupId IN (SELECT * FROM GId) AND assignmentId = '${assignmentId}'
      )
  SELECT firstName, lastName, assignmentId
  From GroupMembers JOIN Student ON GroupMembers.username = Student.username;`,

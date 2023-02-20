@@ -1,17 +1,30 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Stack from '@mui/material/Stack'
-import Sidebar from './Sidebar'
-import AssignmentCard from './AssignmentCard'
-import config from './config.json'
+import Sidebar from '../components/Sidebar'
+import AssignmentCard from '../components/AssignmentCard'
+import Header from '../components/Header'
+import config from '../config.json'
 
-function AssignmentsDashboard() {
+function AssignmentsPage() {
   let classCode = window.location.href.split('/')[4]
   classCode = decodeURI(classCode)
   const [instructors, setInstructors] = useState([])
   const [className, setClassName] = useState('')
   const [assignments, setAssignments] = useState([])
+
+  const navigate = useNavigate()
+
+  // eslint-disable-next-line no-unused-vars
+  const getUser = async () => {
+    const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
+    if (!data) {
+      navigate('/login')
+    }
+    return data
+  }
 
   const getInstructorInfo = async () => {
     const { data } = await axios.get(
@@ -38,6 +51,8 @@ function AssignmentsDashboard() {
   }
 
   useEffect(() => {
+    // TODO: uncomment this to check that the user is logged in
+    // getUser()
     getInstructorInfo().then((res) => {
       setInstructors(res)
     })
@@ -49,29 +64,30 @@ function AssignmentsDashboard() {
     })
   }, [])
   return (
-    // <div className="h-screen">
-    <Stack direction="row" spacing={2}>
-      <Sidebar
-        classCode={classCode}
-        className={className}
-        instructors={instructors}
-      />
-      <div className="sticky inline-block">
-        {
-          assignments.length ? assignments.map((assignment) => (
-            <AssignmentCard
-              classCode={classCode}
-              assignmentId={assignment.assignmentId}
-              deadline={assignment.deadline}
-            // groupInfo={assignmentGroupInfo}
-            />
-          )) : null
-        }
-      </div>
-    </Stack>
-    // </div>
+    <>
+      <Header />
+      <Stack direction="row" spacing={2}>
+        <Sidebar
+          classCode={classCode}
+          className={className}
+          instructors={instructors}
+        />
+        <div className="flex flex-wrap">
+          {
+            assignments.length ? assignments.map((assignment) => (
+              <AssignmentCard
+                classCode={classCode}
+                assignmentId={assignment.assignmentId}
+                deadline={assignment.deadline}
+              // groupInfo={assignmentGroupInfo}
+              />
+            )) : null
+          }
+        </div>
+      </Stack>
+    </>
 
   )
 }
 
-export default AssignmentsDashboard
+export default AssignmentsPage
