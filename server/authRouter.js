@@ -1,4 +1,3 @@
-/* eslint-disable no-else-return */
 const express = require('express')
 const GoogleStrategy = require('passport-google-oidc')
 const mysql = require('mysql2')
@@ -43,7 +42,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/username', (req, res) => {
   if (req.session.passport) {
-    req.session.username = req.session.user
+    req.session.username = [req.session.passport.user.emails[0].value.split('@')]
   }
   res.json(req.session.username)
 })
@@ -77,9 +76,8 @@ const verify = async (issuer, profile, cb) => {
         const newProfile = profile
         newProfile.create = true
         return cb(null, newProfile)
-      } else {
-        return cb(null, profile)
       }
+      return cb(null, profile)
     },
   )
 }
@@ -115,13 +113,11 @@ router.get(
             return res.redirect(
               `${frontendServer}/signup?${query}`,
             )
-          } else {
-            req.session.username = username
-            return res.redirect(`${frontendServer}/courses`)
           }
-        } else {
-          return res.redirect(`${frontendServer}/login`)
+          req.session.username = username
+          return res.redirect(`${frontendServer}/courses`)
         }
+        return res.redirect(`${frontendServer}/login`)
       },
     )(req, res, next)
   },
@@ -129,7 +125,7 @@ router.get(
 
 passport.serializeUser((user, cb) => {
   process.nextTick(() => {
-    cb(null, { username: user.username })
+    cb(null, { username: user.emails[0].value.split('@')[0] })
   })
 })
 
