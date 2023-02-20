@@ -14,7 +14,8 @@ app.use(cors({
   credentials: true,
   origin: [
     `http://${config.server_host}:${config.frontend_server_port}`,
-    `http://localhost:${config.frontend_server_port}`],
+    `http://localhost:${config.frontend_server_port}`,
+    'http://127.0.0.1:3000'],
   exposedHeaders: ['set-cookie'],
 }))
 

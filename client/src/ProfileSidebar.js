@@ -1,7 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-use-before-define */
-/* eslint-disable react/prop-types */
-/* eslint-disable react/jsx-no-useless-fragment */
 // import { Box } from '@mui/material'
 // import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
@@ -38,7 +34,7 @@ function ProfileSidebar({
         <Typography variant="h7" fullWidth className="text-xl font-bold px-6 pt-2">
           <HomeOutlinedIcon />
           {' '}
-          {school.join(', ')}
+          {[school]?.join(', ')}
           {' '}
           {year}
           {' '}
@@ -46,7 +42,7 @@ function ProfileSidebar({
         <Typography variant="h7" fullWidth className="text-xl font-bold px-6 pt-2">
           <BuildOutlinedIcon />
           {' '}
-          {majors.join(',')}
+          {[majors]?.join(',')}
           {' '}
           Undergrad
         </Typography>

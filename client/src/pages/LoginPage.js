@@ -2,13 +2,14 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import GoogleButton from '../assets/google-button.png'
+import config from '../config.json'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const getUser = async () => {
-    const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
+    const { data } = await axios.get(`http://localhost:${config.server_port}/username`, { withCredentials: true })
     if (data) {
-      navigate('/')
+      navigate('/courses')
     }
     return data
   }

@@ -137,7 +137,7 @@ router.get('/class/:classCode', async (req, res) => {
 /* PROFILE ROUTES */
 
 // POST creates profile for a user
-router.post('/users', async (req, res) => {
+router.post('/profile', async (req, res) => {
   const {
     emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school,
   } = req.body
@@ -146,14 +146,14 @@ router.post('/users', async (req, res) => {
   const majorsString = majors.join(',')
   if (!req.session.isInstructor) {
     connection.query(
-      `INSERT INTO Student (emailAddress, username, firstName, lastName, profileImageUrl, year, majors, schools)
-      VALUES ('${emailAddress}', '${username}', '${firstName}', '${lastName}', '${profileImageUrl}', '${year}', '${majorsString}', '${schools}');
+      `INSERT INTO Student (emailAddress, username, firstName, lastName, profileImageUrl, year, majors, schools, bio)
+      VALUES ('${emailAddress}', '${username}', '${firstName}', '${lastName}', '${profileImageUrl}', '${year}', '${majorsString}', '${schools}', '');
       `,
       (error, results) => {
         if (error) {
           res.json({ error })
         } else if (results) {
-          // res.json({ results })
+          req.session.username = username
           res.json('success')
         }
       },
@@ -176,18 +176,18 @@ router.post('/users', async (req, res) => {
 })
 
 // [GET] profile for a user
-router.get('/users/:user', async (req, res) => {
-  const { username } = req.params
-  if (req.session.isInstructor) {
+router.get('/profile', async (req, res) => {
+  const { username } = req.session
+  if (!req.session.isInstructor) {
     connection.query(
       `SELECT * 
       FROM Student WHERE username = '${username}';
       `,
-      (error, results) => {
+      (error, data) => {
         if (error) {
-          res.json({ error })
-        } else if (results) {
-          res.json({ results })
+          res.error({ error })
+        } else if (data) {
+          res.json(data)
         }
       },
     )
@@ -207,22 +207,56 @@ router.get('/users/:user', async (req, res) => {
   }
 })
 
+// // [GET] profile for a user
+// router.get('/users/:user', async (req, res) => {
+//   const { username } = req.params
+//   if (req.session.isInstructor) {
+//     connection.query(
+//       `SELECT *
+//       FROM Student WHERE username = '${username}';
+//       `,
+//       (error, results) => {
+//         if (error) {
+//           res.json({ error })
+//         } else if (results) {
+//           res.json({ results })
+//         }
+//       },
+//     )
+//   } else {
+//     connection.query(
+//       `SELECT *
+//       FROM Instructor WHERE username = '${username}';
+//       `,
+//       (error, results) => {
+//         if (error) {
+//           res.json({ error })
+//         } else if (results) {
+//           res.json({ results })
+//         }
+//       },
+//     )
+//   }
+// })
+
 // [POST] update profile for a user
 router.post('/profile/edit', async (req, res) => {
   const {
-    emailAddress, firstName, lastName, year, profileImageUrl, majors, school,
+    emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school, bio,
   } = req.body
-  if (!req.session.isInstructor) {
+  const schools = school.join(',')
+  const majorsString = majors.join(',')
+  if (req.session.isInstructor) {
     connection.query(
       `UPDATE Instructor
-SET profileImageUrl = '${profileImageUrl}', firstName= '${firstName}' // change based 
-on what to edit
+SET profileImageUrl = '${profileImageUrl}', firstName= '${firstName}', username = '${username}', lastName = '${lastName}, year = '${year}', schools = '${schools}', bio = '${bio}', majors='${majorsString}'
 WHERE emailAddress = '${emailAddress}';`,
       (error, results) => {
         if (error) {
           res.json({ error })
         } else if (results) {
-          res.json({ results })
+          // res.json({ results })
+          res.json('success')
         }
       },
     )
@@ -230,13 +264,15 @@ WHERE emailAddress = '${emailAddress}';`,
     connection.query(
       // TODO: Change these fields based on what to edit
       `UPDATE Student
-SET profileImageUrl = '${profileImageUrl}', majors= '${majors}'
-WHERE emailAddress = '${emailAddress}';`,
+      SET profileImageUrl = '${profileImageUrl}', firstName= '${firstName}', emailAddress = '${emailAddress}', lastName = '${lastName}', year = '${year}', schools = '${schools}', bio = '${bio}', majors='${majorsString}'
+      WHERE username = '${username}';`,
       (error, results) => {
         if (error) {
+          console.log('erroring here')
           res.json({ error })
         } else if (results) {
-          res.json({ results })
+          // res.json({ results })
+          res.json('success')
         }
       },
     )
@@ -252,8 +288,7 @@ router.post('/class/:classCode/assignment', async (req, res) => {
     deadline, maxGroupSize, minGroupSize, numGroups,
   } = req.body
   connection.query(
-    `INSERT INTO Assignment (assignmentId, classCode, deadline, maxGroupSize, minGroupSize, numGroups) 
-    VALUES ('${classCode}', '${deadline}', '${maxGroupSize}', '${minGroupSize}', '${numGroups}');    
+    `INSERT INTO Assignment (assignmentId, classCode, deadline, maxGroupSize, minGroupSize, numGroups) VALUES ('${classCode}', '${deadline}', '${maxGroupSize}', '${minGroupSize}', '${numGroups}');    
     `,
     (error, results) => {
       if (error) {
@@ -397,11 +432,7 @@ router.get(
 // [GET] the group ID the user belongs to
 router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, res) => {
   const { classCode, assignmentId } = req.params
-  // TODO: Uncomment when done testing
-  // const { username } = req.session
-
-  // TODO: Delete after testing
-  const username = 'yuanb'
+  const { username } = req.session
   connection.query(
     `SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
      AND assignmentId = '${assignmentId}'
@@ -410,7 +441,6 @@ router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, r
       if (error) {
         res.json({ error })
       } else if (results) {
-        console.log(results)
         res.json(results)
       }
     },
@@ -435,7 +465,6 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members',
       if (error) {
         res.json({ error })
       } else if (results) {
-        console.log(results)
         res.json(results)
       }
     },
