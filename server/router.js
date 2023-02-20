@@ -420,9 +420,9 @@ router.get(
   '/class/:classCode/assignments/:assignmentId/my-group-info',
   async (req, res) => {
     const { classCode, assignmentId } = req.params
-    // const { username } = req.session
+    const { username } = req.session
     console.log(req.session.username)
-    const username = 'jasonhom'
+    // const username = 'jasonhom'
     // const classCode = 'CIS 4000'
     // const assignmentId = 2
     connection.query(

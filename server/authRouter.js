@@ -1,6 +1,5 @@
 /* eslint-disable no-else-return */
 const express = require('express')
-const crypto = require('node:crypto')
 const GoogleStrategy = require('passport-google-oidc')
 const mysql = require('mysql2')
 const passport = require('passport')
@@ -43,6 +42,9 @@ router.post('/login', async (req, res) => {
 })
 
 router.get('/username', (req, res) => {
+  if (req.session.passport) {
+    req.session.username = req.session.user
+  }
   res.json(req.session.username)
 })
 

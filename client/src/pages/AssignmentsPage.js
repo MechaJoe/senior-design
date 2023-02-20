@@ -19,7 +19,7 @@ function AssignmentsPage() {
 
   // eslint-disable-next-line no-unused-vars
   const getUser = async () => {
-    const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
+    const data = await axios.get('http://localhost:8080/username', { withCredentials: true })
     if (!data) {
       navigate('/login')
     }
@@ -52,7 +52,7 @@ function AssignmentsPage() {
 
   useEffect(() => {
     // TODO: uncomment this to check that the user is logged in
-    // getUser()
+    getUser()
     getInstructorInfo().then((res) => {
       setInstructors(res)
     })
