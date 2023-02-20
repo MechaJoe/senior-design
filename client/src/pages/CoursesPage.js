@@ -8,7 +8,7 @@ import CoursesSideBar from '../components/CoursesSideBar'
 import {
   getUserAllCourses,
 } from '../infoHelpers'
-import TopBar from '../TopBar'
+import TopBar from '../components/Header'
 
 // const navigate = useNavigate()
 

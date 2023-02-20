@@ -1,4 +1,7 @@
+/* eslint-disable jsx-a11y/alt-text */
 import axios from 'axios'
+// import AWS from 'aws-sdk'
+import { uploadFile } from 'react-s3'
 // import S3 from "react-aws-s3"
 import {
   Box, Select, MenuItem, FormControl, InputLabel, Chip, Button, Stack, Typography,
@@ -9,6 +12,19 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 // import { search } from '../../server/authRouter'
 
 const config = require('./config.json')
+
+const S3_BUCKET = 'concourse-profile-pics'
+const REGION = 'us-east-1'
+const ACCESS_KEY = 'AKIATNJII2FS373UPG7D'
+const SECRET_ACCESS_KEY = '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'
+
+const s3config = {
+  bucketName: S3_BUCKET,
+  region: REGION,
+  accessKeyId: ACCESS_KEY,
+  secretAccessKey: SECRET_ACCESS_KEY,
+}
+
 // eslint-disable-next-line react/prop-types
 // eslint-disable-next-line no-unused-vars
 function ProfileForm() {
@@ -16,15 +32,15 @@ function ProfileForm() {
   const {
     emailAddress, username, firstName, lastName,
   } = Object.fromEntries(searchParams)
-  console.log('email')
-  console.log(emailAddress)
+  // console.log('email')
+  // console.log(emailAddress)
   const navigate = useNavigate()
   const [pt1, setPt1] = useState(true)
   // const emailAddress = 'gansa@wharton.upenn.edu'
   // const username = 'gansa'
   // const firstName = 'Sam'
   // const lastName = 'Gan'
-  const profileImageUrl = ''
+  const [profileImageUrl, setProfileImageUrl] = useState('')
   const [year, setYear] = useState('')
   // const [profileImageUrl, setProfileImageUrl] = useState('')
   const [majors, setMajors] = useState([])
@@ -49,6 +65,11 @@ function ProfileForm() {
   //     }
   //   });
   // };
+  const handleUpload = async () => {
+    uploadFile(profileImageUrl, s3config)
+      .then((data) => console.log(data))
+      .catch((err) => console.error(err))
+  }
 
   const handleSave = async () => {
     if (!year || majors.length === 0 || school.length === 0) {
@@ -166,23 +187,43 @@ function ProfileForm() {
               <Typography variant="h3" fullWidth>
                 Add a profile photo!
               </Typography>
-              <div style={{
-                marginBottom: '20px',
-                height: '250px',
-                width: '250px',
-                backgroundColor: '#E9EFF3',
-                borderRadius: '50%',
-              }}
-              />
+              {profileImageUrl
+                ? (
+                  <div style={{
+                    marginBottom: '20px',
+                    height: '250px',
+                    width: '250px',
+                    backgroundColor: '#E9EFF3',
+                    borderRadius: '50%',
+                  }}
+                  />
+                ) : (
+                  <img
+                    src={profileImageUrl}
+                    style={{
+                      marginBottom: '20px',
+                      height: '250px',
+                      width: '250px',
+                      // backgroundColor: '#E9EFF3',
+                      borderRadius: '50%',
+                    }}
+                  />
+                )}
 
               <Button
                 fullWidth
                 variant="contained"
                 component="label"
+                onClick={handleUpload}
               >
                 Add a photo
                 <input
                   type="file"
+                  onChange={(e) => {
+                    console.log(e.target.files[0])
+                    setProfileImageUrl(window.URL.createObjectURL(e.target.files[0]))
+                    console.log(profileImageUrl)
+                  }}
                   hidden
                 />
               </Button>
