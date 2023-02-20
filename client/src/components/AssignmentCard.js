@@ -9,7 +9,7 @@ import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import ControlPointDuplicateRoundedIcon from '@mui/icons-material/ControlPointDuplicateRounded'
-import config from './config.json'
+import config from '../config.json'
 
 function AssignmentCard({
   classCode, assignmentId, deadline,

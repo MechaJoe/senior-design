@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Stack from '@mui/material/Stack'
-import Sidebar from './Sidebar'
-import AssignmentCard from './AssignmentCard'
-import Header from './Header'
-import config from './config.json'
+import Sidebar from '../components/Sidebar'
+import AssignmentCard from '../components/AssignmentCard'
+import Header from '../components/Header'
+import config from '../config.json'
 
-function AssignmentsDashboard() {
+function AssignmentsPage() {
   let classCode = window.location.href.split('/')[4]
   classCode = decodeURI(classCode)
   const [instructors, setInstructors] = useState([])
@@ -90,4 +90,4 @@ function AssignmentsDashboard() {
   )
 }
 
-export default AssignmentsDashboard
+export default AssignmentsPage
