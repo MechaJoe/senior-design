@@ -3,7 +3,7 @@ import {
   RouterProvider,
 } from 'react-router-dom'
 import AssignmentDashboard from './AssignmentDashboard'
-import CoursesPage from './CoursesPage'
+import CoursesPage from './pages/CoursesPage'
 import HomePage from './pages/HomePage'
 import GroupsPage from './pages/GroupsPage'
 import LoginPage from './pages/LoginPage'

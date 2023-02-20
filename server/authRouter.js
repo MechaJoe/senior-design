@@ -61,8 +61,11 @@ router.post('/federated-signup', (req, res) => {
 })
 
 router.get('/username', (req, res) => {
+  console.log('here')
   if (req.session.passport) {
     req.session.username = req.session.passport.user.id
+    console.log('there')
+    console.log(req.session.username)
   }
   res.json(req.session.username)
 })
