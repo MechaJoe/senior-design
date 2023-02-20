@@ -2,8 +2,8 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
+import CoursesPage from './pages/CoursesPage'
 import AssignmentsPage from './pages/AssignmentsPage'
-import CoursesPage from './CoursesPage'
 import HomePage from './pages/HomePage'
 import GroupsPage from './pages/GroupsPage'
 import LoginPage from './pages/LoginPage'
