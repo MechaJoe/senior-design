@@ -9,7 +9,7 @@ import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import ControlPointDuplicateRoundedIcon from '@mui/icons-material/ControlPointDuplicateRounded'
-import config from './config.json'
+import config from '../config.json'
 
 function AssignmentCard({
   classCode, assignmentId, deadline,
@@ -118,7 +118,15 @@ function AssignmentCard({
                 </div>
               )) : null
             }
-            <Button variant="contained" startIcon={<ChatOutlinedIcon />} style={{ margin: '15px', backgroundColor: 'white', color: 'black' }}> Open Chat </Button>
+            <Button
+              variant="contained"
+              startIcon={<ChatOutlinedIcon />}
+              style={{
+                margin: '15px', backgroundColor: 'white', color: 'black',
+              }}
+            >
+              Open Chat
+            </Button>
             <p>
               {groupSize.maxGroupSize - groupInfo.length}
               &nbsp;

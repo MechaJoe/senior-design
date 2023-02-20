@@ -1,8 +1,10 @@
+/* eslint-disable no-else-return */
 const express = require('express')
+const crypto = require('node:crypto')
+const GoogleStrategy = require('passport-google-oidc')
 const mysql = require('mysql2')
 const passport = require('passport')
-const GoogleStrategy = require('passport-google-oidc')
-const crypto = require('node:crypto')
+const querystring = require('node:querystring')
 const config = require('./config.json')
 
 const frontendServer = `http://${config.server_host}:${config.frontend_server_port}`
@@ -40,33 +42,7 @@ router.post('/login', async (req, res) => {
   })
 })
 
-// Profile creation route
-router.post('/federated-signup', (req, res) => {
-  const {
-    firstName, lastName, pronouns, location,
-  } = req.body
-  const { username } = req.session
-  // console.log(req.session)
-  const password = crypto.pbkdf2Sync(username, 'joeisunhackable', 100000, 64, 'sha512').toString('hex')
-  const sql = `INSERT INTO User (username, password, first_name, last_name, pronouns, location)
-               VALUES ('${username}', '${password}', '${firstName}', '${lastName}', '${pronouns}', '${location}')`
-  connection.query(sql, (error, results) => {
-    if (error) {
-      res.json({ error })
-    } else if (results) {
-      req.session.username = username
-      res.send('Successful federated signup')
-    }
-  })
-})
-
 router.get('/username', (req, res) => {
-  console.log('here')
-  if (req.session.passport) {
-    req.session.username = req.session.passport.user.id
-    console.log('there')
-    console.log(req.session.username)
-  }
   res.json(req.session.username)
 })
 
@@ -91,17 +67,17 @@ router.post('/logout', (req, res) => {
 })
 
 const verify = async (issuer, profile, cb) => {
-  const username = profile.id
+  const username = profile.emails[0].value.split('@')[0]
   connection.query(
-    `SELECT * FROM User WHERE username = '${username}'`,
+    `SELECT * FROM Student WHERE username = '${username}'`,
     (error, results) => {
       if (error || !results || results.length === 0) {
         const newProfile = profile
-        // console.log(profile)
         newProfile.create = true
         return cb(null, newProfile)
+      } else {
+        return cb(null, profile)
       }
-      return cb(null, profile)
     },
   )
 }
@@ -125,16 +101,25 @@ router.get(
     passport.authenticate(
       'google',
       (err, user) => {
-        if (user && user.create) {
-          req.session.username = user.id
-          // TODO: Any other fields that need to be stored in the session?
-          return res.redirect(`${frontendServer}/signup`)
-        }
         if (user) {
-          req.session.username = user.id
-          return res.redirect(`${frontendServer}`)
+          const username = user.emails[0].value.split('@')[0]
+          if (user.create) {
+            const query = querystring.stringify({
+              emailAddress: user.emails[0].value,
+              username,
+              firstName: user.name.givenName,
+              lastName: user.name.familyName,
+            })
+            return res.redirect(
+              `${frontendServer}/signup?${query}`,
+            )
+          } else {
+            req.session.username = username
+            return res.redirect(`${frontendServer}/courses`)
+          }
+        } else {
+          return res.redirect(`${frontendServer}/login`)
         }
-        return res.redirect(`${frontendServer}/login`)
       },
     )(req, res, next)
   },
@@ -142,7 +127,7 @@ router.get(
 
 passport.serializeUser((user, cb) => {
   process.nextTick(() => {
-    cb(null, { username: user.id })
+    cb(null, { username: user.username })
   })
 })
 
