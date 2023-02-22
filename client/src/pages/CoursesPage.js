@@ -6,6 +6,7 @@ import {
 import CourseCard from '../components/CourseCard'
 import CoursesSideBar from '../components/CoursesSideBar'
 import {
+  checkUserLoggedIn,
   getUserAllCourses,
 } from '../infoHelpers'
 import Header from '../components/Header'
@@ -37,12 +38,12 @@ function StudentCourses() {
     //   // navigate('/login')
     //   window.location.href = '/login'
     // }
-
-    getUserAllCourses('lejiaz')
-      .then((response) => {
+    checkUserLoggedIn().then((user) => {
+      getUserAllCourses(user).then((response) => {
         setStudentCourses(response)
         setIsLoading(false)
       })
+    })
   }, [])
 
   return (
