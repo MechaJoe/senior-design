@@ -8,7 +8,7 @@ import CoursesSideBar from '../components/CoursesSideBar'
 import {
   getUserAllCourses,
 } from '../infoHelpers'
-import TopBar from '../components/Header'
+import Header from '../components/Header'
 
 // const navigate = useNavigate()
 
@@ -54,17 +54,17 @@ function StudentCourses() {
       </h3>
       <div className="px-4">
         {!isLoading && (
-        <Grid container spacing={1}>
-          {studentCourses.map(
-            (course) => (
-              <Grid item md={4} key={`my-courses: ${course.classCode}`} style={{ marginTop: 10 }}>
-                <CourseCard
-                  courseId={course.classCode}
-                />
-              </Grid>
-            ),
-          )}
-        </Grid>
+          <Grid container spacing={1}>
+            {studentCourses.map(
+              (course) => (
+                <Grid item md={4} key={`my-courses: ${course.classCode}`} style={{ marginTop: 10 }}>
+                  <CourseCard
+                    courseId={course.classCode}
+                  />
+                </Grid>
+              ),
+            )}
+          </Grid>
         )}
       </div>
     </div>
@@ -74,7 +74,7 @@ function StudentCourses() {
 function CoursesPage() {
   return (
     <Stack direction="column">
-      <TopBar />
+      <Header />
       <Stack direction="row" spacing={1}>
         <CoursesSideBar />
         <div className="justify-center">
