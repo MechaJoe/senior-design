@@ -7,69 +7,33 @@ import {
   Box, Select, MenuItem, FormControl, InputLabel, Chip, Button, Stack, Typography,
 } from '@mui/material'
 import { useState } from 'react'
-// import { useNavigate } from 'react-router-dom'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-// import { search } from '../../server/authRouter'
+import { Buffer } from 'buffer'
 
+Buffer.from('anything', 'base64')
+// eslint-disable-next-line global-require
+window.Buffer = window.Buffer || require('buffer').Buffer
 const config = require('./config.json')
 
-const S3_BUCKET = 'concourse-profile-pics'
-const REGION = 'us-east-1'
-const ACCESS_KEY = 'AKIATNJII2FS373UPG7D'
-const SECRET_ACCESS_KEY = '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'
-
 const s3config = {
-  bucketName: S3_BUCKET,
-  region: REGION,
-  accessKeyId: ACCESS_KEY,
-  secretAccessKey: SECRET_ACCESS_KEY,
+  bucketName: config.S3_BUCKET,
+  region: config.REGION,
+  accessKeyId: config.ACCESS_KEY,
+  secretAccessKey: config.SECRET_ACCESS_KEY,
 }
 
 // eslint-disable-next-line react/prop-types
-// eslint-disable-next-line no-unused-vars
 function ProfileForm() {
   const [searchParams] = useSearchParams()
   const {
     emailAddress, username, firstName, lastName,
   } = Object.fromEntries(searchParams)
-  // console.log('email')
-  // console.log(emailAddress)
   const navigate = useNavigate()
   const [pt1, setPt1] = useState(true)
-  // const emailAddress = 'gansa@wharton.upenn.edu'
-  // const username = 'gansa'
-  // const firstName = 'Sam'
-  // const lastName = 'Gan'
   const [profileImageUrl, setProfileImageUrl] = useState('')
   const [year, setYear] = useState('')
-  // const [profileImageUrl, setProfileImageUrl] = useState('')
   const [majors, setMajors] = useState([])
   const [school, setSchool] = useState([])
-
-  // const handleClick = (event) => {
-  //   event.preventDefault();
-  //   let newArr = fileInput.current.files;
-  //   for (let i = 0; i < newArr.length; i++) {
-  //     handleUpload(newArr[i]);
-  //   }
-  // };
-
-  // const handleUpload = (file) => {
-  //   let newFileName = file.name.replace(/\..+$/, "");
-  //   const ReactS3Client = new S3(config);
-  //   ReactS3Client.uploadFile(file, newFileName).then((data) => {
-  //     if (data.status === 204) {
-  //       console.log("success");
-  //     } else {
-  //       console.log("fail");
-  //     }
-  //   });
-  // };
-  const handleUpload = async () => {
-    uploadFile(profileImageUrl, s3config)
-      .then((data) => console.log(data))
-      .catch((err) => console.error(err))
-  }
 
   const handleSave = async () => {
     if (!year || majors.length === 0 || school.length === 0) {
@@ -84,12 +48,20 @@ function ProfileForm() {
       navigate('/profile', {
         firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl,
       })
-      // window.location.reload()
-      // useNavigate('/dashboard', { replace: true })
     } else {
       console.log(data)
     }
   }
+
+  const handleUpload = async () => {
+    uploadFile(profileImageUrl, s3config)
+      .then((data) => {
+        console.log(data)
+        handleSave()
+      })
+      .catch((err) => console.error(err))
+  }
+
   return (
     <Box
       className="container h-screen mx-auto min-w-full bg-white"
@@ -118,7 +90,6 @@ function ProfileForm() {
                   <MenuItem value={2025}>2025</MenuItem>
                   <MenuItem value={2026}>2026</MenuItem>
                 </Select>
-                {/* <FormHelperText>Select your year</FormHelperText> */}
               </FormControl>
 
               <FormControl fullWidth>
@@ -143,7 +114,6 @@ function ProfileForm() {
                   <MenuItem value="FNCE">FNCE</MenuItem>
                   <MenuItem value="MATH">MATH</MenuItem>
                 </Select>
-                {/* <FormHelperText>Select your major(s)</FormHelperText> */}
               </FormControl>
 
               <FormControl fullWidth>
@@ -166,12 +136,10 @@ function ProfileForm() {
                   <MenuItem value="WHARTON">WHARTON</MenuItem>
                   <MenuItem value="NURSING">NURSING</MenuItem>
                 </Select>
-                {/* <FormHelperText>Select your school(s)</FormHelperText> */}
               </FormControl>
               <Button
                 fullWidth
                 variant="contained"
-                // color="#D87731"
                 onClick={() => setPt1(false)}
               >
                 {' '}
@@ -179,7 +147,6 @@ function ProfileForm() {
                 {' '}
 
               </Button>
-              {/* </Box> */}
             </Stack>
           )
           : (
@@ -189,6 +156,17 @@ function ProfileForm() {
               </Typography>
               {profileImageUrl
                 ? (
+                  <img
+                    src={URL.createObjectURL(profileImageUrl)}
+                    style={{
+                      marginBottom: '20px',
+                      height: '250px',
+                      width: '250px',
+                      borderRadius: '50%',
+                    }}
+                  />
+                )
+                : (
                   <div style={{
                     marginBottom: '20px',
                     height: '250px',
@@ -197,36 +175,36 @@ function ProfileForm() {
                     borderRadius: '50%',
                   }}
                   />
-                ) : (
-                  <img
-                    src={profileImageUrl}
-                    style={{
-                      marginBottom: '20px',
-                      height: '250px',
-                      width: '250px',
-                      // backgroundColor: '#E9EFF3',
-                      borderRadius: '50%',
-                    }}
-                  />
+                ) }
+              { profileImageUrl
+                ? (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    component="label"
+                    onClick={handleUpload}
+                  >
+                    Next
+                  </Button>
+                )
+                : (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    component="label"
+                  >
+                    Add a photo
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        console.log(e.target.files[0])
+                        setProfileImageUrl(e.target.files[0])
+                        console.log(profileImageUrl)
+                      }}
+                      hidden
+                    />
+                  </Button>
                 )}
-
-              <Button
-                fullWidth
-                variant="contained"
-                component="label"
-                onClick={handleUpload}
-              >
-                Add a photo
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    console.log(e.target.files[0])
-                    setProfileImageUrl(window.URL.createObjectURL(e.target.files[0]))
-                    console.log(profileImageUrl)
-                  }}
-                  hidden
-                />
-              </Button>
               <Button fullWidth onClick={handleSave}> Skip </Button>
             </Stack>
           )
