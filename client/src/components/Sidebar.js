@@ -15,7 +15,7 @@ function Sidebar({ classCode, className, instructors }) {
       <h2 className="px-6 pt-6 text-xl"> Instructors </h2>
       {
         instructors ? instructors.map((instructor) => (
-          <div className="px-6 pt-2" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div key={instructor.firstName + instructor.lastName} className="px-6 pt-2" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
             <AccountCircleOutlinedIcon />
             <h3>
               &nbsp;

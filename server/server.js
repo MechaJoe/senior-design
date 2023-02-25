@@ -19,17 +19,20 @@ app.use(cors({
 app.use(express.json())
 app.use(session({
   name: 'session',
-  keys: ['username'],
   secret: 'mySecret123',
   resave: false,
   unset: 'destroy',
-  saveUninitialized: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 360000,
+    secure: false, // set to true for HTTPS
+  },
 }))
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use('/', Router)
 app.use('/', AuthRouter)
+app.use('/', Router)
 
 app.listen(config.backend_server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.backend_server_port}/`)
