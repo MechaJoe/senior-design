@@ -26,7 +26,7 @@ export default function LoginPage() {
         <div className="text-4xl font-sans p-6 pt-12 pb-12">
           Log In to Concourse
         </div>
-        <a className="p-6 pb-12" href="http://localhost:8080/login/federated/google">
+        <a className="p-6 pb-12" href={`http://localhost:${config.server_port}/login/google`}>
           <button type="button">
             <img className="object-scale-down h-16 w-auto" src={GoogleButton} alt="google sign-in" />
           </button>

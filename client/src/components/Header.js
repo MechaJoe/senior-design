@@ -25,10 +25,10 @@ export default function Header() {
           <Link to="/about">
             <NotificationsIcon fontSize="large" />
           </Link>
-          <Link to="/faq">
+          <Link to="/profile">
             <AccountCircleIcon fontSize="large" />
           </Link>
-          <Link to="/contact">
+          <Link to="/logout">
             <LogoutIcon fontSize="large" />
           </Link>
         </div>

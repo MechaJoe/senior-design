@@ -56,8 +56,6 @@ router.get('/user/classes', async (req, res) => {
       if (error) {
         res.json({ error })
       } else if (results) {
-        console.log(username)
-        console.log(results)
         res.json({ results })
       }
     },
@@ -204,7 +202,7 @@ router.get('/profile', async (req, res) => {
       `,
       (error, data) => {
         if (error) {
-          res.error({ error })
+          res.json({ error })
         } else if (data) {
           res.json(data)
         }
@@ -368,7 +366,6 @@ router.get('/class/:classCode/assignments/:assignmentId/groupSize', async (req, 
       if (error) {
         res.json({ error })
       } else if (results) {
-        console.log(results)
         res.json(results[0])
       }
     },
@@ -406,10 +403,8 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId', async (
     (error, results) => {
       if (error) {
         res.json(error)
-        console.log(error)
       } else if (results) {
         res.json(results)
-        console.log(results)
       }
     },
   )
@@ -421,7 +416,6 @@ router.get(
   async (req, res) => {
     const { classCode, assignmentId } = req.params
     const { username } = req.session
-    console.log(req.session.username)
     // const username = 'jasonhom'
     // const classCode = 'CIS 4000'
     // const assignmentId = 2
