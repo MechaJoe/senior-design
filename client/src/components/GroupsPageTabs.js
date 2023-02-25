@@ -5,7 +5,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import FullCard from './FullCard'
+import FullProfileCard from './FullProfileCard'
 
 const theme = createTheme({
   palette: {
@@ -67,7 +67,7 @@ export default function GroupsPageTabs(props) {
         <TabPanel value={value} index={0}>
           <div className="flex flex-row space-x-4">
             {groupMembers?.map((member) => (
-              <FullCard
+              <FullProfileCard
                 key={member.username}
                 firstName={member.firstName}
                 lastName={member.lastName}
