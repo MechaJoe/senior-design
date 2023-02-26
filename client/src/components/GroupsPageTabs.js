@@ -50,7 +50,7 @@ export default function GroupsPageTabs(props) {
   }
 
   return (
-    <div className="min-w-full pt-6">
+    <div className="min-w-full max-w-full pt-6">
       <ThemeProvider theme={theme}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
@@ -65,7 +65,7 @@ export default function GroupsPageTabs(props) {
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
-          <div className="flex flex-row space-x-4">
+          <div className="grid grid-cols-3 gap-4">
             {groupMembers?.map((member) => (
               <FullProfileCard
                 key={member.username}

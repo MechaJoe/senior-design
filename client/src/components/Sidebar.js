@@ -2,7 +2,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 
 function Sidebar({ classCode, className, instructors }) {
   return (
-    <div className="bg-gunmetal w-1/3 h-screen font-sans text-white sticky top-0">
+    <div className="bg-gunmetal w-1/6 h-screen font-sans text-white sticky top-0">
       <h1 className="text-4xl font-bold px-6 pt-12">
         {' '}
         {classCode}

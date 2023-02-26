@@ -9,7 +9,7 @@ export default function FullProfileCard(props) {
   const schoolList = schools.split(',')
 
   return (
-    <div className="rounded-xl bg-tan/5 max-w-sm p-6 text-center border-4 border-gunmetal">
+    <div className="rounded-xl w bg-tan/5 w-[330px] h-[360px] p-6 text-center border-4 border-gunmetal">
       {profileImageUrl
         ? <img className="w-32 h-32 mx-auto" src={profileImageUrl} alt="profile" />
         : (
@@ -23,7 +23,7 @@ export default function FullProfileCard(props) {
             {firstName[0] + lastName[0]}
           </Avatar>
         )}
-      <div className="px-6 p-6">
+      <div className="p-3">
         <span className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{year}</span>
         {schoolList.map((school) => (
           <span key={school} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{school}</span>
@@ -32,13 +32,13 @@ export default function FullProfileCard(props) {
           <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
         ))}
       </div>
-      <div className="p-6">
-        <div className="font-sans text-xl font-semibold">
+      <div className="p-1">
+        <div className="font-sans text-l font-semibold">
           {firstName}
           {' '}
           {lastName}
         </div>
-        <div className="font-sans text-xl">
+        <div className="font-sans text-l">
           {emailAddress}
         </div>
       </div>
