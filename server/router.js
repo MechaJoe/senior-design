@@ -444,7 +444,10 @@ router.get(
 )
 
 // [GET] the group ID the user belongs to
-router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, res) => {
+/* Note: All students should have a group created for them when the assignment is created
+ *       on the instructor side
+ */
+router.get('/class/:classCode/assignments/:assignmentId/my-group-id', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { username } = req.session
   connection.query(

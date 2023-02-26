@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Box from '@mui/material/Box'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
@@ -19,8 +18,6 @@ export default function GroupsPage() {
   }, [])
 
   const { classCode, assignmentId } = useParams()
-
-  // populate sidebar with class info
   const [classTitle, setClassTitle] = useState('')
   const [instructors, setInstructors] = useState([])
 
@@ -56,7 +53,7 @@ export default function GroupsPage() {
 
   const getMyGroup = async () => {
     const { data: [{ groupId }] } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/my-group`),
+      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/my-group-id`),
     )
     if (groupId) {
       const { data: members } = await axios.get(
@@ -78,20 +75,16 @@ export default function GroupsPage() {
   }, [])
 
   return (
-    <Box
-      className="container mx-auto min-w-full"
-    >
-      <div className="flex flex-row min-h-screen">
-        <Sidebar classCode={classCode} className={classTitle} instructors={instructors} />
-        <div className="flex flex-col w-5/6 p-6">
-          <div className="font-sans font-bold text-4xl">
-            Assignment
-            {' '}
-            {assignmentId}
-          </div>
-          <GroupsPageTabs groupMembers={groupMembers} />
+    <div className="mx-auto min-w-full flex flex-row min-h-screen">
+      <Sidebar classCode={classCode} className={classTitle} instructors={instructors} />
+      <div className="flex flex-col w-5/6 p-6">
+        <div className="font-sans font-bold text-4xl">
+          Assignment
+          {' '}
+          {assignmentId}
         </div>
+        <GroupsPageTabs groupMembers={groupMembers} />
       </div>
-    </Box>
+    </div>
   )
 }
