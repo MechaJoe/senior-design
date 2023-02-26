@@ -18,32 +18,11 @@ const connection = mysql.createPool({
 
 const router = express.Router()
 
-router.post('/login', async (req, res) => {
-  const { body } = req
-  const { username, password } = body
-  const sql = `SELECT password
-  FROM User u
-  WHERE u.username = '${username}'`
-  connection.query(sql, (error, results) => {
-    if (error) {
-      res.json({ error })
-    } else if (results) {
-      if (results.length !== 0 && results[0].password === password) {
-        req.session.username = username
-        req.session.save()
-        // console.log(req.session)
-        res.send('Successful login')
-      } else {
-        res.send('Unsuccessful login')
-      }
-    }
-  })
-})
-
 router.get('/username', (req, res) => {
   if (req.session.passport) {
     req.session.username = [req.session.passport.user.emails[0].value.split('@')]
   }
+  req.session.save()
   res.json(req.session.username)
 })
 
@@ -64,6 +43,7 @@ router.get('/name', (req, res) => {
 router.post('/logout', (req, res) => {
   req.logout()
   req.session.username = null
+  req.session.save()
   res.send('Logged out')
 })
 
@@ -82,7 +62,7 @@ const verify = async (issuer, profile, cb) => {
   )
 }
 
-router.get('/login/federated/google', passport.authenticate('google'))
+router.get('/login/google', passport.authenticate('google'))
 
 passport.use(new GoogleStrategy(
   {
@@ -115,6 +95,7 @@ router.get(
             )
           }
           req.session.username = username
+          req.session.save()
           return res.redirect(`${frontendServer}/courses`)
         }
         return res.redirect(`${frontendServer}/login`)
@@ -125,7 +106,8 @@ router.get(
 
 passport.serializeUser((user, cb) => {
   process.nextTick(() => {
-    cb(null, { username: user.emails[0].value.split('@')[0] })
+    // cb(null, { username: user.emails[0].value.split('@')[0] })
+    cb(null, user)
   })
 })
 

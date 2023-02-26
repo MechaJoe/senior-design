@@ -55,7 +55,7 @@ function AssignmentsPage() {
       setInstructors(res)
     })
     getClassName().then((res) => {
-      setClassName(res[0].className)
+      setClassName(res.results[0].className)
     })
     getAssignmentInfo().then((res) => {
       setAssignments(res)
@@ -74,6 +74,7 @@ function AssignmentsPage() {
           {
             assignments.length ? assignments.map((assignment) => (
               <AssignmentCard
+                key={assignment.assignmentId}
                 classCode={classCode}
                 assignmentId={assignment.assignmentId}
                 deadline={assignment.deadline}

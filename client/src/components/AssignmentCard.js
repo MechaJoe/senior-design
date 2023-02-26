@@ -14,6 +14,7 @@ import config from '../config.json'
 function AssignmentCard({
   classCode, assignmentId, deadline,
 }) {
+  const navigate = useNavigate()
   const [groupInfo, setGroupInfo] = useState([])
   const [groupSize, setGroupSize] = useState({})
   const [shadow, setShadow] = useState(1)
@@ -29,7 +30,7 @@ function AssignmentCard({
   const deadlineString = deadlineDate.toLocaleDateString('en-us', options)
   const enterAssignment = () => {
     const path = `/courses/${classCode}/assignments/${assignmentId}`
-    useNavigate(path)
+    navigate(path)
   }
   const getGroupInfo = async () => {
     const { data } = await axios.get(
@@ -53,7 +54,7 @@ function AssignmentCard({
   useEffect(() => {
     getGroupInfo().then((res) => {
       if (!res.length) {
-        useNavigate('/')
+        navigate('/')
       }
       setGroupInfo(res)
     })
