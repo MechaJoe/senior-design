@@ -9,7 +9,7 @@ export default function FullProfileCard(props) {
   const schoolList = schools.split(',')
 
   return (
-    <div className="rounded-xl w bg-tan/5 w-[330px] h-[360px] p-6 text-center border-4 border-gunmetal">
+    <div className="rounded-2xl w bg-tan/5 w-[330px] h-[360px] p-6 text-center border-[6px] border-gunmetal">
       {profileImageUrl
         ? <img className="w-32 h-32 mx-auto" src={profileImageUrl} alt="profile" />
         : (

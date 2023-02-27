@@ -20,6 +20,8 @@ export default function GroupsPage() {
   const { classCode, assignmentId } = useParams()
   const [classTitle, setClassTitle] = useState('')
   const [instructors, setInstructors] = useState([])
+  const [groupMembers, setGroupMembers] = useState([])
+  const [individuals, setIndividuals] = useState([])
 
   const getInstructors = async () => {
     const { data: instructorData } = await axios.get(
@@ -49,7 +51,6 @@ export default function GroupsPage() {
   }, [])
 
   // get group members of logged in user
-  const [groupMembers, setGroupMembers] = useState([])
 
   const getMyGroup = async () => {
     const { data: [{ groupId }] } = await axios.get(
@@ -69,9 +70,23 @@ export default function GroupsPage() {
     }
     return groupId
   }
+
+  // get all individuals in class
+  const getIndividuals = async () => {
+    const { data: individualsData } = await axios.get(
+      encodeURI(`${config.server_domain}/class/${classCode}/individuals`),
+    )
+    if (individualsData) {
+      setIndividuals(individualsData)
+    } else {
+      console.log('no individuals found')
+    }
+  }
+
   useEffect(() => {
     getMyGroup()
     getClassTitle()
+    getIndividuals()
   }, [])
 
   return (
@@ -83,7 +98,7 @@ export default function GroupsPage() {
           {' '}
           {assignmentId}
         </div>
-        <GroupsPageTabs groupMembers={groupMembers} />
+        <GroupsPageTabs groupMembers={groupMembers} individuals={individuals} />
       </div>
     </div>
   )
