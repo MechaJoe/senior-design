@@ -133,13 +133,41 @@ router.get('/class/:classCode/students', async (req, res) => {
 })
 
 // GETs all students in a class without a group
-// TODO: Test this
-router.get('/class/:classCode/students/no-group', async (req, res) => {
-  const { classCode } = req.params
+router.get('/class/:classCode/assignments/:assignmentId/no-group', async (req, res) => {
+  const { classCode, assignmentId } = req.params
   connection.query(
-    `SELECT Student.emailAddress
-    FROM StudentOf JOIN Student ON StudentOf.emailAddress = Student.emailAddress
-    WHERE StudentOf.classCode = '${classCode}' AND StudentOf.groupId IS NULL;
+    `WITH all_students AS (
+      SELECT Student.username FROM Student JOIN StudentOf ON StudentOf.username = Student.username
+      WHERE StudentOf.classCode = '${classCode}'
+    )
+    SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students JOIN Student ON all_students.username = Student.username
+      WHERE all_students.username NOT IN (
+        SELECT all_students.username FROM all_students JOIN BelongsToGroup ON all_students.username = BelongsToGroup.username
+        WHERE assignmentId = '${assignmentId}'
+      );
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json({ results })
+      }
+    },
+  )
+})
+
+// GETs all students in a class in any group
+router.get('/class/:classCode/assignments/:assignmentId/grouped', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  connection.query(
+    `WITH all_students AS (
+      SELECT Student.username FROM Student JOIN StudentOf ON StudentOf.username = Student.username
+      WHERE StudentOf.classCode = '${classCode}'
+    )
+      SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
+          JOIN Student ON all_students.username = Student.username
+          JOIN BelongsToGroup ON BelongsToGroup.username = all_students.username
+      WHERE assignmentId = '${assignmentId}';
     `,
     (error, results) => {
       if (error) {
@@ -453,7 +481,7 @@ router.get(
         if (error) {
           res.json({ error })
         } else if (results) {
-          console.log(results)
+          // console.log(results)
           res.json(results)
         }
       },
