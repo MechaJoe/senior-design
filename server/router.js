@@ -133,6 +133,25 @@ router.get('/class/:classCode/students', async (req, res) => {
   )
 })
 
+// GETs all students in a class without a group
+// TODO: Test this
+router.get('/class/:classCode/students/no-group', async (req, res) => {
+  const { classCode } = req.params
+  connection.query(
+    `SELECT Student.emailAddress
+    FROM StudentOf JOIN Student ON StudentOf.emailAddress = Student.emailAddress
+    WHERE StudentOf.classCode = '${classCode}' AND StudentOf.groupId IS NULL;
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json({ results })
+      }
+    },
+  )
+})
+
 // GETs name of a class
 router.get('/class/:classCode', async (req, res) => {
   const { classCode } = req.params
