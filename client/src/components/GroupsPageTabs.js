@@ -42,7 +42,7 @@ function a11yProps(index) {
 }
 
 export default function GroupsPageTabs(props) {
-  const { groupMembers } = props
+  const { groupMembers, individuals, grouped } = props
   const [value, setValue] = useState(0)
 
   const handleChange = (event, newValue) => {
@@ -60,7 +60,7 @@ export default function GroupsPageTabs(props) {
             variant="fullWidth"
           >
             <Tab label="My Group" {...a11yProps(0)} />
-            <Tab label="Free Agents" {...a11yProps(1)} />
+            <Tab label="Individuals" {...a11yProps(1)} />
             <Tab label="All Groups" {...a11yProps(2)} />
           </Tabs>
         </Box>
@@ -81,7 +81,33 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          Free Agents Placeholder
+          <div className="grid grid-cols-3 gap-4">
+            {individuals?.map((member) => (
+              <FullProfileCard
+                key={member.username}
+                firstName={member.firstName}
+                lastName={member.lastName}
+                emailAddress={member.emailAddress}
+                profileImageUrl={member.profileImageUrl}
+                year={member.year}
+                majors={member.majors}
+                schools={member.schools}
+              />
+            ))}
+            {grouped?.map((member) => (
+              <FullProfileCard
+                key={member.username}
+                firstName={member.firstName}
+                lastName={member.lastName}
+                emailAddress={member.emailAddress}
+                profileImageUrl={member.profileImageUrl}
+                year={member.year}
+                majors={member.majors}
+                schools={member.schools}
+                grayed
+              />
+            ))}
+          </div>
         </TabPanel>
         <TabPanel value={value} index={2}>
           All Groups Placeholder

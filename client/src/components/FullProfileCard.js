@@ -2,14 +2,14 @@ import Avatar from '@mui/material/Avatar'
 
 export default function FullProfileCard(props) {
   const {
-    firstName, lastName, emailAddress, profileImageUrl, year, majors, schools,
+    firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, grayed,
   } = props
 
   const majorList = majors.split(',')
   const schoolList = schools.split(',')
 
   return (
-    <div className="rounded-2xl w bg-tan/5 w-[330px] h-[360px] p-6 text-center border-[6px] border-gunmetal">
+    <div className={`rounded-2xl w-[330px] h-[360px] p-6 text-center border-[6px] ${grayed ? 'bg-gray-200 border-gray-300' : 'bg-tan/5 border-gunmetal'}`}>
       {profileImageUrl
         ? <img className="w-32 h-32 mx-auto" src={profileImageUrl} alt="profile" />
         : (
