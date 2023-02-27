@@ -42,7 +42,6 @@ export default function FullProfileCard(props) {
           {emailAddress}
         </div>
       </div>
-
     </div>
   )
 }

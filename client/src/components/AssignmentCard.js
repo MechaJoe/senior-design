@@ -53,9 +53,6 @@ function AssignmentCard({
 
   useEffect(() => {
     getGroupInfo().then((res) => {
-      if (!res.length) {
-        // navigate('/')
-      }
       setGroupInfo(res)
     })
     getGroupSize().then((res) => {
