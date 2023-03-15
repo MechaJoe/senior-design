@@ -12,9 +12,11 @@ export default function Header() {
   return (
     <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
       <Toolbar>
-        <h1 className="font-sans text-5xl font-bold">
-          concourse
-        </h1>
+        <Link to="/courses">
+          <h1 className="font-sans text-5xl font-bold">
+            concourse
+          </h1>
+        </Link>
         {/* <Typography variant="h3" className="font-sans">
           concourse
         </Typography> */}
