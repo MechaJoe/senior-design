@@ -28,6 +28,9 @@ module.exports = {
       fontWeight: {
         bold: '1000',
       },
+      screens: {
+        laptop: '1300px',
+      },
     },
   },
   plugins: [],

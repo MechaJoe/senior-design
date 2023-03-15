@@ -75,7 +75,7 @@ export default function GroupsPageTabs(props) {
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4">
             {groupMembers?.map((member) => (
               <FullProfileCard
                 key={member.username}
@@ -91,7 +91,7 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4">
             {individuals?.map((member) => (
               <FullProfileCard
                 key={member.username}
