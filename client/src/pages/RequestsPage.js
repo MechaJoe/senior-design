@@ -1,19 +1,20 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
 // import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Stack from '@mui/material/Stack'
 import Sidebar from '../components/Sidebar'
-import AssignmentCard from '../components/AssignmentCard'
 import Header from '../components/Header'
+import RequestCard from '../components/RequestCard'
 import config from '../config.json'
 
-function AssignmentsPage() {
+function RequestsPage() {
   let classCode = window.location.href.split('/')[4]
   classCode = decodeURI(classCode)
+  let assignmentId = window.location.href.split('/')[6]
+  assignmentId = decodeURI(assignmentId)
   const [instructors, setInstructors] = useState([])
   const [className, setClassName] = useState('')
-  const [assignments, setAssignments] = useState([])
+  const [requests, setRequests] = useState([])
 
   // const navigate = useNavigate()
 
@@ -41,9 +42,9 @@ function AssignmentsPage() {
     return data
   }
 
-  const getAssignmentInfo = async () => {
+  const getRequests = async () => {
     const { data } = await axios.get(
-      `http://${config.server_host}:${config.server_port}/class/${classCode}/assignments`,
+      `http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assignmentId}/requests`,
       { withCredentials: true },
     )
     return data
@@ -57,10 +58,11 @@ function AssignmentsPage() {
     getClassName().then((res) => {
       setClassName(res.results[0].className)
     })
-    getAssignmentInfo().then((res) => {
-      setAssignments(res)
+    getRequests().then((res) => {
+      setRequests(res)
     })
   }, [])
+
   return (
     <>
       <Header />
@@ -70,23 +72,26 @@ function AssignmentsPage() {
           className={className}
           instructors={instructors}
         />
+        <h2> Individual Requests </h2>
         <div className="flex flex-wrap">
           {
-            assignments.length ? assignments.map((assignment) => (
-              <AssignmentCard
-                key={assignment.assignmentId}
-                classCode={classCode}
-                assignmentId={assignment.assignmentId}
-                deadline={assignment.deadline}
-              // groupInfo={assignmentGroupInfo}
+            requests.length ? requests.map((member) => (
+              <RequestCard
+                key={member.username}
+                firstName={member.firstName}
+                lastName={member.lastName}
+                emailAddress={member.emailAddress}
+                profileImageUrl={member.profileImageUrl}
+                year={member.year}
+                majors={member.majors}
+                schools={member.schools}
               />
             )) : null
           }
         </div>
       </Stack>
     </>
-
   )
 }
 
-export default AssignmentsPage
+export default RequestsPage
