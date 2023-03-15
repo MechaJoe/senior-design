@@ -1,7 +1,4 @@
-import {
-  AppBar,
-  Toolbar,
-} from '@mui/material'
+import { AppBar, Toolbar } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
 import ChatIcon from '@mui/icons-material/Chat'
@@ -17,9 +14,6 @@ export default function Header() {
             concourse
           </h1>
         </Link>
-        {/* <Typography variant="h3" className="font-sans">
-          concourse
-        </Typography> */}
         <div className="absolute right-10 space-x-4">
           <Link to="/chat">
             <ChatIcon fontSize="large" />
