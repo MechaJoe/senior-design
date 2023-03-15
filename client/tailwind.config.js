@@ -9,6 +9,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        buttonblue: '#162368',
+        buttongreen: '#16681E',
         cardstock: '#F5F3EE',
         tan: '#CCB98E',
         gunmetal: '#03254E',

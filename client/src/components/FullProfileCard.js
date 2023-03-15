@@ -32,7 +32,7 @@ export default function FullProfileCard(props) {
           <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
         ))}
       </div>
-      <div className="p-1">
+      <div className="">
         <div className="font-sans text-l font-semibold">
           {firstName}
           {' '}
@@ -40,6 +40,10 @@ export default function FullProfileCard(props) {
         </div>
         <div className="font-sans text-l">
           {emailAddress}
+        </div>
+        <div className="grid grid-cols-2 gap-4 justify-items-center p-4 font-sans">
+          <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+          <button type="button" className=" bg-buttongreen text-white rounded w-24">Request</button>
         </div>
       </div>
     </div>
