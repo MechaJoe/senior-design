@@ -463,9 +463,6 @@ router.get(
   async (req, res) => {
     const { classCode, assignmentId } = req.params
     const { username } = req.session
-    // const username = 'jasonhom'
-    // const classCode = 'CIS 4000'
-    // const assignmentId = 2
     connection.query(
       `With GId AS (SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
       AND assignmentId = '${assignmentId}'
