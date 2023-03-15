@@ -6,6 +6,7 @@ import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import FullProfileCard from './FullProfileCard'
+import GroupCard from './GroupCard'
 
 const theme = createTheme({
   palette: {
@@ -27,7 +28,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          <Typography component="div">{children}</Typography>
         </Box>
       )}
     </div>
@@ -42,7 +43,16 @@ function a11yProps(index) {
 }
 
 export default function GroupsPageTabs(props) {
-  const { groupMembers, individuals, grouped } = props
+  const {
+    groupMembers,
+    individuals,
+    grouped,
+    groupIds,
+    classCode,
+    assignmentId,
+    groupSize,
+    setModalProfile,
+  } = props
   const [value, setValue] = useState(0)
 
   const handleChange = (event, newValue) => {
@@ -110,7 +120,18 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={2}>
-          All Groups Placeholder
+          <div className="grid grid-cols-2 gap-4">
+            {groupIds?.map((g) => (
+              <GroupCard
+                key={g}
+                groupId={g}
+                classCode={classCode}
+                assignmentId={assignmentId}
+                groupSize={groupSize}
+                setModalProfile={setModalProfile}
+              />
+            ))}
+          </div>
         </TabPanel>
       </ThemeProvider>
     </div>

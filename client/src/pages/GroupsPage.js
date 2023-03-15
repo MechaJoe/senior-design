@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar'
 import config from '../config.json'
 import GroupsPageTabs from '../components/GroupsPageTabs'
 import Header from '../components/Header'
+import { getGroupIds, getGroupSize } from '../infoHelpers'
 
 export default function GroupsPage() {
   const navigate = useNavigate()
@@ -24,6 +25,8 @@ export default function GroupsPage() {
   const [groupMembers, setGroupMembers] = useState([])
   const [individuals, setIndividuals] = useState([])
   const [grouped, setGrouped] = useState([])
+  const [groupIds, setGroupIds] = useState([])
+  const [groupSize, setGroupSize] = useState({})
 
   const getInstructors = async () => {
     const { data: instructorData } = await axios.get(
@@ -37,7 +40,7 @@ export default function GroupsPage() {
   }
 
   const getClassTitle = async () => {
-    const { data: { results: { className } } } = await axios.get(
+    const { data: { results: [{ className }] } } = await axios.get(
       encodeURI(`${config.server_domain}/class/${classCode}`),
     )
     if (className) {
@@ -53,7 +56,6 @@ export default function GroupsPage() {
   }, [])
 
   // get group members of logged in user
-
   const getMyGroup = async () => {
     const { data: [{ groupId }] } = await axios.get(
       encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/my-group-id`),
@@ -79,19 +81,18 @@ export default function GroupsPage() {
       encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/no-group`),
     )
     if (results) {
-      console.log(results)
       setIndividuals(results)
     } else {
       console.log('no individuals found')
     }
   }
 
+  // get all individuals in class with a group
   const getGrouped = async () => {
     const { data: { results } } = await axios.get(
       encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/grouped`),
     )
     if (results) {
-      console.log(results)
       setGrouped(results)
     } else {
       console.log('no grouped individuals found')
@@ -103,6 +104,20 @@ export default function GroupsPage() {
     getClassTitle()
     getIndividuals()
     getGrouped()
+    getGroupIds(classCode, assignmentId).then((data) => {
+      if (data) {
+        setGroupIds(data.map((group) => group.groupId))
+      } else {
+        console.log('no grouped individuals found')
+      }
+    })
+    getGroupSize(classCode, assignmentId).then((data) => {
+      if (data) {
+        setGroupSize(data)
+      } else {
+        console.log('no group size found')
+      }
+    })
   }, [])
 
   return (
@@ -117,9 +132,13 @@ export default function GroupsPage() {
             {assignmentId}
           </div>
           <GroupsPageTabs
+            classCode={classCode}
+            assignmentId={assignmentId}
             groupMembers={groupMembers}
             individuals={individuals}
             grouped={grouped}
+            groupIds={groupIds}
+            groupSize={groupSize}
           />
         </div>
       </div>
