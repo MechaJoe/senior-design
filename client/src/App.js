@@ -9,6 +9,7 @@ import GroupsPage from './pages/GroupsPage'
 import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
 import Profile from './Profile'
+import ChatPage from './pages/ChatPage'
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
   {
     path: 'courses/:classCode/assignments/:assignmentId',
     element: <GroupsPage />,
+  },
+  {
+    path: 'chat',
+    element: <ChatPage />,
   },
 ])
 

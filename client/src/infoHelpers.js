@@ -44,3 +44,14 @@ export const checkUserLoggedIn = async () => {
   const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
   return data
 }
+
+export const getUserAllChats = async (username) => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/${username}/all`)
+    console.log('res')
+    console.log(res.data)
+    return res.data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}

@@ -484,4 +484,23 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members',
   )
 })
 
+// CHAT ROUTES
+
+// [GET] all the chats for a given user
+router.get('/chats/:username/all', async (req, res) => {
+  const { username } = req.params
+  connection.query(
+    `SELECT *
+    FROM BelongsToGroup B NATURAL JOIN Chat C
+    WHERE username = '${username}';
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
 module.exports = router

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 
 export default function Header() {
   return (
-    <AppBar position="static" style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
+    <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
       <Toolbar>
         <h1 className="font-sans text-5xl font-bold">
           concourse
