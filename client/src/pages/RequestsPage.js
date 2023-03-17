@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 // import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
@@ -14,9 +15,26 @@ function RequestsPage() {
   assignmentId = decodeURI(assignmentId)
   const [instructors, setInstructors] = useState([])
   const [className, setClassName] = useState('')
-  const [requests, setRequests] = useState([])
+  const [individualRequests, setIndividualRequests] = useState([])
+  // const [groupRequests, setGroupRequests] = useState([])
+  const [groupToMembers, setGroupToMembers] = useState({})
 
   // const navigate = useNavigate()
+  // eslint-disable-next-line no-unused-vars
+  const separateGroups = async (allRequests) => {
+    if (allRequests) {
+      const groupDict = {}
+      const groups = new Set()
+      allRequests.forEach((student) => {
+        groups.add(student.groupId)
+      })
+      groups.forEach((groupId) => {
+        const members = allRequests.filter((member) => member.groupId === groupId)
+        groupDict[groupId] = members
+      })
+      setGroupToMembers(groupDict)
+    }
+  }
 
   const getUser = async () => {
     const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
@@ -42,12 +60,32 @@ function RequestsPage() {
     return data
   }
 
-  const getRequests = async () => {
+  const getIndividualRequests = async () => {
     const { data } = await axios.get(
-      `http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assignmentId}/requests`,
+      `http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assignmentId}/requests/individuals`,
       { withCredentials: true },
     )
     return data
+  }
+
+  const getGroupRequests = async () => {
+    const { data } = await axios.get(
+      `http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assignmentId}/requests/groups`,
+      { withCredentials: true },
+    )
+    const groupDict = {}
+    if (data) {
+      const groups = new Set()
+      data.forEach((student) => {
+        groups.add(student.groupId)
+      })
+      groups.forEach((groupId) => {
+        const members = data.filter((member) => member.groupId === groupId)
+        groupDict[groupId] = members
+      })
+      // setGroupToMembers(groupDict)
+    }
+    return groupDict
   }
 
   useEffect(() => {
@@ -58,10 +96,21 @@ function RequestsPage() {
     getClassName().then((res) => {
       setClassName(res.results[0].className)
     })
-    getRequests().then((res) => {
-      setRequests(res)
+    getIndividualRequests().then((res) => {
+      setIndividualRequests(res)
     })
+    getGroupRequests().then((res) => {
+      setGroupToMembers(res)
+      // setGroupRequests(res)
+      // console.log(`Group Requests: ${JSON.stringify(groupRequests)}`)
+      // separateGroups(groupRequests)
+      // console.log(`Dictionary: ${JSON.stringify(groupToMembers)}`)
+    })
+    // separateGroups(groupRequests)
   }, [])
+
+  // console.log(`Group Requests: ${JSON.stringify(groupRequests)}`)
+  console.log(`Dictionary: ${JSON.stringify(groupToMembers)}`)
 
   return (
     <>
@@ -72,22 +121,30 @@ function RequestsPage() {
           className={className}
           instructors={instructors}
         />
-        <h2> Individual Requests </h2>
-        <div className="flex flex-wrap">
-          {
-            requests.length ? requests.map((member) => (
-              <RequestCard
-                key={member.username}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                emailAddress={member.emailAddress}
-                profileImageUrl={member.profileImageUrl}
-                year={member.year}
-                majors={member.majors}
-                schools={member.schools}
-              />
-            )) : null
-          }
+        <div>
+          <h1 className="font-sans text-3xl my-6 font-bold"> Requests </h1>
+          <Divider sx={{ borderBottomWidth: 4 }} />
+          <h1 className="font-sans text-xl my-6 font-bold"> Individual Requests </h1>
+          <div className="grid grid-cols-3 flex flex-wrap mb-4">
+            {
+              individualRequests.length ? individualRequests.map((member) => (
+                <RequestCard
+                  students={[member]}
+                />
+              )) : null
+            }
+          </div>
+          <Divider sx={{ borderBottomWidth: 4 }} />
+          <h1 className="font-sans text-xl my-6 font-bold"> Group Requests </h1>
+          <div className="flex flex-col">
+            {
+              groupToMembers ? Object.values(groupToMembers).map((group) => (
+                <RequestCard
+                  students={group}
+                />
+              )) : null
+            }
+          </div>
         </div>
       </Stack>
     </>

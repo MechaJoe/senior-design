@@ -547,6 +547,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
       if (error) {
         res.json({ error })
       } else if (results) {
+        console.log(`Group Results: ${JSON.stringify(results)}`)
         res.json(results)
       }
     },
