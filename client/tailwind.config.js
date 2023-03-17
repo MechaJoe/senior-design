@@ -18,8 +18,10 @@ module.exports = {
         pearl: '#E6DCC7',
         parchment: '#EFEBD1',
         rust: '#D87731',
-        skyblue: '#227FEC',
+        skyblue: '#227FEC20',
         skybluelight: '#227FEC30',
+        lilac: '#D9DFFF',
+        powderblue: '#E7F5FF',
         gray: '#DFE0DF',
       },
       fontFamily: {

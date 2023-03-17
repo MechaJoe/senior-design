@@ -1,67 +1,68 @@
-import Avatar from '@mui/material/Avatar'
 import { Button } from '@mui/material'
+// import CloseIcon from '@mui/icons-material/Close'
+// import Avatar from '@mui/material/Avatar'
+import IconButton from '@mui/material/IconButton'
+import CancelIcon from '@mui/icons-material/Cancel'
+// import ChatIcon from '@mui/icons-material/Chat'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import RequestProfileCard from './RequestProfileCard'
 
-export default function RequestCard(props) {
-  const {
-    firstName, lastName, emailAddress, profileImageUrl, year, majors, schools,
-  } = props
-
-  const majorList = majors.split(',')
-  const schoolList = schools.split(',')
-
+export default function RequestCard({ students }) {
   return (
-    <div className="rounded-xl bg-tan/5 max-w-sm p-6 text-center border-4 border-gunmetal">
-      {profileImageUrl
-        ? <img className="w-32 h-32 mx-auto" src={profileImageUrl} alt="profile" />
-        : (
-          <Avatar
-            sx={{
-              width: 130, height: 130, font: 'Montserrat', fontSize: '3rem',
-            }}
-            className="mx-auto"
-            alt="profile"
-          >
-            {firstName[0] + lastName[0]}
+    <div className="bg-powderblue m-5 rounded-2xl">
+      <div className="justify-center flex flex-row items-center">
+        {
+          students.length ? students.map((member) => (
+            <RequestProfileCard
+              key={member.username}
+              firstName={member.firstName}
+              lastName={member.lastName}
+              emailAddress={member.emailAddress}
+              profileImageUrl={member.profileImageUrl}
+              year={member.year}
+              majors={member.majors}
+              schools={member.schools}
+            />
+          )) : null
+        }
+      </div>
+      <div className="justify-center flex flex-row items-center mb-4">
+        {/* <Button
+          variant="contained"
+          style={{
+            margin: '15px', backgroundColor: '#16681E', color: 'white',
+          }}
+        >
+          Accept
+        </Button> */}
+        <IconButton>
+          <CheckCircleIcon style={{ color: '#16681E', fontSize: 60 }} />
+        </IconButton>
+        <IconButton>
+          <CancelIcon style={{ color: '#CB5045', fontSize: 60 }} />
+        </IconButton>
+        {/* <IconButton>
+          <Avatar sx={{ width: '40px', height: '40px' }}>
+            <ChatIcon style={{ color: '#162368', fontSize: 60 }} />
           </Avatar>
-        )}
-      <div className="px-6 p-6">
-        <span className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{year}</span>
-        {schoolList.map((school) => (
-          <span key={school} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{school}</span>
-        ))}
-        {majorList.map((major) => (
-          <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
-        ))}
-      </div>
-      <div className="p-6">
-        <div className="font-sans text-xl font-semibold">
-          {firstName}
-          {' '}
-          {lastName}
-        </div>
-        <div className="font-sans text-xl">
-          {emailAddress}
-        </div>
-      </div>
-      <div>
-        <Button
-          variant="contained"
-          style={{
-            margin: '15px', backgroundColor: 'white', color: 'black',
-          }}
-        >
-          Approve
-        </Button>
-        <Button
-          variant="contained"
-          style={{
-            margin: '15px', backgroundColor: 'white', color: 'black',
-          }}
-        >
-          Reject
-        </Button>
-      </div>
+        </IconButton> */}
 
+        {/* <Button
+          variant="contained"
+          startIcon={<CloseIcon />}
+          style={{
+            backgroundColor: '#CB5045', color: 'white', borderRadius: '180px', width: '10px',
+          }}
+        /> */}
+        <Button
+          variant="contained"
+          style={{
+            margin: '15px', backgroundColor: '#162368', color: 'white',
+          }}
+        >
+          Chat
+        </Button>
+      </div>
     </div>
   )
 }
