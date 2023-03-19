@@ -20,21 +20,6 @@ function RequestsPage() {
   const [groupToMembers, setGroupToMembers] = useState({})
 
   // const navigate = useNavigate()
-  // eslint-disable-next-line no-unused-vars
-  const separateGroups = async (allRequests) => {
-    if (allRequests) {
-      const groupDict = {}
-      const groups = new Set()
-      allRequests.forEach((student) => {
-        groups.add(student.groupId)
-      })
-      groups.forEach((groupId) => {
-        const members = allRequests.filter((member) => member.groupId === groupId)
-        groupDict[groupId] = members
-      })
-      setGroupToMembers(groupDict)
-    }
-  }
 
   const getUser = async () => {
     const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
@@ -122,7 +107,17 @@ function RequestsPage() {
           instructors={instructors}
         />
         <div>
-          <h1 className="font-sans text-3xl my-6 font-bold"> Requests </h1>
+          <h1 className="font-sans text-3xl my-6 font-bold">
+            {' '}
+            Assignment
+            {' '}
+            {assignmentId}
+            :
+            {' '}
+            Requests
+            {' '}
+          </h1>
+          {/* <h1 className="font-sans text-3xl my-6 font-bold"> Requests </h1> */}
           <Divider sx={{ borderBottomWidth: 4 }} />
           <h1 className="font-sans text-xl my-6 font-bold"> Individual Requests </h1>
           <div className="grid grid-cols-3 flex flex-wrap mb-4">

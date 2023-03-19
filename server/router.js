@@ -539,14 +539,20 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', a
   // const { username } = req.session
   const username = 'jasonhom'
   connection.query(
-    `WITH reqs AS (
-      SELECT requestId, fromStudent, messageId
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  ), reqs AS (
+      SELECT fromGroupId
       FROM Request
-      WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND toStudent = '${username}'
+      WHERE toGroupId IN (SELECT * FROM myGID)
   ), groupsRequested AS (
       SELECT groupId, classCode, assignmentId
       FROM reqs
-               JOIN BelongsToGroup ON reqs.fromStudent = BelongsToGroup.username
+               JOIN BelongsToGroup ON reqs.fromGroupId = BelongsToGroup.groupId
       WHERE classCode = '${classCode}'
         AND assignmentId = '${assignmentId}'
   ), individuals AS (
@@ -573,14 +579,20 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
   // const { username } = req.session
   const username = 'jasonhom'
   connection.query(
-    `WITH reqs AS (
-      SELECT requestId, fromStudent, messageId
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  ), reqs AS (
+      SELECT fromGroupId
       FROM Request
-      WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND toStudent = '${username}'
+      WHERE toGroupId IN (SELECT * FROM myGID)
   ), groupsRequested AS (
       SELECT groupId, classCode, assignmentId
       FROM reqs
-               JOIN BelongsToGroup ON reqs.fromStudent = BelongsToGroup.username
+               JOIN BelongsToGroup ON reqs.fromGroupId = BelongsToGroup.groupId
       WHERE classCode = '${classCode}'
         AND assignmentId = '${assignmentId}'
   ), groupReqs AS (
