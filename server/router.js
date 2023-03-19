@@ -592,11 +592,11 @@ router.post('/user/:user/requests', async (req, res) => {
 
 // TODO: Add datetime attribute after discussing chat
 // [DELETE] request from the current user to another user
-router.get('/delete-request/:requestId', async (req, res) => {
+router.post('/reject-request', async (req, res) => {
   // const { classCode, assignmentId, requestId } = req.params
   const {
     classCode, assignmentId, fromGroupId,
-  } = req.params
+  } = req.body
   // const { username } = req.session
   const username = 'jasonhom'
   connection.query(
@@ -609,6 +609,35 @@ router.get('/delete-request/:requestId', async (req, res) => {
   )
   DELETE FROM Request
   WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND fromGroupId = '${fromGroupId}' AND toGroupId IN (SELECT * FROM myGID);`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] Accepts request from another user to current user
+router.post('/accept-request', async (req, res) => {
+  // const { classCode, assignmentId, requestId } = req.params
+  const {
+    classCode, assignmentId, fromGroupId,
+  } = req.body
+  // const { username } = req.session
+  const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  )
+  UPDATE BelongsToGroup, myGID
+  SET BelongsToGroup.groupId = myGID.groupId
+  WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND BelongsToGroup.groupId = ${fromGroupId};`,
     (error, results) => {
       if (error) {
         res.json({ error })

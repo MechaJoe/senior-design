@@ -1,13 +1,27 @@
 import { Button } from '@mui/material'
 // import CloseIcon from '@mui/icons-material/Close'
 // import Avatar from '@mui/material/Avatar'
+import axios from 'axios'
 import IconButton from '@mui/material/IconButton'
 import CancelIcon from '@mui/icons-material/Cancel'
 // import ChatIcon from '@mui/icons-material/Chat'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import RequestProfileCard from './RequestProfileCard'
+import config from '../config.json'
 
-export default function RequestCard({ students }) {
+export default function RequestCard({ classCode, assignmentId, students }) {
+  const handleAcceptOnClick = async () => {
+    await Promise.all([
+      axios.post(`http://${config.server_host}:${config.server_port}/accept-request`, { classCode, assignmentId, fromGroupId: students[0].groupId }),
+      axios.post(`http://${config.server_host}:${config.server_port}/reject-request`, { classCode, assignmentId, fromGroupId: students[0].groupId }),
+    ])
+    window.location.reload()
+  }
+
+  const handleRejectOnClick = async () => {
+    await axios.post(`http://${config.server_host}:${config.server_port}/reject-request`, { classCode, assignmentId, fromGroupId: students[0].groupId })
+    window.location.reload()
+  }
   return (
     <div className="bg-powderblue m-5 rounded-2xl">
       <div className="justify-center flex flex-row items-center">
@@ -35,10 +49,10 @@ export default function RequestCard({ students }) {
         >
           Accept
         </Button> */}
-        <IconButton>
+        <IconButton onClick={handleAcceptOnClick}>
           <CheckCircleIcon style={{ color: '#16681E', fontSize: 60 }} />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={handleRejectOnClick}>
           <CancelIcon style={{ color: '#CB5045', fontSize: 60 }} />
         </IconButton>
         {/* <IconButton>
