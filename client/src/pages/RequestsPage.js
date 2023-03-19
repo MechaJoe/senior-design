@@ -124,9 +124,11 @@ function RequestsPage() {
             {
               individualRequests.length ? individualRequests.map((member) => (
                 <RequestCard
+                  classCode={classCode}
+                  assignmentId={assignmentId}
                   students={[member]}
                 />
-              )) : null
+              )) : <h1> No individual requests currently </h1>
             }
           </div>
           <Divider sx={{ borderBottomWidth: 4 }} />
@@ -137,7 +139,7 @@ function RequestsPage() {
                 <RequestCard
                   students={group}
                 />
-              )) : null
+              )) : <h1> No group requests currently </h1>
             }
           </div>
         </div>
