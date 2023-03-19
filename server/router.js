@@ -508,17 +508,18 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', a
       WHERE classCode = '${classCode}'
         AND assignmentId = '${assignmentId}'
   ), individuals AS (
-      SELECT username
+      SELECT username, BelongsToGroup.groupId
   FROM groupsRequested JOIN BelongsToGroup ON groupsRequested.groupId = BelongsToGroup.groupId
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) = 1
   )
-  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools
+  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
   FROM individuals JOIN Student ON individuals.username = Student.username;`,
     (error, results) => {
       if (error) {
         res.json({ error })
       } else if (results) {
+        console.log(`Individual Results: ${JSON.stringify(results)}`)
         res.json(results)
       }
     },
@@ -566,48 +567,6 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
   )
 })
 
-// [GET] all requests that a user has received for a class assignment
-
-// router.get('/class/:classCode/assignments/:assignmentId/requests', async (req, res) => {
-//   const { classCode, assignmentId } = req.params
-//   // const { username } = req.session
-//   const username = 'jasonhom'
-//   connection.query(
-//     `WITH reqs AS (
-//       SELECT requestId, fromStudent, messageId
-//       FROM Request
-//       WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}'
-// AND toStudent = '${username}'
-//   )
-//   SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools
-//   FROM Student JOIN reqs ON Student.username = reqs.fromStudent;`,
-//     (error, results) => {
-//       if (error) {
-//         res.json({ error })
-//       } else if (results) {
-//         res.json(results)
-//       }
-//     },
-//   )
-// })
-// router.get('/class/:classCode/assignments/:assignmentId/requests', async (req, res) => {
-//   const { classCode, assignmentId } = req.params
-//   const { username } = req.session
-//   connection.query(
-//     `SELECT requestId, fromStudent, messageId
-//     FROM Request
-//     WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}'
-// AND toStudent = '${username}';`,
-//     (error, results) => {
-//       if (error) {
-//         res.json({ error })
-//       } else if (results) {
-//         res.json(results)
-//       }
-//     },
-//   )
-// })
-
 // TODO: Add datetime attribute after discussing chat
 // [POST] new request from the current user to another user
 router.post('/user/:user/requests', async (req, res) => {
@@ -633,14 +592,23 @@ router.post('/user/:user/requests', async (req, res) => {
 
 // TODO: Add datetime attribute after discussing chat
 // [DELETE] request from the current user to another user
-router.delete('/delete-request/:requestId', async (req, res) => {
+router.get('/delete-request/:requestId', async (req, res) => {
   // const { classCode, assignmentId, requestId } = req.params
   const {
-    classCode, assignmentId, requestId,
-  } = req.body
+    classCode, assignmentId, fromGroupId,
+  } = req.params
+  // const { username } = req.session
+  const username = 'jasonhom'
   connection.query(
-    `DELETE FROM Request 
-    WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND requestId = '${requestId}';`,
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  )
+  DELETE FROM Request
+  WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND fromGroupId = '${fromGroupId}' AND toGroupId IN (SELECT * FROM myGID);`,
     (error, results) => {
       if (error) {
         res.json({ error })
