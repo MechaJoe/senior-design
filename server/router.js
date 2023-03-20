@@ -503,4 +503,65 @@ router.get('/chats/:username/all', async (req, res) => {
     },
   )
 })
+
+// [GET] filtered the chats for a given user
+router.get('/chats/:username/:classCode/all', async (req, res) => {
+  const { username, classCode } = req.params
+  connection.query(
+    `SELECT *
+    FROM BelongsToGroup B NATURAL JOIN Chat C
+    WHERE username = '${username}' AND classCode = '${classCode}';
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] all the messages for a given chat
+router.get('/chats/:chatId', async (req, res) => {
+  const { chatId } = req.params
+  connection.query(
+    `SELECT *
+    FROM Message
+    WHERE chatId = '${chatId}';
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] a new message for a given chat
+router.post('/chats/:chatId', async (req, res) => {
+  const { chatId } = req.params
+  const username = 'yuanb' // TODO: req.session not working
+  console.log(username)
+  const {
+    messageContent,
+  } = req.body
+  const timestamp = new Date()
+  messageContent.replace("'", "''")
+  connection.query(
+    `INSERT INTO Message (content, sender, chatId, timestamp)
+    VALUES ('${messageContent}', '${username}', '${chatId}', '${timestamp}');
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 module.exports = router

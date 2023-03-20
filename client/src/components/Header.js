@@ -19,7 +19,7 @@ export default function Header() {
           concourse
         </Typography> */}
         <div className="absolute right-10 space-x-4">
-          <Link to="/">
+          <Link to="/chat">
             <ChatIcon fontSize="large" />
           </Link>
           <Link to="/about">

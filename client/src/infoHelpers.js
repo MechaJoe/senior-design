@@ -48,7 +48,25 @@ export const checkUserLoggedIn = async () => {
 export const getUserAllChats = async (username) => {
   try {
     const res = await axios.get(`${baseUrl}/chats/${username}/all`)
-    console.log('res')
+    console.log(res.data)
+    return res.data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+export const getUserFilteredChats = async (username, classCode) => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/${username}/${classCode}/all`)
+    return res.data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+export const getChatAllMessages = async (chatId) => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/${chatId}`)
     console.log(res.data)
     return res.data
   } catch (err) {
