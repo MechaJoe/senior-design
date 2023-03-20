@@ -16,6 +16,8 @@ module.exports = {
         parchment: '#EFEBD1',
         rust: '#D87731',
         skyblue: '#227FEC20',
+        lilac: '#D9DFFF',
+        powderblue: '#E7F5FF',
       },
       fontFamily: {
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],

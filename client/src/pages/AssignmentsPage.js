@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Stack from '@mui/material/Stack'
 import Sidebar from '../components/Sidebar'
@@ -15,12 +15,12 @@ function AssignmentsPage() {
   const [className, setClassName] = useState('')
   const [assignments, setAssignments] = useState([])
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const getUser = async () => {
     const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
     if (!data) {
-      navigate('/login')
+      // navigate('/login')
     }
     return data
   }
