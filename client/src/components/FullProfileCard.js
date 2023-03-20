@@ -2,7 +2,7 @@ import Avatar from '@mui/material/Avatar'
 
 export default function FullProfileCard(props) {
   const {
-    firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, grayed,
+    firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, grayed, requested,
   } = props
 
   const majorList = majors.split(',')
@@ -41,10 +41,19 @@ export default function FullProfileCard(props) {
         <div className="font-sans text-l">
           {emailAddress}
         </div>
-        <div className="grid grid-cols-2 gap-4 justify-items-center p-4 font-sans">
-          <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
-          <button type="button" className=" bg-buttongreen text-white rounded w-24">Request</button>
-        </div>
+        {grayed
+          ? (
+            <div className="justify-items-center items-center p-4 font-sans">
+              <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+            </div>
+          )
+          : (
+            <div className="grid grid-cols-2 gap-4 justify-items-center p-4 font-sans">
+              <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+              {requested ? <button type="button" className="bg-gray-400 text-white rounded w-24">Request</button>
+                : <button type="button" className=" bg-buttongreen text-white rounded w-24">Request</button>}
+            </div>
+          )}
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar'
 import config from '../config.json'
 import GroupsPageTabs from '../components/GroupsPageTabs'
 import Header from '../components/Header'
-import { getGroupIds, getGroupSize } from '../infoHelpers'
+import { getGroupIds, getGroupSize, getMyGroupId } from '../infoHelpers'
 
 export default function GroupsPage() {
   const navigate = useNavigate()
@@ -25,6 +25,7 @@ export default function GroupsPage() {
   const [groupMembers, setGroupMembers] = useState([])
   const [individuals, setIndividuals] = useState([])
   const [grouped, setGrouped] = useState([])
+  const [myGroupId, setMyGroupId] = useState('')
   const [groupIds, setGroupIds] = useState([])
   const [groupSize, setGroupSize] = useState({})
 
@@ -57,9 +58,8 @@ export default function GroupsPage() {
 
   // get group members of logged in user
   const getMyGroup = async () => {
-    const { data: [{ groupId }] } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/my-group-id`),
-    )
+    const groupId = await getMyGroupId(classCode, assignmentId)
+    setMyGroupId(groupId)
     if (groupId) {
       const { data: members } = await axios.get(
         encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`),
@@ -137,6 +137,7 @@ export default function GroupsPage() {
             groupMembers={groupMembers}
             individuals={individuals}
             grouped={grouped}
+            myGroupId={myGroupId}
             groupIds={groupIds}
             groupSize={groupSize}
           />

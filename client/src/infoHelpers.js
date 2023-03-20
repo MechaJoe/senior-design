@@ -53,6 +53,13 @@ export const getGroupIds = async (classCode, assignmentId) => {
   return results
 }
 
+export const getMyGroupId = async (classCode, assignmentId) => {
+  const { data: [{ groupId }] } = await axios.get(
+    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/my-group-id`,
+  )
+  return groupId
+}
+
 // get all members in a group
 export const getMembers = async (classCode, assignmentId, groupId) => {
   const { data } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`)

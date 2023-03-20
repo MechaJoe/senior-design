@@ -3,14 +3,22 @@ import Avatar from '@mui/material/Avatar'
 import ProfileModal from './ProfileModal'
 
 export default function MiniProfileCard(props) {
-  const { member } = props
+  const { member, locked, requested } = props
   const { firstName, lastName, profileImageUrl } = member
 
   const [isShowing, setIsShowing] = useState(false)
 
   return (
     <>
-      {isShowing && <ProfileModal onClose={() => setIsShowing(!isShowing)} profile={member} />}
+      {isShowing
+      && (
+      <ProfileModal
+        onClose={() => setIsShowing(!isShowing)}
+        profile={member}
+        locked={locked}
+        requested={requested}
+      />
+      )}
       <button
         type="button"
         className="rounded-2xl p-6 text-center bg-tan/10"

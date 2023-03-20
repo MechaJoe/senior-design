@@ -5,6 +5,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
+import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import FullProfileCard from './FullProfileCard'
 import GroupCard from './GroupCard'
 
@@ -47,6 +48,7 @@ export default function GroupsPageTabs(props) {
     groupMembers,
     individuals,
     grouped,
+    myGroupId,
     groupIds,
     classCode,
     assignmentId,
@@ -86,12 +88,21 @@ export default function GroupsPageTabs(props) {
                 year={member.year}
                 majors={member.majors}
                 schools={member.schools}
+                requested
               />
             ))}
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4">
+          <ReactSearchAutocomplete
+            placeholder="Search by name, year, tag..."
+            styling={
+            {
+              borderRadius: '16px',
+            }
+          }
+          />
+          <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4 pt-4">
             {individuals?.map((member) => (
               <FullProfileCard
                 key={member.username}
@@ -121,7 +132,16 @@ export default function GroupsPageTabs(props) {
         </TabPanel>
         <TabPanel value={value} index={2}>
           <div className="grid grid-cols-2 gap-4">
-            {groupIds?.map((g) => (
+            <GroupCard
+              key={myGroupId}
+              groupId={myGroupId}
+              classCode={classCode}
+              assignmentId={assignmentId}
+              groupSize={groupSize}
+              setModalProfile={setModalProfile}
+              locked
+            />
+            {groupIds?.filter((g) => g !== myGroupId).map((g) => (
               <GroupCard
                 key={g}
                 groupId={g}

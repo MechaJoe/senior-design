@@ -1,7 +1,10 @@
 import { createPortal } from 'react-dom'
 import { Avatar } from '@mui/material'
 
-function ProfileModal({ onClose, profile }) {
+function ProfileModal(props) {
+  const {
+    locked, requested, onClose, profile,
+  } = props
   const {
     firstName, lastName, emailAddress, profileImageUrl, year, majors, schools,
   } = profile
@@ -55,10 +58,19 @@ function ProfileModal({ onClose, profile }) {
             <div className="font-sans text-l pb-4">
               {emailAddress}
             </div>
-            <div className="grid grid-cols-2 gap-4 justify-items-center">
-              <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
-              <button type="button" className=" bg-buttongreen text-white rounded w-24">Request</button>
-            </div>
+            {locked
+              ? (
+                <div className="justify-items-center items-center font-sans">
+                  <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+                </div>
+              )
+              : (
+                <div className="grid grid-cols-2 gap-4 justify-items-center p-4 font-sans">
+                  <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+                  {requested ? <button type="button" className="bg-gray-500 text-white rounded w-24">Request</button>
+                    : <button type="button" className=" bg-buttongreen text-white rounded w-24">Request</button>}
+                </div>
+              )}
           </div>
         </div>
       </div>,
