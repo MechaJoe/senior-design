@@ -545,7 +545,7 @@ router.get('/chats/:chatId', async (req, res) => {
 // [POST] a new message for a given chat
 router.post('/chats/:chatId', async (req, res) => {
   const { chatId } = req.params
-  const username = 'yuanb' // TODO: req.session not working
+  const { username } = req.session // TODO: req.session not working
   console.log(username)
   const {
     messageContent,

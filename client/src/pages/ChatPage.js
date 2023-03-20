@@ -10,8 +10,9 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined'
 import {
-  Stack, TextField, Typography,
+  Stack, TextField, Typography, Modal,
 } from '@mui/material'
 // import Toolbar from '@mui/material/Toolbar'
 // import SelectedChat from '../components/SelectedChat'
@@ -32,6 +33,8 @@ function ChatPage() {
   const [newMsg, setNewMsg] = useState('')
   const [filter, setFilter] = useState('')
   const [selectedChatId, setSelectedChatId] = useState('') // selected chatId
+  const [modal, setModal] = useState(false)
+  const [newMember, setNewMember] = useState('')
   const curr = 'lejiaz'
   const handleClickChat = (id) => {
     setSelectedChatId(id)
@@ -46,6 +49,22 @@ function ChatPage() {
     setFilter(classCode)
   }
 
+  const handleAddNewMember = async () => {
+    if (!newMember) {
+      console.log('no new member typed')
+      return
+    }
+    // ${config.server_host}:${config.server_port}
+    const { data } = await axios.post(`http://localhost:8080/chats/${selectedChatId}/add`, {
+      newMember,
+    }, { withCredentials: true })
+    if (data === 'success') {
+      // setNewMsg(messageContent)
+      setNewMember('')
+    } else {
+      console.log(data)
+    }
+  }
   const handleSendMessage = async () => {
     if (!messageContent || !selectedChatId) {
       console.log('no message typed or no selected chat')
@@ -136,6 +155,11 @@ function ChatPage() {
             </List>
           </Stack>
           <Stack direction="column" className="w-screen p-0">
+            <div className="block">
+              <Button className="mt-4 mr-4 float-right" onClick={() => setModal(true)}>
+                <PersonAddAltOutlinedIcon fontSize="large" />
+              </Button>
+            </div>
             <Box className="mt-20 p-5">
               {selected.map((m) => (
                 <Stack direction="column" className="py-2">
@@ -166,6 +190,28 @@ function ChatPage() {
           </Stack>
         </Stack>
       </Stack>
+
+      <Modal
+        open={modal}
+        onClose={() => setModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        style={{
+          display: 'flex', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '350px', marginLeft: '400px', marginRight: '400px',
+        }}
+        // sx={{ border: 4, borderColor: 'black', borderRadius: 4 }}
+      >
+        <Stack spacing={4} fullWidth className="inline-block bg-white p-5 rounded-xl">
+          <Typography fullWidth variant="h8">
+            Add People
+          </Typography>
+          <input value={newMember} onInput={(e) => setNewMember(e.target.value)} className="mx-5" placeholder="Enter username or email" />
+          <Stack direction="row" alignItems="center" justifyContent="right">
+            <Button onClick={() => setModal(false)} variant="filled" className="text-black"> Close </Button>
+            <Button onClick={handleAddNewMember} variant="filled"> Add </Button>
+          </Stack>
+        </Stack>
+      </Modal>
     </Box>
   )
 }
