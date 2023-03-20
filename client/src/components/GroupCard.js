@@ -5,7 +5,7 @@ import { getMembers } from '../infoHelpers'
 
 export default function GroupCard(props) {
   const {
-    classCode, assignmentId, groupId, groupSize, setModalProfile,
+    classCode, assignmentId, groupId, groupSize, locked,
   } = props
   const [groupMembers, setGroupMembers] = useState([])
 
@@ -26,10 +26,10 @@ export default function GroupCard(props) {
         <MiniProfileCard
           key={member.username}
           member={member}
-          setModalProfile={setModalProfile}
+          locked={locked}
         />
       ))}
-      {groupMembers.length < groupSize.maxGroupSize
+      {groupMembers.length < groupSize.maxGroupSize && !locked
         ? <JoinGroupButton classCode={classCode} assignmentId={assignmentId} groupId={groupId} />
         : null}
     </div>
