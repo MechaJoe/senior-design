@@ -567,19 +567,21 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
   )
 })
 
-// TODO: Add datetime attribute after discussing chat
-// [POST] new request from the current user to another user
-router.post('/user/:user/requests', async (req, res) => {
+// [POST] request from the current user to another user
+router.post('/request/add', async (req, res) => {
   // const { classCode, assignmentId, requestId } = req.params
   const {
-    classCode, assignmentId, requestId, toStudent, username,
+    classCode, assignmentId, toGroupId,
   } = req.body
   // const { username } = req.session
-  const messageId = null // TODO: Change later
+  const username = 'jasonhom'
   connection.query(
-    `INSERT INTO Request (classCode, assignmentId, requestId, fromStudent, toStudent, messageId)
-      VALUES ('${classCode}', '${assignmentId}', '${requestId}', '${username}', '${toStudent}', 
-        ${messageId});`, // TODO: left quotes out for messageId since we are setting to null, must change later
+    `INSERT INTO Request (classCode, assignmentId, fromGroupId, toGroupId)
+    SELECT '${classCode}', '${assignmentId}', groupId, ${toGroupId}
+    FROM BelongsToGroup
+    WHERE username = '${username}'
+          AND assignmentId = '${assignmentId}'
+          AND classCode = '${classCode}';`,
     (error, results) => {
       if (error) {
         res.json({ error })
