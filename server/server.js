@@ -24,7 +24,7 @@ app.use(session({
   unset: 'destroy',
   saveUninitialized: true,
   cookie: {
-    maxAge: 360000,
+    maxAge: 36000000,
     secure: false, // set to true for HTTPS
   },
 }))

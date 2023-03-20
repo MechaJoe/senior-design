@@ -9,6 +9,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        buttonblue: '#162368',
+        buttongreen: '#16681E',
+        cardstock: '#F5F3EE',
         tan: '#CCB98E',
         gunmetal: '#03254E',
         porcelain: '#E9EFF3',
@@ -24,6 +27,9 @@ module.exports = {
       },
       fontWeight: {
         bold: '1000',
+      },
+      screens: {
+        laptop: '1300px',
       },
     },
   },
