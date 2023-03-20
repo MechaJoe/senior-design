@@ -13,7 +13,7 @@ import Divider from '@mui/material/Divider'
 import {
   Stack, TextField, Typography,
 } from '@mui/material'
-import Toolbar from '@mui/material/Toolbar'
+// import Toolbar from '@mui/material/Toolbar'
 // import SelectedChat from '../components/SelectedChat'
 // import ChatSideBar from '../components/ChatSideBar'
 import Header from '../components/Header'
@@ -47,12 +47,17 @@ function ChatPage() {
   }
 
   const handleSendMessage = async () => {
+    if (!messageContent || !selectedChatId) {
+      console.log('no message typed or no selected chat')
+      return
+    }
     // ${config.server_host}:${config.server_port}
     const { data } = await axios.post(`http://localhost:8080/chats/${selectedChatId}`, { // TOOD: get chatid from props?
       messageContent,
     }, { withCredentials: true })
     if (data === 'success') {
       setNewMsg(messageContent)
+      setMessageContent('')
     } else {
       console.log(data)
     }
@@ -74,7 +79,16 @@ function ChatPage() {
         setChats(response)
       })
     }
-  }, [filter, newMsg])
+  }, [filter])
+
+  useEffect(() => {
+    getChatAllMessages(selectedChatId).then((response) => {
+      console.log('response')
+      console.log(response)
+      setSelected(response)
+    })
+  }, [newMsg])
+
   return (
     <Box
       className="container w-screen mx-auto min-w-full bg-white min-h-screen"
@@ -93,31 +107,27 @@ function ChatPage() {
                 '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' },
               }}
             >
-              <Toolbar />
-              {/* <Toolbar /> */}
-              <Toolbar>
-                <h2 className="pt-6 text-xl font-bold"> Filter by Class</h2>
-              </Toolbar>
-              <Divider />
-              {/* <Box sx={{ overflow: 'auto' }}> */}
-              <List>
+              <Typography variant="h-4" className="pt-20 pl-5 pb-2 text-xl font-bold"> Filter by Class</Typography>
+              <List sx={{ paddingLeft: '5px' }}>
+                <Divider />
                 {studentCourses.map((course) => (
-                  <ListItem key={course.classCode} disablePadding>
+                  <ListItem key={course.classCode} disablePadding className={course.classCode === filter ? 'bg-skybluelight' : ''}>
                     <ListItemButton sx={{ '&& .Mui-selected': { backgroundColor: 'blue' } }} onClick={() => handleClickFilter(course.classCode)}>
                       <ListItemText primary={course.classCode} />
                     </ListItemButton>
+                    <Divider id="divy" />
                   </ListItem>
+
                 ))}
               </List>
-              {/* </Box> */}
             </Drawer>
           </Stack>
-          <Stack direction="column" className="w-1/3 font-sans bg-slate-100 sticky top-0">
+          <Stack sx={{ borderRight: 1, borderColor: '#DFE0DF' }} direction="column" className="w-1/3 font-sans sticky top-0">
+            <Typography variant="h-4" className="pt-4 pl-5 pb-2 text-xl font-bold"> Chats </Typography>
             <List>
-              <h2 className="pt-6 pl-3 text-3xl font-bold"> Chats</h2>
               <Divider />
               {chats.map((chat) => (
-                <ListItem key={chat.chatId} disablePadding>
+                <ListItem key={chat.chatId} className={chat.chatId === selectedChatId ? 'border-b bg-skybluelight border-gray' : 'border-b border-gray'} disablePadding>
                   <ListItemButton sx={{ '&& .Mui-selected': { backgroundColor: 'red' } }} onClick={() => handleClickChat(chat.chatId)}>
                     <ListItemText primary={chat.name} />
                   </ListItemButton>
@@ -129,24 +139,27 @@ function ChatPage() {
             <Box className="mt-20 p-5">
               {selected.map((m) => (
                 <Stack direction="column" className="py-2">
-                  {/* <div style={{ textAlign: m.sender === curr ? 'left' : 'left' }} className="py-2"> */}
-                  <Typography className={m.sender === curr ? 'bubble-r border p-5' : 'bubble-l border rounded-full p-2'} variant="h8" gutterBottom>
-                    {m.content}
-                  </Typography>
-                  <Typography className={m.sender === curr ? 'bubble-r' : 'bubble-l'} variant="h8" gutterBottom>
-                    {m.sender}
-                  </Typography>
-                  {/* </div> */}
+                  <div id="msg">
+                    <Typography className={m.sender === curr ? 'bg-skyblue text-white rounded-lg p-2 float-right' : 'border border-skyblue rounded-lg p-2 float-left'} variant="h8" gutterBottom>
+                      {m.content}
+                    </Typography>
+                  </div>
+                  <div id="caption">
+                    <Typography className={m.sender === curr ? 'float-right' : 'float-left'} variant="caption" gutterBottom>
+                      {m.sender}
+                    </Typography>
+                  </div>
                 </Stack>
               ))}
             </Box>
             {/* mt-auto is like a footer ;) */}
-            <div className="row justify-content-center d-flex justify-content-center mt-auto p-5">
+            <div className="row justify-content-center d-flex justify-content-center mt-auto px-5">
               <Divider />
-              <Stack direction="row">
-                <input style={{ color: 'gray', borderRadius: '25px' }} className="float-left border-skyblue" placeholder="Type a message" value={messageContent} onInput={(e) => setMessageContent(e.target.value)} />
-                <div className="chat-col col-1">
-                  <Button className="float-right chat-btn" size="lg" variant="primary" type="submit" onClick={handleSendMessage}>Send</Button>
+              <Stack direction="row" className="py-5">
+                {/* flex-1 worked for input */}
+                <input style={{ borderColor: 'skyblue', borderRadius: '25px' }} className="px-5 flex-1  border-skyblue" placeholder="Type a message..." value={messageContent} onInput={(e) => setMessageContent(e.target.value)} />
+                <div className="ml-4 chat-col col-1 text-white bg-skyblue rounded-lg">
+                  <Button className="bg-skyblue" variant="primary" type="submit" onClick={handleSendMessage}>Send</Button>
                 </div>
               </Stack>
             </div>

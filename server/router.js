@@ -525,6 +525,7 @@ router.get('/chats/:username/:classCode/all', async (req, res) => {
 // [GET] all the messages for a given chat
 router.get('/chats/:chatId', async (req, res) => {
   const { chatId } = req.params
+  console.log(chatId)
   connection.query(
     `SELECT *
     FROM Message
@@ -532,6 +533,7 @@ router.get('/chats/:chatId', async (req, res) => {
     `,
     (error, results) => {
       if (error) {
+        console.log(error)
         res.json({ error })
       } else if (results) {
         res.json(results)
