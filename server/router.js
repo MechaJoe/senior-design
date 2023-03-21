@@ -10,6 +10,7 @@ const connection = mysql.createPool({
   password: process.env.RDS_PASSWORD ? process.env.RDS_PASSWORD : config.rds_password,
   port: process.env.RDS_PORT ? process.env.RDS_PORT : config.rds_port,
   database: process.env.RDS_DB ? process.env.RDS_DB : config.rds_db,
+  multipleStatements: true,
 })
 
 const router = express.Router()
@@ -532,6 +533,75 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members',
   )
 })
 
+// [POST] Create a group with the specified username as the leader
+router.post('/class/:classCode/assignments/:assignmentId/group', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  let { leader } = req.body
+  if (!leader || leader === '') {
+    leader = req.session
+  }
+  const groupId = uuidv4()
+  connection.query(
+    `INSERT INTO GroupAss (classCode, groupId, assignmentId, leader) VALUES ('${classCode}', '${groupId}', '${assignmentId}', '${leader}');
+     INSERT INTO BelongsToGroup VALUES ('${leader}', '${groupId}', '${classCode}', '${assignmentId}');`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [PATCH] Modify a group (add/remove members)
+router.patch('/class/:classCode/assignments/:assignmentId/group/:groupId', async (req, res) => {
+  const { classCode, assignmentId, groupId } = req.params
+  const { op } = req.body
+  let { username } = req.body
+  if (!username || username === '') {
+    username = req.session.username
+  }
+  let sql = ''
+  if (op === 'add') {
+    sql = `INSERT INTO BelongsToGroup VALUES ('${classCode}, ${assignmentId}, ${groupId}, ${username}'));`
+  }
+  if (op === 'remove') {
+    sql = `DELETE FROM BelongsToGroup WHERE classCode = '${classCode}'
+            AND assignmentId = '${assignmentId}'
+            AND groupId = '${groupId}'
+            AND username = '${username}';`
+  } else {
+    res.json({ error: 'Invalid operation' })
+  }
+  connection.query(
+    sql,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [DELETE] a group
+router.delete('/class/:classCode/assignments/:assignmentId/group/:groupId', async (req, res) => {
+  const { classCode, assignmentId, groupId } = req.params
+  connection.query(
+    `DELETE FROM GroupAss WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND groupId = '${groupId}';
+     DELETE FROM BelongsToGroup WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND groupId = '${groupId}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 /* REQUEST ROUTES */
 // [GET] all individual requests that a user has received for a class assignment
 router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', async (req, res) => {
@@ -574,7 +644,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', a
   )
 })
 
-// [GET] all individual requests that a user has received for a class assignment
+// [GET] all group requests that a user has received for a class assignment
 router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async (req, res) => {
   const { classCode, assignmentId } = req.params
   // const { username } = req.session
@@ -621,8 +691,7 @@ router.post('/request/add', async (req, res) => {
   const {
     classCode, assignmentId, toGroupId,
   } = req.body
-  // const { username } = req.session
-  const username = 'jasonhom'
+  const { username } = req.session
   connection.query(
     `INSERT INTO Request (classCode, assignmentId, fromGroupId, toGroupId)
     SELECT '${classCode}', '${assignmentId}', groupId, ${toGroupId}

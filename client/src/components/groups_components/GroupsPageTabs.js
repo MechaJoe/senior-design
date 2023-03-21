@@ -8,6 +8,10 @@ import { useState } from 'react'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import FullProfileCard from './FullProfileCard'
 import GroupCard from './GroupCard'
+import GroupChatCard from './GroupChatCard'
+import LeaveGroupCard from './LeaveGroupCard'
+import ConfirmModal from './ConfirmModal'
+import { sendRequest } from '../../infoHelpers'
 
 const theme = createTheme({
   palette: {
@@ -53,9 +57,9 @@ export default function GroupsPageTabs(props) {
     classCode,
     assignmentId,
     groupSize,
-    setModalProfile,
   } = props
   const [value, setValue] = useState(0)
+  const [isShowing, setIsShowing] = useState(false)
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -78,6 +82,7 @@ export default function GroupsPageTabs(props) {
         </Box>
         <TabPanel value={value} index={0}>
           <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4">
+            <GroupChatCard />
             {groupMembers?.map((member) => (
               <FullProfileCard
                 key={member.username}
@@ -88,12 +93,20 @@ export default function GroupsPageTabs(props) {
                 year={member.year}
                 majors={member.majors}
                 schools={member.schools}
-                requested
+                locked
               />
             ))}
+            <LeaveGroupCard />
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
+          {isShowing && (
+          <ConfirmModal
+            action="request"
+            onClose={() => setIsShowing(false)}
+            confirm={() => sendRequest(classCode, assignmentId, myGroupId)}
+          />
+          )}
           <ReactSearchAutocomplete
             placeholder="Search by name, year, tag..."
             styling={
@@ -113,6 +126,7 @@ export default function GroupsPageTabs(props) {
                 year={member.year}
                 majors={member.majors}
                 schools={member.schools}
+                showModal={() => setIsShowing(true)}
               />
             ))}
             {grouped?.map((member) => (
@@ -138,7 +152,6 @@ export default function GroupsPageTabs(props) {
               classCode={classCode}
               assignmentId={assignmentId}
               groupSize={groupSize}
-              setModalProfile={setModalProfile}
               locked
             />
             {groupIds?.filter((g) => g !== myGroupId).map((g) => (
@@ -148,7 +161,6 @@ export default function GroupsPageTabs(props) {
                 classCode={classCode}
                 assignmentId={assignmentId}
                 groupSize={groupSize}
-                setModalProfile={setModalProfile}
               />
             ))}
           </div>
