@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
@@ -35,6 +36,8 @@ function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState('') // selected chatId
   const [modal, setModal] = useState(false)
   const [newMember, setNewMember] = useState('')
+  const { initialChatId } = useParams()
+
   const curr = 'lejiaz'
   const handleClickChat = (id) => {
     setSelectedChatId(id)
@@ -86,6 +89,7 @@ function ChatPage() {
     getUserAllCourses('lejiaz').then((response) => {
       setStudentCourses(response)
     })
+    handleClickChat(initialChatId)
   }, [])
 
   useEffect(() => {

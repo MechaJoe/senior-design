@@ -45,7 +45,7 @@ const router = createBrowserRouter([
     element: <GroupsPage />,
   },
   {
-    path: 'chat',
+    path: 'chat/:initialChatId?',
     element: <ChatPage />,
   },
 ])
