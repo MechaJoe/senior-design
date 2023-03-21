@@ -14,7 +14,7 @@ function ProfileModal(props) {
   return (
     createPortal(
       <div
-        className="flex absolute justify-center items-center inset-0 z-2 w-full min-h-screen cursor-default backdrop-blur-sm"
+        className="flex fixed justify-center items-center inset-0 z-2 w-full min-h-screen cursor-default backdrop-blur-sm"
         onClick={onClose}
         onKeyDown={onClose}
         role="button"

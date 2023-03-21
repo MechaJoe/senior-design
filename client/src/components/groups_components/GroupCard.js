@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import MiniProfileCard from './MiniProfileCard'
 import JoinGroupButton from './JoinGroupButton'
-import { getMembers } from '../infoHelpers'
+import { getMembers } from '../../infoHelpers'
 
 export default function GroupCard(props) {
   const {

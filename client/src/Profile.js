@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import config from './config.json'
 import ProfileSidebar from './ProfileSidebar'
+import Header from './components/Header'
 // import { createTheme } from '@mui/material/styles'
 // const theme = createTheme({
 //   palette: {
@@ -88,7 +89,7 @@ function Profile() {
     <Box
       className="container mx-auto min-w-full bg-white"
     >
-      {/* // eslint-disable-next-line react/jsx-indent */}
+      <Header />
       <div className="flex flex-row min-h-screen">
         <ProfileSidebar
           firstName={firstName}

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import config from '../config.json'
-import GroupsPageTabs from '../components/GroupsPageTabs'
+import GroupsPageTabs from '../components/groups_components/GroupsPageTabs'
 import Header from '../components/Header'
 import { getGroupIds, getGroupSize, getMyGroupId } from '../infoHelpers'
 
