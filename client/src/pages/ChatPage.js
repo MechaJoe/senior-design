@@ -20,7 +20,7 @@ import {
 // import ChatSideBar from '../components/ChatSideBar'
 import Header from '../components/Header'
 import {
-  getUserAllChats, getChatAllMessages, getLoggedInUserAllCourses, getUserFilteredChats,
+  getUserAllChats, getChatAllMessages, getUserFilteredChats, getChatAllMembers, getLoggedInUserAllCourses,
 } from '../infoHelpers'
 
 const drawerWidth = 240
@@ -31,21 +31,36 @@ function ChatPage() {
   const [selected, setSelected] = useState([])
   const [messageContent, setMessageContent] = useState('')
   const [studentCourses, setStudentCourses] = useState([])
-  const [newMsg, setNewMsg] = useState('')
+  // const [newMsg, setNewMsg] = useState('')
   const [filter, setFilter] = useState('')
   const [selectedChatId, setSelectedChatId] = useState('') // selected chatId
   const [modal, setModal] = useState(false)
   const [newMember, setNewMember] = useState('')
   const { initialChatId } = useParams()
 
+  const [chatMembers, setChatMembers] = useState([])
   const curr = 'lejiaz'
+
+  const updateChatMembers = (id) => {
+    getChatAllMembers(id).then((response) => {
+      console.log('response')
+      console.log(response)
+      const usernames = response.map((r) => r.username)
+      console.log(usernames)
+      setChatMembers(usernames)
+    })
+  }
+
   const handleClickChat = (id) => {
     setSelectedChatId(id)
+    console.log(`chat id is ${id}`)
     getChatAllMessages(id).then((response) => {
       console.log('response')
       console.log(response)
       setSelected(response)
     })
+
+    updateChatMembers(id)
   }
 
   const handleClickFilter = (classCode) => {
@@ -58,32 +73,37 @@ function ChatPage() {
       return
     }
     // ${config.server_host}:${config.server_port}
-    const { data } = await axios.post(`http://localhost:8080/chats/${selectedChatId}/add`, {
+    const { error, results } = await axios.post(`http://localhost:8080/chats/${selectedChatId}/add`, {
       newMember,
     }, { withCredentials: true })
-    if (data === 'success') {
+    if (error) {
       // setNewMsg(messageContent)
-      setNewMember('')
+      alert(`User ${newMember} not found`)
     } else {
-      console.log(data)
+      setNewMember('')
+      updateChatMembers(selectedChatId)
     }
   }
   const handleSendMessage = async () => {
+    console.log(selectedChatId)
     if (!messageContent || !selectedChatId) {
       console.log('no message typed or no selected chat')
       return
     }
     // ${config.server_host}:${config.server_port}
-    const { data } = await axios.post(`http://localhost:8080/chats/${selectedChatId}`, { // TOOD: get chatid from props?
+    const { error, results } = await axios.post(`http://localhost:8080/chats/${selectedChatId}`, { // TOOD: get chatid from props?
       messageContent,
     }, { withCredentials: true })
-    if (data === 'success') {
-      setNewMsg(messageContent)
-      setMessageContent('')
+    if (error) {
+      console.log(error)
     } else {
-      console.log(data)
+      setMessageContent('')
     }
   }
+
+  // useEffect(() => {
+
+  // }, [])
 
   useEffect(() => {
     getLoggedInUserAllCourses().then((response) => {
@@ -91,6 +111,15 @@ function ChatPage() {
     })
     handleClickChat(initialChatId)
   }, [])
+
+  useEffect(() => {
+    const intervalID = setInterval(async () => {
+      getChatAllMessages(selectedChatId).then((response) => {
+        setSelected(response)
+      })
+    }, 500)
+    return () => clearInterval(intervalID)
+  }, [selectedChatId])
 
   useEffect(() => {
     if (filter === '') {
@@ -103,14 +132,6 @@ function ChatPage() {
       })
     }
   }, [filter])
-
-  useEffect(() => {
-    getChatAllMessages(selectedChatId).then((response) => {
-      console.log('response')
-      console.log(response)
-      setSelected(response)
-    })
-  }, [newMsg])
 
   return (
     <Box
@@ -160,6 +181,9 @@ function ChatPage() {
           </Stack>
           <Stack direction="column" className="w-screen p-0">
             <div className="block">
+              <Typography className="mt-15 p-5 ml-4 float-left" variant="caption">
+                {chatMembers.join(', ')}
+              </Typography>
               <Button className="mt-4 mr-4 float-right" onClick={() => setModal(true)}>
                 <PersonAddAltOutlinedIcon fontSize="large" />
               </Button>
@@ -198,18 +222,15 @@ function ChatPage() {
       <Modal
         open={modal}
         onClose={() => setModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
         style={{
-          display: 'flex', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '350px', marginLeft: '400px', marginRight: '400px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '200px', marginRight: '200px',
         }}
-        // sx={{ border: 4, borderColor: 'black', borderRadius: 4 }}
       >
-        <Stack spacing={4} fullWidth className="inline-block bg-white p-5 rounded-xl">
+        <Stack spacing={4} className="bg-white p-5 rounded-xl">
           <Typography fullWidth variant="h8">
             Add People
           </Typography>
-          <input value={newMember} onInput={(e) => setNewMember(e.target.value)} className="mx-5" placeholder="Enter username or email" />
+          <input value={newMember} onInput={(e) => setNewMember(e.target.value)} className="mx-5" placeholder="Enter username" />
           <Stack direction="row" alignItems="center" justifyContent="right">
             <Button onClick={() => setModal(false)} variant="filled" className="text-black"> Close </Button>
             <Button onClick={handleAddNewMember} variant="filled"> Add </Button>

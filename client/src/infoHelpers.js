@@ -69,9 +69,19 @@ export const getUserFilteredChats = async (classCode) => {
 export const getChatAllMessages = async (chatId) => {
   try {
     const res = await axios.get(`${baseUrl}/chats/${chatId}`)
-    console.log(res.data)
     return res.data
   } catch (err) {
+    console.log(err)
+    throw new Error(err.message)
+  }
+}
+
+export const getChatAllMembers = async (chatId) => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/${chatId}/members`)
+    return res.data
+  } catch (err) {
+    console.log(err)
     throw new Error(err.message)
   }
 }
