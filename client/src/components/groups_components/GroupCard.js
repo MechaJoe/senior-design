@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
 import MiniProfileCard from './MiniProfileCard'
 import JoinGroupButton from './JoinGroupButton'
-import { getMembers } from '../../infoHelpers'
+import ConfirmModal from './ConfirmModal'
+import { getMembers, sendRequest } from '../../infoHelpers'
 
 export default function GroupCard(props) {
   const {
     classCode, assignmentId, groupId, groupSize, locked,
   } = props
   const [groupMembers, setGroupMembers] = useState([])
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
     getMembers(classCode, assignmentId, groupId).then((data) => {
@@ -21,17 +23,26 @@ export default function GroupCard(props) {
   }, [])
 
   return (
-    <div className="grid grid-cols-3 gap-4 rounded-2xl border-[6px] border-gunmetal items-center justify-items-center p-6">
-      {groupMembers.map((member) => (
-        <MiniProfileCard
-          key={member.username}
-          member={member}
-          locked={locked}
-        />
-      ))}
-      {groupMembers.length < groupSize.maxGroupSize && !locked
-        ? <JoinGroupButton classCode={classCode} assignmentId={assignmentId} groupId={groupId} />
-        : null}
-    </div>
+    <>
+      {show && (
+      <ConfirmModal
+        action="request"
+        onClose={() => setShow(false)}
+        confirm={() => sendRequest(classCode, assignmentId, groupId)}
+      />
+      )}
+      <div className="grid grid-cols-3 gap-4 rounded-2xl border-[6px] border-gunmetal items-center justify-items-center p-6">
+        {groupMembers.map((member) => (
+          <MiniProfileCard
+            key={member.username}
+            member={member}
+            locked={locked}
+          />
+        ))}
+        {groupMembers.length < groupSize.maxGroupSize && !locked
+          ? <JoinGroupButton classCode={classCode} assignmentId={assignmentId} groupId={groupId} />
+          : null}
+      </div>
+    </>
   )
 }

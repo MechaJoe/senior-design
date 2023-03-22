@@ -28,6 +28,7 @@ export default function GroupsPage() {
   const [myGroupId, setMyGroupId] = useState('')
   const [groupIds, setGroupIds] = useState([])
   const [groupSize, setGroupSize] = useState({})
+  const [requested, setRequested] = useState(new Set())
 
   const getInstructors = async () => {
     const { data: instructorData } = await axios.get(
@@ -51,9 +52,22 @@ export default function GroupsPage() {
     }
   }
 
+  const getRequested = async () => {
+    const { data: groupRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/groups`)
+    const { data: individualRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/individuals`)
+    console.log(groupRequested)
+    console.log(individualRequested)
+    setRequested(new Set(
+      groupRequested
+        .concat(individualRequested)
+        .map((user) => user.username),
+    ))
+  }
+
   useEffect(() => {
     getInstructors()
     getClassTitle()
+    getRequested()
   }, [])
 
   // get group members of logged in user
@@ -140,6 +154,7 @@ export default function GroupsPage() {
             myGroupId={myGroupId}
             groupIds={groupIds}
             groupSize={groupSize}
+            requested={requested}
           />
         </div>
       </div>
