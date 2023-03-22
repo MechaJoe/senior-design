@@ -948,6 +948,25 @@ router.get('/chats/:chatId', async (req, res) => {
   )
 })
 
+// [GET] all the members for a given chat
+router.get('/chats/:chatId/members', async (req, res) => {
+  const { chatId } = req.params
+  connection.query(
+    `SELECT B.username, firstName
+    FROM BelongsToChat B JOIN Student S ON B.username = S.username
+    WHERE chatId = '${chatId}';
+    `,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 // [POST] a new message for a given chat
 router.post('/chats/:chatId', async (req, res) => {
   const { chatId } = req.params
@@ -1001,6 +1020,26 @@ router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
       }
     },
   ))
+})
+
+// [POST] add a new user to a chat
+router.post('/chats/:chatId/add', async (req, res) => {
+  const { chatId } = req.params
+  const {
+    newMember,
+  } = req.body
+  connection.query(
+    `INSERT INTO BelongsToChat (chatId, username)
+    VALUES ('${chatId}', '${newMember}');
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
 })
 
 // [POST] a new chat (an established group)
