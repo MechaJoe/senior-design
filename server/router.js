@@ -1,5 +1,6 @@
 const express = require('express')
 const mysql = require('mysql2')
+const { v4: uuidv4 } = require('uuid')
 const config = require('./config.json')
 
 const connection = mysql.createPool({
@@ -487,11 +488,11 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members',
 // CHAT ROUTES
 
 // [GET] all the chats for a given user
-router.get('/chats/:username/all', async (req, res) => {
-  const { username } = req.params
+router.get('/chats/all', async (req, res) => {
+  const { username } = req.session
   connection.query(
     `SELECT *
-    FROM BelongsToGroup B NATURAL JOIN Chat C
+    FROM BelongsToChat B NATURAL JOIN Chat C
     WHERE username = '${username}';
     `,
     (error, results) => {
@@ -504,12 +505,13 @@ router.get('/chats/:username/all', async (req, res) => {
   )
 })
 
-// [GET] filtered the chats for a given user
-router.get('/chats/:username/:classCode/all', async (req, res) => {
-  const { username, classCode } = req.params
+// [GET] filtered chats for the logged in user
+router.get('/chats/:classCode/all', async (req, res) => {
+  const { username } = req.session
+  const { classCode } = req.params
   connection.query(
     `SELECT *
-    FROM BelongsToGroup B NATURAL JOIN Chat C
+    FROM BelongsToChat B NATURAL JOIN Chat C
     WHERE username = '${username}' AND classCode = '${classCode}';
     `,
     (error, results) => {
@@ -564,6 +566,68 @@ router.post('/chats/:chatId', async (req, res) => {
       }
     },
   )
+})
+
+// [POST] a new chat (not an established group)
+router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { members } = req.body
+  const chatId = uuidv4()
+  console.log('members')
+  console.log(members)
+  connection.query(
+    `INSERT INTO Chat (chatId, classCode, assignmentId) VALUES ('${classCode}', '${chatId}', '${assignmentId}'');
+     `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+  members.forEach((member) => connection.query(
+    `INSERT INTO BelongstoChat VALUES('${chatId}', '${member})
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  ))
+})
+
+// [POST] a new chat (an established group)
+router.post('/chats/:classCode/assignments/:assignmentId/:groupId', async (req, res) => {
+  const { classCode, assignmentId, groupId } = req.params
+  const { members } = req.body
+  const chatId = uuidv4()
+  console.log('members')
+  console.log(members)
+  connection.query(
+    `INSERT INTO Chat (chatId, classCode, groupId, assignmentId) VALUES ('${chatId}', '${classCode}', '${groupId}','${assignmentId}'');
+     `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+  members.forEach((member) => connection.query(
+    `INSERT INTO BelongstoChat VALUES('${chatId}', '${member})
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  ))
 })
 
 module.exports = router

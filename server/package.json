@@ -17,7 +17,8 @@
     "express-session": "^1.17.3",
     "mysql2": "^3.1.2",
     "passport": "^0.6.0",
-    "passport-google-oidc": "^0.1.0"
+    "passport-google-oidc": "^0.1.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "eslint": "^8.34.0",

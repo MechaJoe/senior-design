@@ -42,12 +42,14 @@ export const getUser = async (username) => {
 
 export const checkUserLoggedIn = async () => {
   const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
+  console.log('data')
+  console.log(data)
   return data
 }
 
-export const getUserAllChats = async (username) => {
+export const getUserAllChats = async () => {
   try {
-    const res = await axios.get(`${baseUrl}/chats/${username}/all`)
+    const res = await axios.get(`${baseUrl}/chats/all`)
     console.log(res.data)
     return res.data
   } catch (err) {
@@ -55,9 +57,9 @@ export const getUserAllChats = async (username) => {
   }
 }
 
-export const getUserFilteredChats = async (username, classCode) => {
+export const getUserFilteredChats = async (classCode) => {
   try {
-    const res = await axios.get(`${baseUrl}/chats/${username}/${classCode}/all`)
+    const res = await axios.get(`${baseUrl}/chats/${classCode}/all`)
     return res.data
   } catch (err) {
     throw new Error(err.message)

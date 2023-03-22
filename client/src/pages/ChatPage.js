@@ -20,7 +20,7 @@ import {
 // import ChatSideBar from '../components/ChatSideBar'
 import Header from '../components/Header'
 import {
-  getUserAllChats, getChatAllMessages, getUserAllCourses, getUserFilteredChats,
+  getUserAllChats, getChatAllMessages, getLoggedInUserAllCourses, getUserFilteredChats,
 } from '../infoHelpers'
 
 const drawerWidth = 240
@@ -86,7 +86,7 @@ function ChatPage() {
   }
 
   useEffect(() => {
-    getUserAllCourses('lejiaz').then((response) => {
+    getLoggedInUserAllCourses().then((response) => {
       setStudentCourses(response)
     })
     handleClickChat(initialChatId)
@@ -94,11 +94,11 @@ function ChatPage() {
 
   useEffect(() => {
     if (filter === '') {
-      getUserAllChats('lejiaz').then((response) => {
+      getUserAllChats().then((response) => {
         setChats(response)
       })
     } else {
-      getUserFilteredChats('lejiaz', filter).then((response) => {
+      getUserFilteredChats(filter).then((response) => {
         setChats(response)
       })
     }
@@ -135,7 +135,7 @@ function ChatPage() {
                 <Divider />
                 {studentCourses.map((course) => (
                   <ListItem key={course.classCode} disablePadding className={course.classCode === filter ? 'bg-skybluelight' : ''}>
-                    <ListItemButton sx={{ '&& .Mui-selected': { backgroundColor: 'blue' } }} onClick={() => handleClickFilter(course.classCode)}>
+                    <ListItemButton onClick={() => handleClickFilter(course.classCode)}>
                       <ListItemText primary={course.classCode} />
                     </ListItemButton>
                     <Divider id="divy" />
@@ -151,7 +151,7 @@ function ChatPage() {
               <Divider />
               {chats.map((chat) => (
                 <ListItem key={chat.chatId} className={chat.chatId === selectedChatId ? 'border-b bg-skybluelight border-gray' : 'border-b border-gray'} disablePadding>
-                  <ListItemButton sx={{ '&& .Mui-selected': { backgroundColor: 'red' } }} onClick={() => handleClickChat(chat.chatId)}>
+                  <ListItemButton onClick={() => handleClickChat(chat.chatId)}>
                     <ListItemText primary={chat.name} />
                   </ListItemButton>
                 </ListItem>
