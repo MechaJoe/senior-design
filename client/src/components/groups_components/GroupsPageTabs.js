@@ -52,6 +52,7 @@ export default function GroupsPageTabs(props) {
     groupMembers,
     individuals,
     grouped,
+    requested,
     myGroupId,
     groupIds,
     classCode,
@@ -59,7 +60,7 @@ export default function GroupsPageTabs(props) {
     groupSize,
   } = props
   const [value, setValue] = useState(0)
-  const [isShowing, setIsShowing] = useState(false)
+  const [requestShow, setRequestShow] = useState(false)
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -100,10 +101,10 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          {isShowing && (
+          {requestShow && (
           <ConfirmModal
             action="request"
-            onClose={() => setIsShowing(false)}
+            onClose={() => setRequestShow(false)}
             confirm={() => sendRequest(classCode, assignmentId, myGroupId)}
           />
           )}
@@ -126,7 +127,8 @@ export default function GroupsPageTabs(props) {
                 year={member.year}
                 majors={member.majors}
                 schools={member.schools}
-                showModal={() => setIsShowing(true)}
+                showModal={() => setRequestShow(true)}
+                requested={requested?.has(member.username)}
               />
             ))}
             {grouped?.map((member) => (
