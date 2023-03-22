@@ -72,3 +72,42 @@ export const getGroupSize = async (classCode, assignmentId) => {
   )
   return data
 }
+
+export const getUserAllChats = async () => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/all`)
+    console.log(res.data)
+    return res.data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+export const getUserFilteredChats = async (classCode) => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/${classCode}/all`)
+    return res.data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+export const getChatAllMessages = async (chatId) => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/${chatId}`)
+    return res.data
+  } catch (err) {
+    console.log(err)
+    throw new Error(err.message)
+  }
+}
+
+export const getChatAllMembers = async (chatId) => {
+  try {
+    const res = await axios.get(`${baseUrl}/chats/${chatId}/members`)
+    return res.data
+  } catch (err) {
+    console.log(err)
+    throw new Error(err.message)
+  }
+}
