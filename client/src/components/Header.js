@@ -1,7 +1,4 @@
-import {
-  AppBar,
-  Toolbar,
-} from '@mui/material'
+import { AppBar, Toolbar } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
 import ChatIcon from '@mui/icons-material/Chat'
@@ -12,12 +9,11 @@ export default function Header() {
   return (
     <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
       <Toolbar>
-        <h1 className="font-sans text-5xl font-bold">
-          concourse
-        </h1>
-        {/* <Typography variant="h3" className="font-sans">
-          concourse
-        </Typography> */}
+        <Link to="/courses">
+          <h1 className="font-sans text-5xl font-bold">
+            concourse
+          </h1>
+        </Link>
         <div className="absolute right-10 space-x-4">
           <Link to="/chat">
             <ChatIcon fontSize="large" />

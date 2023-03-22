@@ -9,6 +9,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        buttonblue: '#162368',
+        buttongreen: '#16681E',
+        cardstock: '#F5F3EE',
         tan: '#CCB98E',
         gunmetal: '#03254E',
         porcelain: '#E9EFF3',
@@ -18,12 +21,17 @@ module.exports = {
         skyblue: '#227FEC',
         skybluelight: '#227FEC30',
         gray: '#DFE0DF',
+        lilac: '#D9DFFF',
+        powderblue: '#E7F5FF',
       },
       fontFamily: {
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
       },
       fontWeight: {
         bold: '1000',
+      },
+      screens: {
+        laptop: '1300px',
       },
     },
   },

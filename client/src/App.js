@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
 import Profile from './Profile'
 import ChatPage from './pages/ChatPage'
+import RequestsPage from './pages/RequestsPage'
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: '/courses/:classCode/assignments',
     element: <AssignmentsPage />,
+  },
+  {
+    path: '/courses/:classCode/assignments/:assignmentId/requests',
+    element: <RequestsPage />,
   },
   {
     path: 'signup',

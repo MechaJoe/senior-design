@@ -1,10 +1,11 @@
 import axios from 'axios'
-import Box from '@mui/material/Box'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import config from '../config.json'
 import GroupsPageTabs from '../components/GroupsPageTabs'
+import Header from '../components/Header'
+import { getGroupIds, getGroupSize, getMyGroupId } from '../infoHelpers'
 
 export default function GroupsPage() {
   const navigate = useNavigate()
@@ -19,10 +20,14 @@ export default function GroupsPage() {
   }, [])
 
   const { classCode, assignmentId } = useParams()
-
-  // populate sidebar with class info
   const [classTitle, setClassTitle] = useState('')
   const [instructors, setInstructors] = useState([])
+  const [groupMembers, setGroupMembers] = useState([])
+  const [individuals, setIndividuals] = useState([])
+  const [grouped, setGrouped] = useState([])
+  const [myGroupId, setMyGroupId] = useState('')
+  const [groupIds, setGroupIds] = useState([])
+  const [groupSize, setGroupSize] = useState({})
 
   const getInstructors = async () => {
     const { data: instructorData } = await axios.get(
@@ -36,11 +41,11 @@ export default function GroupsPage() {
   }
 
   const getClassTitle = async () => {
-    const { data: classData } = await axios.get(
+    const { data: { results: [{ className }] } } = await axios.get(
       encodeURI(`${config.server_domain}/class/${classCode}`),
     )
-    if (classData) {
-      setClassTitle(classData.className)
+    if (className) {
+      setClassTitle(className)
     } else {
       console.log('no class found')
     }
@@ -52,12 +57,9 @@ export default function GroupsPage() {
   }, [])
 
   // get group members of logged in user
-  const [groupMembers, setGroupMembers] = useState([])
-
   const getMyGroup = async () => {
-    const { data: [{ groupId }] } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/my-group`),
-    )
+    const groupId = await getMyGroupId(classCode, assignmentId)
+    setMyGroupId(groupId)
     if (groupId) {
       const { data: members } = await axios.get(
         encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`),
@@ -72,16 +74,56 @@ export default function GroupsPage() {
     }
     return groupId
   }
+
+  // get all individuals in class without a group
+  const getIndividuals = async () => {
+    const { data: { results } } = await axios.get(
+      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/no-group`),
+    )
+    if (results) {
+      setIndividuals(results)
+    } else {
+      console.log('no individuals found')
+    }
+  }
+
+  // get all individuals in class with a group
+  const getGrouped = async () => {
+    const { data: { results } } = await axios.get(
+      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/grouped`),
+    )
+    if (results) {
+      setGrouped(results)
+    } else {
+      console.log('no grouped individuals found')
+    }
+  }
+
   useEffect(() => {
     getMyGroup()
     getClassTitle()
+    getIndividuals()
+    getGrouped()
+    getGroupIds(classCode, assignmentId).then((data) => {
+      if (data) {
+        setGroupIds(data.map((group) => group.groupId))
+      } else {
+        console.log('no grouped individuals found')
+      }
+    })
+    getGroupSize(classCode, assignmentId).then((data) => {
+      if (data) {
+        setGroupSize(data)
+      } else {
+        console.log('no group size found')
+      }
+    })
   }, [])
 
   return (
-    <Box
-      className="container mx-auto min-w-full"
-    >
-      <div className="flex flex-row min-h-screen">
+    <>
+      <Header />
+      <div className="mx-auto min-w-full flex flex-row min-h-screen">
         <Sidebar classCode={classCode} className={classTitle} instructors={instructors} />
         <div className="flex flex-col w-5/6 p-6">
           <div className="font-sans font-bold text-4xl">
@@ -89,9 +131,18 @@ export default function GroupsPage() {
             {' '}
             {assignmentId}
           </div>
-          <GroupsPageTabs groupMembers={groupMembers} />
+          <GroupsPageTabs
+            classCode={classCode}
+            assignmentId={assignmentId}
+            groupMembers={groupMembers}
+            individuals={individuals}
+            grouped={grouped}
+            myGroupId={myGroupId}
+            groupIds={groupIds}
+            groupSize={groupSize}
+          />
         </div>
       </div>
-    </Box>
+    </>
   )
 }

@@ -1,8 +1,8 @@
 import axios from 'axios'
-// import { useNavigate } from 'react-router-dom'
+import config from './config.json'
 
-const baseUrl = 'http://localhost:8080'
-// const navigate = useNavigate()
+// export const baseUrl = http://localhost:8080
+export const baseUrl = `http://${config.server_host}:${config.server_port}`
 
 export const getCourseName = async (classCode) => {
   try {
@@ -41,9 +41,35 @@ export const getUser = async (username) => {
 }
 
 export const checkUserLoggedIn = async () => {
-  const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
-  console.log('data')
-  console.log(data)
+  const { data } = await axios.get(`${baseUrl}/username`, { withCredentials: true })
+  return data
+}
+
+// get all group IDs in a class
+export const getGroupIds = async (classCode, assignmentId) => {
+  const { data: { results } } = await axios.get(
+    encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/groups`),
+  )
+  return results
+}
+
+export const getMyGroupId = async (classCode, assignmentId) => {
+  const { data: [{ groupId }] } = await axios.get(
+    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/my-group-id`,
+  )
+  return groupId
+}
+
+// get all members in a group
+export const getMembers = async (classCode, assignmentId, groupId) => {
+  const { data } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`)
+  return data
+}
+
+export const getGroupSize = async (classCode, assignmentId) => {
+  const { data } = await axios.get(
+    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/groupSize`,
+  )
   return data
 }
 

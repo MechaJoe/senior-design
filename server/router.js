@@ -133,6 +133,53 @@ router.get('/class/:classCode/students', async (req, res) => {
   )
 })
 
+// GETs all students in a class without a group
+router.get('/class/:classCode/assignments/:assignmentId/no-group', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  connection.query(
+    `WITH all_students AS (
+      SELECT Student.username FROM Student JOIN StudentOf ON StudentOf.username = Student.username
+      WHERE StudentOf.classCode = '${classCode}'
+    )
+    SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students JOIN Student ON all_students.username = Student.username
+      WHERE all_students.username NOT IN (
+        SELECT all_students.username FROM all_students JOIN BelongsToGroup ON all_students.username = BelongsToGroup.username
+        WHERE assignmentId = '${assignmentId}'
+      );
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json({ results })
+      }
+    },
+  )
+})
+
+// GETs all students in a class in any group
+router.get('/class/:classCode/assignments/:assignmentId/grouped', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  connection.query(
+    `WITH all_students AS (
+      SELECT Student.username FROM Student JOIN StudentOf ON StudentOf.username = Student.username
+      WHERE StudentOf.classCode = '${classCode}'
+    )
+      SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
+          JOIN Student ON all_students.username = Student.username
+          JOIN BelongsToGroup ON BelongsToGroup.username = all_students.username
+      WHERE assignmentId = '${assignmentId}';
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json({ results })
+      }
+    },
+  )
+})
+
 // GETs name of a class
 router.get('/class/:classCode', async (req, res) => {
   const { classCode } = req.params
@@ -417,9 +464,6 @@ router.get(
   async (req, res) => {
     const { classCode, assignmentId } = req.params
     const { username } = req.session
-    // const username = 'jasonhom'
-    // const classCode = 'CIS 4000'
-    // const assignmentId = 2
     connection.query(
       `With GId AS (SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
       AND assignmentId = '${assignmentId}'
@@ -435,7 +479,7 @@ router.get(
         if (error) {
           res.json({ error })
         } else if (results) {
-          console.log(results)
+          // console.log(results)
           res.json(results)
         }
       },
@@ -444,7 +488,10 @@ router.get(
 )
 
 // [GET] the group ID the user belongs to
-router.get('/class/:classCode/assignments/:assignmentId/my-group', async (req, res) => {
+/* Note: All students should have a group created for them when the assignment is created
+ *       on the instructor side
+ */
+router.get('/class/:classCode/assignments/:assignmentId/my-group-id', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { username } = req.session
   connection.query(
@@ -667,6 +714,282 @@ router.post('/chats/:classCode/assignments/:assignmentId/:groupId', async (req, 
       }
     },
   ))
+})
+
+/* REQUEST ROUTES */
+// [GET] all incoming individual requests that a user has received for a class assignment
+router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  ), reqs AS (
+      SELECT fromGroupId
+      FROM Request
+      WHERE toGroupId IN (SELECT * FROM myGID)
+  ), groupsRequested AS (
+      SELECT groupId, classCode, assignmentId
+      FROM reqs
+               JOIN BelongsToGroup ON reqs.fromGroupId = BelongsToGroup.groupId
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+  ), individuals AS (
+      SELECT username, BelongsToGroup.groupId
+  FROM groupsRequested JOIN BelongsToGroup ON groupsRequested.groupId = BelongsToGroup.groupId
+  GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
+  HAVING COUNT(*) = 1
+  )
+  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
+  FROM individuals JOIN Student ON individuals.username = Student.username;`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        console.log(`Individual Results: ${JSON.stringify(results)}`)
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] all incoming group requests that a user has received for a class assignment
+router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  ), reqs AS (
+      SELECT fromGroupId
+      FROM Request
+      WHERE toGroupId IN (SELECT * FROM myGID)
+  ), groupsRequested AS (
+      SELECT groupId, classCode, assignmentId
+      FROM reqs
+               JOIN BelongsToGroup ON reqs.fromGroupId = BelongsToGroup.groupId
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+  ), groupReqs AS (
+      SELECT BelongsToGroup.groupId
+  FROM groupsRequested JOIN BelongsToGroup ON groupsRequested.groupId = BelongsToGroup.groupId
+  GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
+  HAVING COUNT(*) > 1
+  )
+  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
+  FROM groupReqs JOIN BelongsToGroup ON groupReqs.groupId = BelongsToGroup.groupId JOIN Student ON BelongsToGroup.username = Student.username;`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        console.log(`Group Results: ${JSON.stringify(results)}`)
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] all outgoingindividual requests that a user has received for a class assignment
+router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/individuals', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  ), reqs AS (
+      SELECT toGroupId
+      FROM Request
+      WHERE fromGroupId IN (SELECT * FROM myGID)
+  ), groupsRequested AS (
+      SELECT groupId, classCode, assignmentId
+      FROM reqs
+               JOIN BelongsToGroup ON reqs.toGroupId = BelongsToGroup.groupId
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+  ), individuals AS (
+      SELECT username, BelongsToGroup.groupId
+  FROM groupsRequested JOIN BelongsToGroup ON groupsRequested.groupId = BelongsToGroup.groupId
+  GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
+  HAVING COUNT(*) = 1
+  )
+  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
+  FROM individuals JOIN Student ON individuals.username = Student.username;`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        console.log(`Individual Results: ${JSON.stringify(results)}`)
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] all outgoing group requests that a user has received for a class assignment
+router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/groups', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  ), reqs AS (
+      SELECT toGroupId
+      FROM Request
+      WHERE fromGroupId IN (SELECT * FROM myGID)
+  ), groupsRequested AS (
+      SELECT groupId, classCode, assignmentId
+      FROM reqs
+               JOIN BelongsToGroup ON reqs.toGroupId = BelongsToGroup.groupId
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+  ), groupReqs AS (
+      SELECT BelongsToGroup.groupId
+  FROM groupsRequested JOIN BelongsToGroup ON groupsRequested.groupId = BelongsToGroup.groupId
+  GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
+  HAVING COUNT(*) > 1
+  )
+  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
+  FROM groupReqs JOIN BelongsToGroup ON groupReqs.groupId = BelongsToGroup.groupId JOIN Student ON BelongsToGroup.username = Student.username;`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        console.log(`Group Results: ${JSON.stringify(results)}`)
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] request from the current user to another user
+router.post('/request/add', async (req, res) => {
+  // const { classCode, assignmentId, requestId } = req.params
+  const {
+    classCode, assignmentId, toGroupId,
+  } = req.body
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `INSERT INTO Request (classCode, assignmentId, fromGroupId, toGroupId)
+    SELECT '${classCode}', '${assignmentId}', groupId, ${toGroupId}
+    FROM BelongsToGroup
+    WHERE username = '${username}'
+          AND assignmentId = '${assignmentId}'
+          AND classCode = '${classCode}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// TODO: Add datetime attribute after discussing chat
+// [DELETE] request from another user to current user
+router.post('/reject-request', async (req, res) => {
+  // const { classCode, assignmentId, requestId } = req.params
+  const {
+    classCode, assignmentId, fromGroupId,
+  } = req.body
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  )
+  DELETE FROM Request
+  WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND fromGroupId = '${fromGroupId}' AND toGroupId IN (SELECT * FROM myGID);`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [DELETE] request from the current user to another user
+router.post('/cancel-request', async (req, res) => {
+  // const { classCode, assignmentId, requestId } = req.params
+  const {
+    classCode, assignmentId, toGroupId,
+  } = req.body
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  )
+  DELETE FROM Request
+  WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND toGroupId = '${toGroupId}' AND fromGroupId IN (SELECT * FROM myGID);`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] Accepts request from another user to current user
+router.post('/accept-request', async (req, res) => {
+  // const { classCode, assignmentId, requestId } = req.params
+  const {
+    classCode, assignmentId, fromGroupId,
+  } = req.body
+  const { username } = req.session
+  // const username = 'jasonhom'
+  connection.query(
+    `WITH myGID AS (
+      SELECT groupId
+      FROM BelongsToGroup
+      WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND username = '${username}'
+  )
+  UPDATE BelongsToGroup, myGID
+  SET BelongsToGroup.groupId = myGID.groupId
+  WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND BelongsToGroup.groupId = ${fromGroupId};`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
 })
 
 module.exports = router
