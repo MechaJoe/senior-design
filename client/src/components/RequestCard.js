@@ -9,7 +9,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import RequestProfileCard from './RequestProfileCard'
 import config from '../config.json'
 
-export default function RequestCard({ classCode, assignmentId, students }) {
+export default function RequestCard({
+  classCode, assignmentId, students, isIncoming,
+}) {
   const handleAcceptOnClick = async () => {
     await Promise.all([
       axios.post(`http://${config.server_host}:${config.server_port}/accept-request`, { classCode, assignmentId, fromGroupId: students[0].groupId }),
@@ -20,6 +22,11 @@ export default function RequestCard({ classCode, assignmentId, students }) {
 
   const handleRejectOnClick = async () => {
     await axios.post(`http://${config.server_host}:${config.server_port}/reject-request`, { classCode, assignmentId, fromGroupId: students[0].groupId })
+    window.location.reload()
+  }
+
+  const handleCancelOnClick = async () => {
+    await axios.post(`http://${config.server_host}:${config.server_port}/cancel-request`, { classCode, assignmentId, toGroupId: students[0].groupId })
     window.location.reload()
   }
   return (
@@ -49,12 +56,27 @@ export default function RequestCard({ classCode, assignmentId, students }) {
         >
           Accept
         </Button> */}
-        <IconButton onClick={handleAcceptOnClick}>
-          <CheckCircleIcon style={{ color: '#16681E', fontSize: 60 }} />
-        </IconButton>
-        <IconButton onClick={handleRejectOnClick}>
-          <CancelIcon style={{ color: '#CB5045', fontSize: 60 }} />
-        </IconButton>
+        {isIncoming ? (
+          <>
+            <IconButton onClick={handleAcceptOnClick}>
+              <CheckCircleIcon style={{ color: '#16681E', fontSize: 60 }} />
+            </IconButton>
+            <IconButton onClick={handleRejectOnClick}>
+              <CancelIcon style={{ color: '#CB5045', fontSize: 60 }} />
+            </IconButton>
+          </>
+        )
+          : (
+            <Button
+              onClick={handleCancelOnClick}
+              variant="contained"
+              style={{
+                margin: '15px', backgroundColor: '#CB5045', color: 'white',
+              }}
+            >
+              Cancel
+            </Button>
+          )}
         {/* <IconButton>
           <Avatar sx={{ width: '40px', height: '40px' }}>
             <ChatIcon style={{ color: '#162368', fontSize: 60 }} />
