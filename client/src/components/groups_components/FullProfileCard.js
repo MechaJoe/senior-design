@@ -52,8 +52,8 @@ export default function FullProfileCard(props) {
           : (
             <div className="grid grid-cols-2 gap-4 justify-items-center p-4 font-sans">
               <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
-              {requested ? <button type="button" className="bg-gray-400 text-white rounded w-24">Request</button>
-                : <button type="button" onClick={showModal} className=" bg-buttongreen text-white rounded w-24">Request</button>}
+              {requested ? <button type="button" className="text-white bg-slate-400 rounded w-24">Request</button>
+                : <button type="button" onClick={showModal} className="bg-buttongreen text-white rounded w-24">Request</button>}
             </div>
           )}
       </div>

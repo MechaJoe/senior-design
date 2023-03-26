@@ -11,7 +11,7 @@ import GroupCard from './GroupCard'
 import GroupChatCard from './GroupChatCard'
 import LeaveGroupCard from './LeaveGroupCard'
 import ConfirmModal from './ConfirmModal'
-import { sendRequest } from '../../infoHelpers'
+import { sendRequest, getGroupId } from '../../infoHelpers'
 
 const theme = createTheme({
   palette: {
@@ -61,6 +61,7 @@ export default function GroupsPageTabs(props) {
   } = props
   const [value, setValue] = useState(0)
   const [requestShow, setRequestShow] = useState(false)
+  const [toGroupId, setToGroupId] = useState('')
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -105,7 +106,7 @@ export default function GroupsPageTabs(props) {
           <ConfirmModal
             action="request"
             onClose={() => setRequestShow(false)}
-            confirm={() => sendRequest(classCode, assignmentId, myGroupId)}
+            confirm={() => sendRequest(classCode, assignmentId, toGroupId)}
           />
           )}
           <ReactSearchAutocomplete
@@ -127,7 +128,11 @@ export default function GroupsPageTabs(props) {
                 year={member.year}
                 majors={member.majors}
                 schools={member.schools}
-                showModal={() => setRequestShow(true)}
+                showModal={async () => {
+                  setRequestShow(true)
+                  const tgid = await getGroupId(classCode, assignmentId, member.username)
+                  setToGroupId(tgid)
+                }}
                 requested={requested?.has(member.username)}
               />
             ))}

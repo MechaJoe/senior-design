@@ -495,13 +495,30 @@ router.get(
   },
 )
 
-// [GET] the group ID the user belongs to
+// [GET] the group ID the logged-in user belongs to
 /* Note: All students should have a group created for them when the assignment is created
  *       on the instructor side
  */
 router.get('/class/:classCode/assignments/:assignmentId/my-group-id', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { username } = req.session
+  connection.query(
+    `SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
+     AND assignmentId = '${assignmentId}'
+     AND classCode = '${classCode}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] the group ID a user belongs to
+router.get('/class/:classCode/assignments/:assignmentId/group-id/:username', async (req, res) => {
+  const { classCode, assignmentId, username } = req.params
   connection.query(
     `SELECT groupId FROM BelongsToGroup WHERE username = '${username}'
      AND assignmentId = '${assignmentId}'
@@ -867,7 +884,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) > 1
   )
-  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
+  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
   FROM groupReqs JOIN BelongsToGroup ON groupReqs.groupId = BelongsToGroup.groupId JOIN Student ON BelongsToGroup.username = Student.username;`,
     (error, results) => {
       if (error) {
@@ -880,7 +897,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
   )
 })
 
-// [GET] all outgoingindividual requests that a user has received for a class assignment
+// [GET] all outgoing individual requests that a user has received for a class assignment
 router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/individuals', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { username } = req.session
@@ -908,7 +925,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/indivi
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) = 1
   )
-  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
+  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
   FROM individuals JOIN Student ON individuals.username = Student.username;`,
     (error, results) => {
       if (error) {
@@ -949,7 +966,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/groups
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) > 1
   )
-  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
+  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
   FROM groupReqs JOIN BelongsToGroup ON groupReqs.groupId = BelongsToGroup.groupId JOIN Student ON BelongsToGroup.username = Student.username;`,
     (error, results) => {
       if (error) {
@@ -971,7 +988,7 @@ router.post('/request/add', async (req, res) => {
   const { username } = req.session
   connection.query(
     `INSERT INTO Request (classCode, assignmentId, fromGroupId, toGroupId)
-    SELECT '${classCode}', '${assignmentId}', groupId, ${toGroupId}
+    SELECT '${classCode}', '${assignmentId}', groupId, '${toGroupId}'
     FROM BelongsToGroup
     WHERE username = '${username}'
           AND assignmentId = '${assignmentId}'
