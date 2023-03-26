@@ -3,9 +3,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
 import ChatIcon from '@mui/icons-material/Chat'
 import NotificationsIcon from '@mui/icons-material/Notifications'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 export default function Header() {
+  const { classCode, assignmentId } = useParams()
+
   return (
     <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
       <Toolbar>
@@ -18,9 +20,12 @@ export default function Header() {
           <Link to="/chat">
             <ChatIcon fontSize="large" />
           </Link>
-          <Link to="/about">
+          {classCode && assignmentId
+          && (
+          <Link to={`/courses/${classCode}/assignments/${assignmentId}/requests`}>
             <NotificationsIcon fontSize="large" />
           </Link>
+          )}
           <Link to="/profile">
             <AccountCircleIcon fontSize="large" />
           </Link>

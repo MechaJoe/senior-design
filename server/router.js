@@ -10,6 +10,7 @@ const connection = mysql.createPool({
   password: process.env.RDS_PASSWORD ? process.env.RDS_PASSWORD : config.rds_password,
   port: process.env.RDS_PORT ? process.env.RDS_PORT : config.rds_port,
   database: process.env.RDS_DB ? process.env.RDS_DB : config.rds_db,
+  multipleStatements: true,
 })
 
 const router = express.Router()
@@ -133,7 +134,7 @@ router.get('/class/:classCode/students', async (req, res) => {
   )
 })
 
-// GETs all students in a class without a group
+// GETs all students in a class without a group (only singleton groups)
 router.get('/class/:classCode/assignments/:assignmentId/no-group', async (req, res) => {
   const { classCode, assignmentId } = req.params
   connection.query(
@@ -141,11 +142,12 @@ router.get('/class/:classCode/assignments/:assignmentId/no-group', async (req, r
       SELECT Student.username FROM Student JOIN StudentOf ON StudentOf.username = Student.username
       WHERE StudentOf.classCode = '${classCode}'
     )
-    SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students JOIN Student ON all_students.username = Student.username
-      WHERE all_students.username NOT IN (
-        SELECT all_students.username FROM all_students JOIN BelongsToGroup ON all_students.username = BelongsToGroup.username
+      SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
+          JOIN Student ON all_students.username = Student.username
+          JOIN BelongsToGroup ON BelongsToGroup.username = all_students.username
         WHERE assignmentId = '${assignmentId}'
-      );
+        GROUP BY groupId
+        HAVING COUNT(groupId) = 1;
     `,
     (error, results) => {
       if (error) {
@@ -157,18 +159,24 @@ router.get('/class/:classCode/assignments/:assignmentId/no-group', async (req, r
   )
 })
 
-// GETs all students in a class in any group
+// GETs all students in a class in any (non-singleton) group
 router.get('/class/:classCode/assignments/:assignmentId/grouped', async (req, res) => {
   const { classCode, assignmentId } = req.params
   connection.query(
     `WITH all_students AS (
       SELECT Student.username FROM Student JOIN StudentOf ON StudentOf.username = Student.username
       WHERE StudentOf.classCode = '${classCode}'
-    )
+    ),
+    singletons AS (
       SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
-          JOIN Student ON all_students.username = Student.username
-          JOIN BelongsToGroup ON BelongsToGroup.username = all_students.username
-      WHERE assignmentId = '${assignmentId}';
+        JOIN Student ON all_students.username = Student.username
+        JOIN BelongsToGroup ON BelongsToGroup.username = all_students.username
+        WHERE assignmentId = '${assignmentId}'
+        GROUP BY groupId
+        HAVING COUNT(groupId) = 1)
+    SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
+    JOIN Student ON all_students.username = Student.username
+    WHERE all_students.username NOT IN (SELECT username FROM singletons);
     `,
     (error, results) => {
       if (error) {
@@ -532,6 +540,27 @@ router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members',
   )
 })
 
+// [POST] Create a group with the specified username as the leader
+router.post('/class/:classCode/assignments/:assignmentId/group', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  let { leader } = req.body
+  if (!leader || leader === '') {
+    leader = req.session
+  }
+  const groupId = uuidv4()
+  connection.query(
+    `INSERT INTO GroupAss (classCode, groupId, assignmentId, leader) VALUES ('${classCode}', '${groupId}', '${assignmentId}', '${leader}');
+     INSERT INTO BelongsToGroup VALUES ('${leader}', '${groupId}', '${classCode}', '${assignmentId}');`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 // CHAT ROUTES
 
 // [GET] all the chats for a given user
@@ -685,6 +714,60 @@ router.post('/chats/:chatId/add', async (req, res) => {
   )
 })
 
+router.patch('/class/:classCode/assignments/:assignmentId/group/:groupId', async (req, res) => {
+  const { classCode, assignmentId, groupId } = req.params
+  const { op } = req.body
+  let { username } = req.body
+  if (!username || username === '') {
+    username = req.session.username
+  }
+  let sql = ''
+  if (op === 'add') {
+    sql = `
+      INSERT INTO BelongsToGroup VALUES ('${classCode}, ${assignmentId}, ${groupId}, ${username}'));
+        DELETE FROM GroupAss WHERE groupId NOT IN
+          (SELECT groupId FROM BelongsToGroup)
+          `
+  }
+  if (op === 'remove') {
+    sql = `
+      DELETE FROM BelongsToGroup WHERE classCode = '${classCode}'
+        AND assignmentId = '${assignmentId}'
+        AND groupId = '${groupId}'
+        AND username = '${username}';
+      DELETE FROM GroupAss WHERE groupId NOT IN
+        (SELECT groupId FROM BelongsToGroup);`
+  } else {
+    res.json({ error: 'Invalid operation' })
+  }
+  connection.query(
+    sql,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [DELETE] a group
+router.delete('/class/:classCode/assignments/:assignmentId/group/:groupId', async (req, res) => {
+  const { classCode, assignmentId, groupId } = req.params
+  connection.query(
+    `DELETE FROM GroupAss WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND groupId = '${groupId}';
+     DELETE FROM BelongsToGroup WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND groupId = '${groupId}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 // [POST] a new chat (an established group)
 router.post('/chats/:classCode/assignments/:assignmentId/:groupId', async (req, res) => {
   const { classCode, assignmentId, groupId } = req.params
@@ -721,7 +804,6 @@ router.post('/chats/:classCode/assignments/:assignmentId/:groupId', async (req, 
 router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { username } = req.session
-  // const username = 'jasonhom'
   connection.query(
     `WITH myGID AS (
       SELECT groupId
@@ -745,7 +827,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', a
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) = 1
   )
-  SELECT firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
+  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
   FROM individuals JOIN Student ON individuals.username = Student.username;`,
     (error, results) => {
       if (error) {
@@ -762,7 +844,6 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', a
 router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { username } = req.session
-  // const username = 'jasonhom'
   connection.query(
     `WITH myGID AS (
       SELECT groupId
@@ -888,7 +969,6 @@ router.post('/request/add', async (req, res) => {
     classCode, assignmentId, toGroupId,
   } = req.body
   const { username } = req.session
-  // const username = 'jasonhom'
   connection.query(
     `INSERT INTO Request (classCode, assignmentId, fromGroupId, toGroupId)
     SELECT '${classCode}', '${assignmentId}', groupId, ${toGroupId}
@@ -981,7 +1061,7 @@ router.post('/accept-request', async (req, res) => {
   )
   UPDATE BelongsToGroup, myGID
   SET BelongsToGroup.groupId = myGID.groupId
-  WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND BelongsToGroup.groupId = ${fromGroupId};`,
+  WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND BelongsToGroup.groupId = '${fromGroupId}';`,
     (error, results) => {
       if (error) {
         res.json({ error })

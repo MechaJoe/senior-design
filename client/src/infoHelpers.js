@@ -67,9 +67,30 @@ export const getMembers = async (classCode, assignmentId, groupId) => {
 }
 
 export const getGroupSize = async (classCode, assignmentId) => {
-  const { data } = await axios.get(
-    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/groupSize`,
-  )
+  const { data } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/groupSize`)
+  return data
+}
+
+// Create a singleton group for the currently logged in user
+export const createGroup = async (classCode, assignmentId) => {
+  const { data } = await axios.post(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group`)
+  return data
+}
+
+export const joinGroup = async (classCode, assignmentId, groupId) => {
+  const { data } = await axios.patch(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}`, { op: 'add' })
+  return data
+}
+
+// When a user leaves a group, they are placed into their own singleton group
+export const leaveGroup = async (classCode, assignmentId, groupId) => {
+  await axios.patch(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}`, { op: 'remove' })
+  const { data } = await axios.post(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group`)
+  return data
+}
+
+export const sendRequest = async (classCode, assignmentId, groupId) => {
+  const { data } = await axios.post(`${baseUrl}/request/add`, { classCode, assignmentId, toGroupId: groupId })
   return data
 }
 
