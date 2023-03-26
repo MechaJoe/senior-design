@@ -1,14 +1,17 @@
+import axios from 'axios'
 import { useState, useEffect } from 'react'
-// import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   Stack, Grid,
 } from '@mui/material'
 import CourseCard from '../components/CourseCard'
 import CoursesSideBar from '../components/CoursesSideBar'
 import {
-  checkUserLoggedIn,
-  getUserAllCourses,
+  getLoggedInUserAllCourses,
 } from '../infoHelpers'
+// import {
+//   getUserAllCourses,
+// } from '../infoHelpers'
 import Header from '../components/Header'
 
 // const navigate = useNavigate()
@@ -17,10 +20,20 @@ function StudentCourses() {
   const [studentCourses, setStudentCourses] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
+  const navigate = useNavigate()
+
   const currDate = new Date()
   const currMonth = currDate.getMonth() + 1
   const currYear = currDate.getFullYear()
   const currSeason = currMonth <= 7 ? 'Spring' : 'Fall'
+
+  const getUser = async () => {
+    const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
+    if (!data) {
+      navigate('/login')
+    }
+    return data
+  }
 
   useEffect(() => {
     // uncomment once localStorage stuff is implemented
@@ -35,14 +48,21 @@ function StudentCourses() {
     // }
 
     // if (!checkUserLoggedIn) {
-    //   // navigate('/login')
-    //   window.location.href = '/login'
+    //   navigate('/login')
+    //   // window.location.href = '/login'
     // }
-    checkUserLoggedIn().then((user) => {
-      getUserAllCourses(user).then((response) => {
-        setStudentCourses(response)
-        setIsLoading(false)
-      })
+    // checkUserLoggedIn().then((user) => {
+    //   console.log('user')
+    //   console.log(user)
+    //   getUserAllCourses(user).then((response) => {
+    //     setStudentCourses(response)
+    //     setIsLoading(false)
+    //   })
+    // })
+    getUser()
+    getLoggedInUserAllCourses().then((response) => {
+      setStudentCourses(response)
+      setIsLoading(false)
     })
   }, [])
 

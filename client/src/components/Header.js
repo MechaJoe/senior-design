@@ -9,7 +9,7 @@ export default function Header() {
   const { classCode, assignmentId } = useParams()
 
   return (
-    <AppBar position="static" style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
+    <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
       <Toolbar>
         <Link to="/courses">
           <h1 className="font-sans text-5xl font-bold">
@@ -17,7 +17,7 @@ export default function Header() {
           </h1>
         </Link>
         <div className="absolute right-10 space-x-4">
-          <Link to="/">
+          <Link to="/chat">
             <ChatIcon fontSize="large" />
           </Link>
           {classCode && assignmentId

@@ -561,7 +561,159 @@ router.post('/class/:classCode/assignments/:assignmentId/group', async (req, res
   )
 })
 
-// [PATCH] a group (add/remove members)
+// CHAT ROUTES
+
+// [GET] all the chats for a given user
+router.get('/chats/all', async (req, res) => {
+  const { username } = req.session
+  connection.query(
+    `SELECT *
+    FROM BelongsToChat B NATURAL JOIN Chat C
+    WHERE username = '${username}';
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] filtered chats for the logged in user
+router.get('/chats/:classCode/all', async (req, res) => {
+  const { username } = req.session
+  const { classCode } = req.params
+  connection.query(
+    `SELECT *
+    FROM BelongsToChat B NATURAL JOIN Chat C
+    WHERE username = '${username}' AND classCode = '${classCode}';
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] all the messages for a given chat
+router.get('/chats/:chatId', async (req, res) => {
+  const { chatId } = req.params
+  console.log(chatId)
+  connection.query(
+    `SELECT *
+    FROM Message
+    WHERE chatId = '${chatId}';
+    `,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [GET] all the members for a given chat
+router.get('/chats/:chatId/members', async (req, res) => {
+  const { chatId } = req.params
+  connection.query(
+    `SELECT B.username, firstName
+    FROM BelongsToChat B JOIN Student S ON B.username = S.username
+    WHERE chatId = '${chatId}';
+    `,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] a new message for a given chat
+router.post('/chats/:chatId', async (req, res) => {
+  const { chatId } = req.params
+  const { username } = req.session // TODO: req.session not working
+  console.log(username)
+  const {
+    messageContent,
+  } = req.body
+  const timestamp = new Date()
+  messageContent.replace("'", "''")
+  connection.query(
+    `INSERT INTO Message (content, sender, chatId, timestamp)
+    VALUES ('${messageContent}', '${username}', '${chatId}', '${timestamp}');
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] a new chat (not an established group)
+router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { members } = req.body
+  const chatId = uuidv4()
+  console.log('members')
+  console.log(members)
+  connection.query(
+    `INSERT INTO Chat (chatId, classCode, assignmentId) VALUES ('${classCode}', '${chatId}', '${assignmentId}'');
+     `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+  members.forEach((member) => connection.query(
+    `INSERT INTO BelongstoChat VALUES('${chatId}', '${member})
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  ))
+})
+
+// [POST] add a new user to a chat
+router.post('/chats/:chatId/add', async (req, res) => {
+  const { chatId } = req.params
+  const {
+    newMember,
+  } = req.body
+  connection.query(
+    `INSERT INTO BelongsToChat (chatId, username)
+    VALUES ('${chatId}', '${newMember}');
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 router.patch('/class/:classCode/assignments/:assignmentId/group/:groupId', async (req, res) => {
   const { classCode, assignmentId, groupId } = req.params
   const { op } = req.body
@@ -614,6 +766,37 @@ router.delete('/class/:classCode/assignments/:assignmentId/group/:groupId', asyn
       }
     },
   )
+})
+
+// [POST] a new chat (an established group)
+router.post('/chats/:classCode/assignments/:assignmentId/:groupId', async (req, res) => {
+  const { classCode, assignmentId, groupId } = req.params
+  const { members } = req.body
+  const chatId = uuidv4()
+  console.log('members')
+  console.log(members)
+  connection.query(
+    `INSERT INTO Chat (chatId, classCode, groupId, assignmentId) VALUES ('${chatId}', '${classCode}', '${groupId}','${assignmentId}'');
+     `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+  members.forEach((member) => connection.query(
+    `INSERT INTO BelongstoChat VALUES('${chatId}', '${member})
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  ))
 })
 
 /* REQUEST ROUTES */
@@ -700,8 +883,8 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
 // [GET] all outgoingindividual requests that a user has received for a class assignment
 router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/individuals', async (req, res) => {
   const { classCode, assignmentId } = req.params
-  // const { username } = req.session
-  const username = 'jasonhom'
+  const { username } = req.session
+  // const username = 'jasonhom'
   connection.query(
     `WITH myGID AS (
       SELECT groupId
@@ -741,8 +924,8 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/indivi
 // [GET] all outgoing group requests that a user has received for a class assignment
 router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/groups', async (req, res) => {
   const { classCode, assignmentId } = req.params
-  // const { username } = req.session
-  const username = 'jasonhom'
+  const { username } = req.session
+  // const username = 'jasonhom'
   connection.query(
     `WITH myGID AS (
       SELECT groupId
@@ -810,8 +993,8 @@ router.post('/reject-request', async (req, res) => {
   const {
     classCode, assignmentId, fromGroupId,
   } = req.body
-  // const { username } = req.session
-  const username = 'jasonhom'
+  const { username } = req.session
+  // const username = 'jasonhom'
   connection.query(
     `WITH myGID AS (
       SELECT groupId
@@ -838,8 +1021,8 @@ router.post('/cancel-request', async (req, res) => {
   const {
     classCode, assignmentId, toGroupId,
   } = req.body
-  // const { username } = req.session
-  const username = 'jasonhom'
+  const { username } = req.session
+  // const username = 'jasonhom'
   connection.query(
     `WITH myGID AS (
       SELECT groupId
@@ -866,8 +1049,8 @@ router.post('/accept-request', async (req, res) => {
   const {
     classCode, assignmentId, fromGroupId,
   } = req.body
-  // const { username } = req.session
-  const username = 'jasonhom'
+  const { username } = req.session
+  // const username = 'jasonhom'
   connection.query(
     `WITH myGID AS (
       SELECT groupId
