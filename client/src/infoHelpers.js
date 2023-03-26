@@ -60,6 +60,14 @@ export const getMyGroupId = async (classCode, assignmentId) => {
   return groupId
 }
 
+// get group ID of a user
+export const getGroupId = async (classCode, assignmentId, username) => {
+  const { data: [{ groupId }] } = await axios.get(
+    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/group-id/${username}`,
+  )
+  return groupId
+}
+
 // get all members in a group
 export const getMembers = async (classCode, assignmentId, groupId) => {
   const { data } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`)
@@ -90,6 +98,10 @@ export const leaveGroup = async (classCode, assignmentId, groupId) => {
 }
 
 export const sendRequest = async (classCode, assignmentId, groupId) => {
+  if (!groupId) {
+    const errMessage = 'Invalid request: groupId is undefined'
+    throw new Error(errMessage)
+  }
   const { data } = await axios.post(`${baseUrl}/request/add`, { classCode, assignmentId, toGroupId: groupId })
   return data
 }
