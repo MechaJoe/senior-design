@@ -34,6 +34,9 @@ export default function GroupCard(props) {
       <div className="grid grid-cols-3 gap-4 rounded-2xl border-[6px] border-gunmetal items-center justify-items-center p-6">
         {groupMembers.map((member) => (
           <MiniProfileCard
+            classCode={classCode}
+            assignmentId={assignmentId}
+            username={member.username}
             key={member.username}
             member={member}
             locked={locked}

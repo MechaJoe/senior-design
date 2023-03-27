@@ -1,4 +1,5 @@
 import axios from 'axios'
+import qs from 'qs'
 import config from './config.json'
 
 // export const baseUrl = http://localhost:8080
@@ -104,6 +105,30 @@ export const sendRequest = async (classCode, assignmentId, groupId) => {
   }
   const { data } = await axios.post(`${baseUrl}/request/add`, { classCode, assignmentId, toGroupId: groupId })
   return data
+}
+
+export const getChatId = async (members) => {
+  try {
+    const { data: [{ chatId }] } = await axios.get(
+      `${baseUrl}/chats/id`,
+      {
+        params: { members },
+        paramsSerializer: { serialize: (params) => qs.stringify(params, { arrayFormat: 'repeat' }) },
+      },
+    )
+    return chatId
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+export const createChat = async (classCode, assignmentId, members) => {
+  try {
+    const { data } = await axios.post(`${baseUrl}/chats/${classCode}/assignments/${assignmentId}`, { members })
+    return data
+  } catch (err) {
+    throw new Error(err.message)
+  }
 }
 
 export const getUserAllChats = async () => {

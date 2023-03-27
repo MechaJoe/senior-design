@@ -84,9 +84,13 @@ export default function GroupsPageTabs(props) {
         </Box>
         <TabPanel value={value} index={0}>
           <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4">
+            {/* My Group */}
             <GroupChatCard />
             {groupMembers?.map((member) => (
               <FullProfileCard
+                classCode={classCode}
+                assignmentId={assignmentId}
+                username={member.username}
                 key={member.username}
                 firstName={member.firstName}
                 lastName={member.lastName}
@@ -102,6 +106,7 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
+          {/* Individuals */}
           {requestShow && (
           <ConfirmModal
             action="request"
@@ -110,7 +115,7 @@ export default function GroupsPageTabs(props) {
           />
           )}
           <ReactSearchAutocomplete
-            placeholder="Search by name, year, tag..."
+            placeholder="Search by name..."
             styling={
             {
               borderRadius: '16px',
@@ -120,6 +125,9 @@ export default function GroupsPageTabs(props) {
           <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4 pt-4">
             {individuals?.map((member) => (
               <FullProfileCard
+                classCode={classCode}
+                assignmentId={assignmentId}
+                username={member.username}
                 key={member.username}
                 firstName={member.firstName}
                 lastName={member.lastName}
@@ -138,6 +146,7 @@ export default function GroupsPageTabs(props) {
             ))}
             {grouped?.map((member) => (
               <FullProfileCard
+                username={member.username}
                 key={member.username}
                 firstName={member.firstName}
                 lastName={member.lastName}
@@ -152,6 +161,7 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={2}>
+          {/* All Groups */}
           <div className="grid grid-cols-2 gap-4">
             <GroupCard
               key={myGroupId}
