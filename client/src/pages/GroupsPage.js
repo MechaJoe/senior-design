@@ -55,13 +55,16 @@ export default function GroupsPage() {
   const getRequested = async () => {
     const { data: groupRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/groups`)
     const { data: individualRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/individuals`)
-    console.log(groupRequested)
-    console.log(individualRequested)
-    setRequested(new Set(
+    const { data: outgoingGroupRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/groups`)
+    const { data: outgoingIndividualRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/individuals`)
+    const allRequested = new Set(
       groupRequested
         .concat(individualRequested)
+        .concat(outgoingGroupRequested)
+        .concat(outgoingIndividualRequested)
         .map((user) => user.username),
-    ))
+    )
+    setRequested(allRequested)
   }
 
   useEffect(() => {

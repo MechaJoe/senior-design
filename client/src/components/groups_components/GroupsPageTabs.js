@@ -11,7 +11,7 @@ import GroupCard from './GroupCard'
 import GroupChatCard from './GroupChatCard'
 import LeaveGroupCard from './LeaveGroupCard'
 import ConfirmModal from './ConfirmModal'
-import { sendRequest } from '../../infoHelpers'
+import { sendRequest, getGroupId } from '../../infoHelpers'
 
 const theme = createTheme({
   palette: {
@@ -61,6 +61,7 @@ export default function GroupsPageTabs(props) {
   } = props
   const [value, setValue] = useState(0)
   const [requestShow, setRequestShow] = useState(false)
+  const [toGroupId, setToGroupId] = useState('')
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -83,9 +84,13 @@ export default function GroupsPageTabs(props) {
         </Box>
         <TabPanel value={value} index={0}>
           <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4">
+            {/* My Group */}
             <GroupChatCard />
             {groupMembers?.map((member) => (
               <FullProfileCard
+                classCode={classCode}
+                assignmentId={assignmentId}
+                username={member.username}
                 key={member.username}
                 firstName={member.firstName}
                 lastName={member.lastName}
@@ -101,15 +106,16 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
+          {/* Individuals */}
           {requestShow && (
           <ConfirmModal
             action="request"
             onClose={() => setRequestShow(false)}
-            confirm={() => sendRequest(classCode, assignmentId, myGroupId)}
+            confirm={() => sendRequest(classCode, assignmentId, toGroupId)}
           />
           )}
           <ReactSearchAutocomplete
-            placeholder="Search by name, year, tag..."
+            placeholder="Search by name..."
             styling={
             {
               borderRadius: '16px',
@@ -119,6 +125,9 @@ export default function GroupsPageTabs(props) {
           <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4 pt-4">
             {individuals?.map((member) => (
               <FullProfileCard
+                classCode={classCode}
+                assignmentId={assignmentId}
+                username={member.username}
                 key={member.username}
                 firstName={member.firstName}
                 lastName={member.lastName}
@@ -127,12 +136,17 @@ export default function GroupsPageTabs(props) {
                 year={member.year}
                 majors={member.majors}
                 schools={member.schools}
-                showModal={() => setRequestShow(true)}
+                showModal={async () => {
+                  setRequestShow(true)
+                  const tgid = await getGroupId(classCode, assignmentId, member.username)
+                  setToGroupId(tgid)
+                }}
                 requested={requested?.has(member.username)}
               />
             ))}
             {grouped?.map((member) => (
               <FullProfileCard
+                username={member.username}
                 key={member.username}
                 firstName={member.firstName}
                 lastName={member.lastName}
@@ -147,6 +161,7 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={2}>
+          {/* All Groups */}
           <div className="grid grid-cols-2 gap-4">
             <GroupCard
               key={myGroupId}

@@ -1,14 +1,44 @@
 import Avatar from '@mui/material/Avatar'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { getChatId, createChat, checkUserLoggedIn } from '../../infoHelpers'
 
 export default function FullProfileCard(props) {
   const {
-    firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, grayed, requested,
+    classCode,
+    assignmentId,
+    username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, grayed,
+    requested,
     showModal,
     locked,
   } = props
 
+  const navigate = useNavigate()
+
   const majorList = majors.split(',')
   const schoolList = schools.split(',')
+  const [dmId, setDmId] = useState('')
+
+  useEffect(() => {
+    checkUserLoggedIn()
+      .then((user) => {
+        getChatId([user, username])
+          .then((chatId) => setDmId(chatId))
+      })
+  }, [])
+
+  const openChat = async () => {
+    if (dmId) {
+      navigate(`/chat/${dmId}`)
+    } else {
+      const newChatId = await createChat(
+        classCode,
+        assignmentId,
+        [username, await checkUserLoggedIn()],
+      )
+      navigate(`/chat/${newChatId}`)
+    }
+  }
 
   return (
     <div className={`rounded-2xl w-[330px] h-[360px] p-6 text-center border-[6px] ${grayed ? 'bg-gray-200 border-gray-300' : 'bg-tan/5 border-gunmetal'}`}>
@@ -46,14 +76,14 @@ export default function FullProfileCard(props) {
         {grayed || locked
           ? (
             <div className="justify-items-center items-center p-4 font-sans">
-              <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+              <button type="button" onClick={() => openChat()} className=" bg-buttonblue text-white rounded w-24">Chat</button>
             </div>
           )
           : (
             <div className="grid grid-cols-2 gap-4 justify-items-center p-4 font-sans">
-              <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
-              {requested ? <button type="button" className="bg-gray-400 text-white rounded w-24">Request</button>
-                : <button type="button" onClick={showModal} className=" bg-buttongreen text-white rounded w-24">Request</button>}
+              <button type="button" onClick={() => openChat()} className=" bg-buttonblue text-white rounded w-24">Chat</button>
+              {requested ? <button type="button" className="text-white bg-slate-400 cursor-default rounded w-24">Request</button>
+                : <button type="button" onClick={showModal} className="bg-buttongreen text-white rounded w-24">Request</button>}
             </div>
           )}
       </div>

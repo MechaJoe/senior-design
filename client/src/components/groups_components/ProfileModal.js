@@ -1,15 +1,39 @@
 import { createPortal } from 'react-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Avatar } from '@mui/material'
+import { getChatId, createChat, checkUserLoggedIn } from '../../infoHelpers'
 
 function ProfileModal(props) {
   const {
     locked, requested, onClose, profile,
   } = props
   const {
-    firstName, lastName, emailAddress, profileImageUrl, year, majors, schools,
+    classCode, assignmentId, username, firstName, lastName, emailAddress, profileImageUrl, year,
+    majors,
+    schools,
   } = profile
   const majorList = majors.split(',')
   const schoolList = schools.split(',')
+  const navigate = useNavigate()
+
+  const [dmId, setDmId] = useState('')
+
+  useEffect(() => {
+    getChatId(username).then((chatId) => setDmId(chatId))
+  }, [])
+
+  const openChat = async (chatId) => {
+    if (chatId) {
+      navigate(`/chat/${chatId}`)
+    }
+    const newChatId = await createChat(
+      classCode,
+      assignmentId,
+      [username, await checkUserLoggedIn()],
+    )
+    navigate(`/chat/${newChatId}`)
+  }
 
   return (
     createPortal(
@@ -61,12 +85,12 @@ function ProfileModal(props) {
             {locked
               ? (
                 <div className="justify-items-center items-center font-sans">
-                  <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+                  <button type="button" onClick={() => openChat(dmId)} className=" bg-buttonblue text-white rounded w-24">Chat</button>
                 </div>
               )
               : (
                 <div className="grid grid-cols-2 gap-4 justify-items-center p-4 font-sans">
-                  <button type="button" className=" bg-buttonblue text-white rounded w-24">Chat</button>
+                  <button type="button" onClick={() => openChat(dmId)} className=" bg-buttonblue text-white rounded w-24">Chat</button>
                   {requested ? <button type="button" className="bg-gray-500 text-white rounded w-24">Request</button>
                     : <button type="button" className=" bg-buttongreen text-white rounded w-24">Request</button>}
                 </div>
