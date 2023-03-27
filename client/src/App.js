@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
 import Profile from './Profile'
 import ChatPage from './pages/ChatPage'
+import InstructorCourses from './pages/InstructorCourses'
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
   {
     path: 'chat/:initialChatId?',
     element: <ChatPage />,
+  },
+  {
+    path: 'instructorcourses',
+    element: <InstructorCourses />,
   },
 ])
 
