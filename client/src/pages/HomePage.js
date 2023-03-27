@@ -11,7 +11,7 @@ export default function HomePage() {
     if (!data) {
       navigate('/login')
     }
-    return data
+    navigate('/courses')
   }
 
   useEffect(() => {
