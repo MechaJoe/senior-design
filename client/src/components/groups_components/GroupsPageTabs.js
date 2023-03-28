@@ -5,13 +5,11 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import FullProfileCard from './FullProfileCard'
 import GroupCard from './GroupCard'
 import GroupChatCard from './GroupChatCard'
 import LeaveGroupCard from './LeaveGroupCard'
-import ConfirmModal from './ConfirmModal'
-import { sendRequest, getGroupId } from '../../infoHelpers'
+import IndividualsTab from './IndividualsTab'
 
 const theme = createTheme({
   palette: {
@@ -60,8 +58,6 @@ export default function GroupsPageTabs(props) {
     groupSize,
   } = props
   const [value, setValue] = useState(0)
-  const [requestShow, setRequestShow] = useState(false)
-  const [toGroupId, setToGroupId] = useState('')
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -106,59 +102,13 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          {/* Individuals */}
-          {requestShow && (
-          <ConfirmModal
-            action="request"
-            onClose={() => setRequestShow(false)}
-            confirm={() => sendRequest(classCode, assignmentId, toGroupId)}
+          <IndividualsTab
+            individuals={individuals}
+            grouped={grouped}
+            requested={requested}
+            classCode={classCode}
+            assignmentId={assignmentId}
           />
-          )}
-          <ReactSearchAutocomplete
-            placeholder="Search by name..."
-            styling={
-            {
-              borderRadius: '16px',
-            }
-          }
-          />
-          <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4 pt-4">
-            {individuals?.map((member) => (
-              <FullProfileCard
-                classCode={classCode}
-                assignmentId={assignmentId}
-                username={member.username}
-                key={member.username}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                emailAddress={member.emailAddress}
-                profileImageUrl={member.profileImageUrl}
-                year={member.year}
-                majors={member.majors}
-                schools={member.schools}
-                showModal={async () => {
-                  setRequestShow(true)
-                  const tgid = await getGroupId(classCode, assignmentId, member.username)
-                  setToGroupId(tgid)
-                }}
-                requested={requested?.has(member.username)}
-              />
-            ))}
-            {grouped?.map((member) => (
-              <FullProfileCard
-                username={member.username}
-                key={member.username}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                emailAddress={member.emailAddress}
-                profileImageUrl={member.profileImageUrl}
-                year={member.year}
-                majors={member.majors}
-                schools={member.schools}
-                grayed
-              />
-            ))}
-          </div>
         </TabPanel>
         <TabPanel value={value} index={2}>
           {/* All Groups */}
