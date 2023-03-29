@@ -2,6 +2,9 @@ import { createPortal } from 'react-dom'
 
 export default function FilterModal(props) {
   const { students, show, setShow } = props
+  const yearList = ['2023', '2024', '2025', '2026']
+  const schoolList = ['SEAS', 'SAS', 'WHARTON', 'NURSING']
+  const majorList = ['CIS', 'EE', 'MATH', 'ASAM', 'BE', 'FNCE']
   console.log(students)
 
   return (
@@ -9,15 +12,60 @@ export default function FilterModal(props) {
     && createPortal(
       <div
         className="flex fixed justify-center items-center inset-0 z-2 w-full cursor-default backdrop-blur-sm"
-        onClick={() => setShow(false)}
-        onKeyDown={() => setShow(false)}
-        role="button"
-        tabIndex={0}
       >
-        <div className="flex flex-col justify-center items-center w-96 h-52 bg-white rounded-2xl border-[6px] text-gunmetal text-xl p-6 border-gunmetal">
-          <div className="flex flex-row w-full pt-12 justify-between">
-            <button type="button" onClick={() => setShow(false)}>Cancel</button>
-            <button type="button" onClick={() => setShow(false)}>Apply Filters</button>
+        <div className="flex flex-col justify-start items-start bg-white rounded-2xl border-[6px] text-gunmetal text-xl p-6 border-gunmetal">
+          <div className="text-gunmetal font-bold pb-6">Filters</div>
+          <div className="pb-3">Year</div>
+          <div className="inline-block pb-6">
+            {yearList.map((year) => (
+              <button
+                className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-gunmetal mr-2 mb-2"
+                type="button"
+              >
+                {year}
+
+              </button>
+            ))}
+          </div>
+          <div className="pb-3">School</div>
+          <div className="inline-block pb-6">
+            {schoolList.map((year) => (
+              <button
+                className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-gunmetal mr-2 mb-2"
+                type="button"
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+          <div className="pb-3">Major</div>
+          <div className="inline-block pb-6">
+            {majorList.map((year) => (
+              <button
+                className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-gunmetal mr-2 mb-2"
+                type="button"
+              >
+                {year}
+
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-row w-full justify-between">
+            <button
+              className="border border-red-700 text-red-700 transition hover:bg-red-700 hover:text-white rounded-xl p-2"
+              type="button"
+              onClick={() => setShow(false)}
+            >
+              Cancel
+
+            </button>
+            <button
+              className="border border-green-700 text-green-700 transition hover:bg-green-700 hover:text-white rounded-xl p-2"
+              type="button"
+              onClick={() => setShow(false)}
+            >
+              Apply
+            </button>
           </div>
         </div>
       </div>,
