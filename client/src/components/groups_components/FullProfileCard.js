@@ -47,7 +47,7 @@ export default function FullProfileCard(props) {
         : (
           <Avatar
             sx={{
-              width: 130, height: 130, font: 'Montserrat', fontSize: '3rem',
+              width: 130, height: 130, font: 'Montserrat', fontSize: '3rem', zIndex: -1,
             }}
             className="mx-auto"
             alt="profile"

@@ -59,7 +59,7 @@ export default function GroupsPageTabs(props) {
   } = props
   const [value, setValue] = useState(0)
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_, newValue) => {
     setValue(newValue)
   }
 
@@ -102,6 +102,7 @@ export default function GroupsPageTabs(props) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
+          {/* Individuals */}
           <IndividualsTab
             individuals={individuals}
             grouped={grouped}
