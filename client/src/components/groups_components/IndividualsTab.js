@@ -9,11 +9,11 @@ import { sendRequest, getGroupId } from '../../infoHelpers'
 export default function IndividualsTab(props) {
   const {
     individuals, grouped, requested, classCode, assignmentId,
+    // tags, TODO: get tags from route in GroupsPage
   } = props
   const [requestShow, setRequestShow] = useState(false)
   const [filterShow, setFilterShow] = useState(false)
   const [filtersApplied, setFiltersApplied] = useState(false)
-
   const [toGroupId, setToGroupId] = useState('')
   const students = individuals?.concat(grouped)
   const items = students.map(
@@ -22,6 +22,8 @@ export default function IndividualsTab(props) {
       name: `${member.firstName} ${member.lastName}`,
     }),
   )
+
+  const tags = ['Frontend', 'Backend', 'Fullstack', 'Design', 'UX', 'UI', 'Data Science', 'Machine Learning', 'Mobile', 'Web']
 
   return (
     <>
@@ -32,7 +34,7 @@ export default function IndividualsTab(props) {
         confirm={() => sendRequest(classCode, assignmentId, toGroupId)}
       />
       )}
-      <FilterModal show={filterShow} setShow={setFilterShow} students={students} />
+      <FilterModal show={filterShow} setShow={setFilterShow} students={students} tags={tags} />
       <div className="grid grid-cols-4 gap-4 px-5">
         <div className="col-span-3">
           <ReactSearchAutocomplete
