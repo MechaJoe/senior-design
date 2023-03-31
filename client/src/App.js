@@ -9,12 +9,9 @@ import GroupsPage from './pages/GroupsPage'
 import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
 import Profile from './Profile'
-<<<<<<< HEAD
 import ChatPage from './pages/ChatPage'
 import InstructorCourses from './pages/InstructorCourses'
-=======
 import RequestsPage from './pages/RequestsPage'
->>>>>>> 06bdaf1 (Individual vs group requests queries done)
 
 const router = createBrowserRouter([
   {
