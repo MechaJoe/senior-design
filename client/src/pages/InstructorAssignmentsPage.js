@@ -5,6 +5,7 @@ import axios from 'axios'
 import Stack from '@mui/material/Stack'
 import Sidebar from '../components/Sidebar'
 import AssignmentDetailsCard from '../components/AssignmentDetailsCard'
+import CreateAssignmentCard from '../components/CreateAssignmentCard'
 import Header from '../components/Header'
 import config from '../config.json'
 
@@ -71,7 +72,7 @@ function InstructorAssignmentsPage() {
           instructors={instructors}
         />
         <div>
-          <h1 className="font-sans text-3xl my-6 font-bold"> Assignments </h1>
+          <h1 className="font-sans text-3xl my-6 font-bold"> Instructor Assignments </h1>
           <div className="flex flex-wrap">
             {
               assignments.length ? assignments.map((assignment) => (
@@ -84,6 +85,7 @@ function InstructorAssignmentsPage() {
                 />
               )) : null
             }
+            <CreateAssignmentCard classCode={className} />
           </div>
         </div>
       </Stack>

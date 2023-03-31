@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import {
-  Button, ButtonBase, Card, CardContent, Typography, Box,
+  Button, ButtonBase, Card, CardContent, Box, IconButton,
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
@@ -50,40 +50,49 @@ function AssignmentCard({
       className="bg-rust-500"
       sx={{
         // NOTE: it doesn't use tailwind css's defined color
-        width: 350, height: 400, display: 'flex', justifyContent: 'center', backgroundColor: '#E6DCC740', border: 6, borderColor: '#212D3B', borderRadius: 8, margin: '30px',
+        width: 350, height: 340, display: 'flex', justifyContent: 'center', backgroundColor: '#E6DCC740', border: 6, borderColor: '#212D3B', borderRadius: 8, margin: '30px',
       }}
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
       zDepth={shadow}
     >
-      <Box sx={{ justifyContent: 'left', width: 350, height: 400 }}>
+      <Box sx={{ justifyContent: 'left', width: 350, height: 340 }}>
         <ButtonBase>
-          <CardContent sx={{ width: 350, height: 400 }}>
+          <CardContent sx={{ width: 350, height: 340 }}>
             <h1 className="font-bold text-2xl p-4" style={{ display: 'inline-block' }}>
               {`Assignment ${assignmentId}`}
             </h1>
-            <div className="text-2xl" style={{ display: 'inline-block' }}>
-              <EditIcon />
-              <DeleteForeverIcon />
+            <div className="text-center space-y-4">
+              <div className="text-left space-y-2" style={{ display: 'inline-block' }}>
+                <h2>
+                  <b>Group Formation Deadline:</b>
+                  <br />
+                  {deadlineString}
+                </h2>
+                <h2>
+                  <b>Minimum Group Size:</b>
+                  &nbsp;
+                  {groupSize.minGroupSize}
+                </h2>
+                <h2>
+                  <b>Maximum Group Size:</b>
+                  &nbsp;
+                  {groupSize.maxGroupSize}
+                </h2>
+              </div>
+              <Button>
+                View Groups
+              </Button>
             </div>
-            <Typography variant="body2" color="text.secondary">
-              Group Formation Deadline:
-              &nbsp;
-              {deadlineString}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Minimum Group Size:
-              &nbsp;
-              {groupSize.minGroupSize}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Maximum Group Size:
-              &nbsp;
-              {groupSize.maxGroupSize}
-            </Typography>
-            <Button>
-              View Groups
-            </Button>
+            <div className="text-2xl" style={{ display: 'inline-block' }}>
+              {/* TODO: Add onclick later */}
+              <IconButton>
+                <EditIcon style={{ color: '#227FEC', fontSize: 40 }} />
+              </IconButton>
+              <IconButton>
+                <DeleteForeverIcon style={{ color: '#CB5045', fontSize: 40 }} />
+              </IconButton>
+            </div>
           </CardContent>
         </ButtonBase>
       </Box>
