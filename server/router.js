@@ -762,14 +762,15 @@ router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { members } = req.body
   const chatId = uuidv4()
+  const response = {}
   connection.query(
     `INSERT INTO Chat (chatId, classCode, assignmentId, name) VALUES ('${chatId}', '${classCode}', '${assignmentId}', '${members.join(', ')}');
      `,
     (error, results) => {
       if (error) {
-        res.json({ error })
+        response.message = 'error inserting into Chat'
       } else if (results) {
-        res.json({ chatId })
+        response.message = 'successfully inserted into Chat'
       }
     },
   )
@@ -777,12 +778,16 @@ router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
     `INSERT INTO BelongsToChat VALUES('${chatId}', '${member}')`,
     (error, results) => {
       if (error) {
-        res.json({ error })
+        response.message = 'error adding member to chat'
       } else if (results) {
-        res.json({ chatId })
+        response.message = `successfully added ${member} into chat`
+        response.chatId = chatId
       }
     },
   ))
+  console.log('hello')
+  console.log(response)
+  res.json(response)
 })
 
 // [POST] add a new user to a chat
