@@ -762,7 +762,10 @@ router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { members } = req.body
   const chatId = uuidv4()
-  const response = {}
+  const response = {
+    message: '',
+    chatId,
+  }
   connection.query(
     `INSERT INTO Chat (chatId, classCode, assignmentId, name) VALUES ('${chatId}', '${classCode}', '${assignmentId}', '${members.join(', ')}');
      `,
@@ -785,8 +788,6 @@ router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
       }
     },
   ))
-  console.log('hello')
-  console.log(response)
   res.json(response)
 })
 
