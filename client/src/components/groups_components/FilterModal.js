@@ -1,12 +1,27 @@
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 
 export default function FilterModal(props) {
   const {
-    show, setShow, tags, // setFilters,
+    show, setShow, tags, applyFilters,
   } = props
   const yearList = ['2023', '2024', '2025', '2026']
-  const schoolList = ['SEAS', 'SAS', 'WHARTON', 'NURSING']
+  const schoolList = ['SEAS', 'SAS', 'Wharton', 'Nursing']
   const majorList = ['CIS', 'EE', 'MATH', 'ASAM', 'BE', 'FNCE']
+  const emptyFilters = {
+    years: [], schools: [], majors: [], tag: [],
+  }
+  const [selected, setSelected] = useState(emptyFilters)
+
+  const handleSelect = (item, type) => {
+    const newSelected = { ...selected }
+    if (newSelected[type].includes(item)) {
+      newSelected[type] = newSelected[type].filter((i) => i !== item)
+    } else {
+      newSelected[type].push(item)
+    }
+    setSelected(newSelected)
+  }
 
   return (
     show
@@ -20,11 +35,25 @@ export default function FilterModal(props) {
           <div className="inline-block pb-6">
             {yearList.map((year) => (
               <button
-                className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-gunmetal mr-2 mb-2"
+                key={year}
+                className={`
+                inline-block
+                rounded-full
+                px-3 py-1
+                mr-2 mb-2
+                text-sm
+                font-sans
+                font-semibold
+                transition
+                ${selected.years.includes(year) ? 'bg-gunmetal text-white' : 'bg-tan text-gunmetal'}
+                hover:bg-gunmetal/80
+                hover:text-white
+                active:bg-gunmetal
+                `}
                 type="button"
+                onClick={() => handleSelect(year, 'years')}
               >
                 {year}
-
               </button>
             ))}
           </div>
@@ -32,8 +61,23 @@ export default function FilterModal(props) {
           <div className="inline-block pb-6">
             {schoolList.map((school) => (
               <button
-                className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-gunmetal mr-2 mb-2"
+                key={school}
+                className={`
+                inline-block
+                rounded-full
+                px-3 py-1
+                mr-2 mb-2
+                text-sm
+                font-sans
+                font-semibold
+                transition
+                ${selected.schools.includes(school) ? 'bg-gunmetal text-white' : 'bg-tan text-gunmetal'}
+                hover:bg-gunmetal/80
+                hover:text-white
+                active:bg-gunmetal
+                `}
                 type="button"
+                onClick={() => handleSelect(school, 'schools')}
               >
                 {school}
               </button>
@@ -43,11 +87,25 @@ export default function FilterModal(props) {
           <div className="inline-block pb-6">
             {majorList.map((major) => (
               <button
-                className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-gunmetal mr-2 mb-2"
+                key={major}
+                className={`
+                inline-block
+                rounded-full
+                px-3 py-1
+                mr-2 mb-2
+                text-sm
+                font-sans
+                font-semibold
+                transition
+                ${selected.majors.includes(major) ? 'bg-gunmetal text-white' : 'bg-tan text-gunmetal'}
+                hover:bg-gunmetal/80
+                hover:text-white
+                active:bg-gunmetal
+                `}
                 type="button"
+                onClick={() => handleSelect(major, 'majors')}
               >
                 {major}
-
               </button>
             ))}
           </div>
@@ -55,8 +113,10 @@ export default function FilterModal(props) {
           <div className="inline-block pb-6">
             {tags.map((tag) => (
               <button
+                key={tag}
                 className="inline-block bg-rust rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-white mr-2 mb-2"
                 type="button"
+                onClick={() => handleSelect(tag, 'tags')}
               >
                 {tag}
               </button>
@@ -69,12 +129,15 @@ export default function FilterModal(props) {
               onClick={() => setShow(false)}
             >
               Cancel
-
             </button>
             <button
               className="border border-green-700 text-green-700 transition hover:bg-green-700 hover:text-white rounded-xl p-2"
               type="button"
-              onClick={() => setShow(false)}
+              onClick={() => {
+                setShow(false)
+                applyFilters(selected)
+                setSelected(emptyFilters)
+              }}
             >
               Apply
             </button>

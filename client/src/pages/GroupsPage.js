@@ -2,15 +2,16 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
-import config from '../config.json'
 import GroupsPageTabs from '../components/groups_components/GroupsPageTabs'
 import Header from '../components/Header'
-import { getGroupIds, getGroupSize, getMyGroupId } from '../infoHelpers'
+import {
+  baseUrl, getGroupIds, getGroupSize, getMyGroupId,
+} from '../infoHelpers'
 
 export default function GroupsPage() {
   const navigate = useNavigate()
   const getUser = async () => {
-    const { data } = await axios.get(`${config.server_domain}/username`)
+    const { data } = await axios.get(`${baseUrl}/username`)
     if (!data) {
       navigate('/login')
     }
@@ -32,7 +33,7 @@ export default function GroupsPage() {
 
   const getInstructors = async () => {
     const { data: instructorData } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}/instructor`),
+      encodeURI(`${baseUrl}/class/${classCode}/instructor`),
     )
     if (instructorData) {
       setInstructors(instructorData)
@@ -43,7 +44,7 @@ export default function GroupsPage() {
 
   const getClassTitle = async () => {
     const { data: { results: [{ className }] } } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}`),
+      encodeURI(`${baseUrl}/class/${classCode}`),
     )
     if (className) {
       setClassTitle(className)
@@ -53,10 +54,10 @@ export default function GroupsPage() {
   }
 
   const getRequested = async () => {
-    const { data: groupRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/groups`)
-    const { data: individualRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/individuals`)
-    const { data: outgoingGroupRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/groups`)
-    const { data: outgoingIndividualRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/individuals`)
+    const { data: groupRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/groups`)
+    const { data: individualRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/individuals`)
+    const { data: outgoingGroupRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/groups`)
+    const { data: outgoingIndividualRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/individuals`)
     const allRequested = new Set(
       groupRequested
         .concat(individualRequested)
@@ -79,7 +80,7 @@ export default function GroupsPage() {
     setMyGroupId(groupId)
     if (groupId) {
       const { data: members } = await axios.get(
-        encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`),
+        encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`),
       )
       if (members) {
         setGroupMembers(members)
@@ -95,7 +96,7 @@ export default function GroupsPage() {
   // get all individuals in class without a group
   const getIndividuals = async () => {
     const { data: { results } } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/no-group`),
+      encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/no-group`),
     )
     if (results) {
       setIndividuals(results)
@@ -107,7 +108,7 @@ export default function GroupsPage() {
   // get all individuals in class with a group
   const getGrouped = async () => {
     const { data: { results } } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/grouped`),
+      encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/grouped`),
     )
     if (results) {
       setGrouped(results)
