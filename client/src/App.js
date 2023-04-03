@@ -12,6 +12,7 @@ import ProfileForm from './ProfileForm'
 import Profile from './Profile'
 import ChatPage from './pages/ChatPage'
 import RequestsPage from './pages/RequestsPage'
+import InstructorAssignmentsPage from './pages/InstructorAssignmentsPage'
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
   {
     path: 'chat/:initialChatId?',
     element: <ChatPage />,
+  },
+  {
+    path: '/courses/:classCode/assignments/instructormode',
+    element: <InstructorAssignmentsPage />,
   },
 ])
 

@@ -427,6 +427,44 @@ router.get('/class/:classCode/assignments/:assignmentId/groupSize', async (req, 
   )
 })
 
+// INSTRUCTOR MODE ASSIGNMENT ROUTES
+
+// Creates a new assignment
+router.post('/class/:classCode/assignments/:assignmentId', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { deadline, maxGroupSize, minGroupSize } = req.body
+  connection.query(
+    `INSERT INTO Assignment(assignmentId, classCode, deadline, maxGroupSize, minGroupSize, numGroups)
+    VALUES ('${assignmentId}', '${classCode}', '${deadline}', ${maxGroupSize}, ${minGroupSize}, 20);
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// Updates details for an existing assignment
+router.put('/class/:classCode/assignments/:assignmentId', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  const { deadline, maxGroupSize, minGroupSize } = req.body
+  connection.query(
+    `INSERT INTO Assignment(assignmentId, classCode, deadline, maxGroupSize, minGroupSize, numGroups)
+    VALUES ('${assignmentId}', '${classCode}', '${deadline}', ${maxGroupSize}, ${minGroupSize}, 20);
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 /* GROUP ROUTES */
 
 // GET all the groups for a specific assignment
