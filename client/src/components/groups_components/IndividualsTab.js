@@ -15,12 +15,7 @@ export default function IndividualsTab(props) {
   const items = students.map(
     (student) => ({
       id: student.username,
-      username: student.username,
       name: `${student.firstName} ${student.lastName}`,
-      year: student.year,
-      schools: student.schools.split(','),
-      majors: student.majors.split(','),
-      tags: student.tags?.split(','),
     }),
   )
   const groupUsernames = groupMembers.map((member) => member.username)
@@ -55,6 +50,15 @@ export default function IndividualsTab(props) {
     })
   }
 
+  const handleOnSearch = (string, results) => {
+    if (string) {
+      const usernames = new Set(results.map((item) => item.id))
+      setDisplayed(students.filter((s) => usernames.has(s.username)))
+    } else {
+      setDisplayed(students)
+    }
+  }
+
   return (
     <>
       {requestShow && (
@@ -82,6 +86,7 @@ export default function IndividualsTab(props) {
               }
             }
             onSelect={(item) => selectStudent(item)}
+            onSearch={handleOnSearch}
             onClear={() => setDisplayed(students)}
           />
         </div>
@@ -97,7 +102,6 @@ export default function IndividualsTab(props) {
             if (!filtersApplied) {
               setFilterShow(true)
             } else {
-              // TODO: clear filters
               setFiltersApplied(false)
               setDisplayed(students)
             }
