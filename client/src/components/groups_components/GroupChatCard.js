@@ -1,11 +1,32 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ChatIcon from '@mui/icons-material/Chat'
+import { getChatId, createGroupChat } from '../../infoHelpers'
 
-export default function GroupChatCard({ groupId }) {
+export default function GroupChatCard({
+  classCode, assignmentId, groupId, groupMembers,
+}) {
   const navigate = useNavigate()
+  const [chatId, setChatId] = useState('')
+  const groupUsernames = groupMembers.map((m) => m.username)
 
-  const onClick = () => {
-    navigate(`/chat/${groupId}`) // navigate to chat page
+  useEffect(() => {
+    getChatId(groupUsernames)
+      .then((cid) => setChatId(cid))
+  }, [])
+
+  const onClick = async () => {
+    if (chatId) {
+      navigate(`/chat/${chatId}`)
+    } else {
+      const newChatId = await createGroupChat(
+        classCode,
+        assignmentId,
+        groupId,
+        groupUsernames,
+      )
+      navigate(`/chat/${newChatId}`)
+    }
   }
 
   return (

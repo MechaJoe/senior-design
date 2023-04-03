@@ -1,5 +1,4 @@
 import { createPortal } from 'react-dom'
-import { Button } from '@mui/material'
 
 export default function ConfirmModal({ action, confirm, onClose }) {
   const generateMessage = (a) => {
@@ -20,11 +19,31 @@ export default function ConfirmModal({ action, confirm, onClose }) {
         role="button"
         tabIndex={0}
       >
-        <div className="flex flex-col justify-center items-center w-96 h-52 bg-white rounded-2xl border-[6px] text-gunmetal text-xl p-6 border-gunmetal">
+        <div className="flex flex-col justify-center items-center w-96 h-52 bg-white rounded-2xl border-[6px] text-gunmetal text-xl p-6 border-gunmetal font-sans">
           {generateMessage(action)}
           <div className="flex flex-row w-full pt-12 justify-between">
-            <Button variant="outlined" color={`${action === 'leave' ? 'error' : 'success'}`} onClick={onClose}>Cancel</Button>
-            <Button variant="contained" color={`${action === 'leave' ? 'error' : 'success'}`} onClick={confirm}>Confirm</Button>
+            <button
+              type="button"
+              className={`p-2 rounded-xl transition border
+                ${action === 'leave'
+                ? 'border-red-700 text-red-700 bg-white hover:bg-red-100'
+                : 'border-green-700 text-green-700 bg-white hover:bg-green-100'
+                }`}
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={`p-2 rounded-xl transition border
+                ${action === 'leave'
+                ? 'border-red-700 hover:bg-red-800 bg-red-700 text-white'
+                : 'border-green-700 hover:bg-green-800 bg-green-700 text-white'
+                }`}
+              onClick={confirm}
+            >
+              Confirm
+            </button>
           </div>
         </div>
       </div>,
