@@ -806,32 +806,34 @@ router.post('/chats/:chatId/add', async (req, res) => {
 })
 
 // [POST] a new chat (an established group)
-router.post('/chats/:classCode/assignments/:assignmentId/:groupId', async (req, res) => {
+router.post('/chats/:classCode/assignments/:assignmentId/groups/:groupId', async (req, res) => {
   const { classCode, assignmentId, groupId } = req.params
   const { members } = req.body
   const chatId = uuidv4()
+  const response = {}
   connection.query(
-    `INSERT INTO Chat (chatId, classCode, groupId, assignmentId) VALUES ('${chatId}', '${classCode}', '${groupId}','${assignmentId}'');
+    `INSERT INTO Chat (chatId, classCode, groupId, assignmentId, name)
+     VALUES ('${chatId}', '${classCode}', '${groupId}','${assignmentId}', '${members.join(', ')}');
      `,
     (error, results) => {
       if (error) {
         res.json({ error })
       } else if (results) {
-        res.json(results)
+        members.forEach((member) => connection.query(
+          `INSERT INTO BelongsToChat (chatId, username) VALUES ('${chatId}', '${member}');
+          `,
+          (error2, results2) => {
+            if (error2) {
+              response.message = 'error adding member to chat'
+            } else if (results2) {
+              response.message = 'success creating chat and adding members'
+            }
+          },
+        ))
+        res.json({ chatId })
       }
     },
   )
-  members.forEach((member) => connection.query(
-    `INSERT INTO BelongstoChat VALUES('${chatId}', '${member})
-    `,
-    (error, results) => {
-      if (error) {
-        res.json({ error })
-      } else if (results) {
-        res.json(results)
-      }
-    },
-  ))
 })
 
 /* REQUEST ROUTES */

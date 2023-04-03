@@ -80,7 +80,12 @@ export default function GroupsPageTabs(props) {
         <TabPanel value={value} index={0}>
           <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4">
             {/* My Group */}
-            <GroupChatCard />
+            <GroupChatCard
+              classCode={classCode}
+              assignmentId={assignmentId}
+              groupId={myGroupId}
+              groupMembers={groupMembers}
+            />
             {groupMembers?.map((member) => (
               <FullProfileCard
                 classCode={classCode}

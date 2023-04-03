@@ -131,6 +131,11 @@ export const createChat = async (classCode, assignmentId, members) => {
   }
 }
 
+export const createGroupChat = async (classCode, assignmentId, groupId, members) => {
+  const { data } = await axios.post(`${baseUrl}/chats/${classCode}/assignments/${assignmentId}/groups/${groupId}`, { members })
+  return data
+}
+
 export const getUserAllChats = async () => {
   try {
     const res = await axios.get(`${baseUrl}/chats/all`)
