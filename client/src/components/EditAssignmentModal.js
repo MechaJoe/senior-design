@@ -10,13 +10,17 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import config from '../config.json'
 
-export default function CreateAssignmentModal({ classCode, show, setShow }) {
-  const [assName, setAssName] = useState('')
+export default function EditAssignmentModal({
+  assignmentId, deadlineDate, groupMinMax, classCode, editShow, setEditShow,
+}) {
+  const [assName, setAssName] = useState(assignmentId)
   const currentDate = new Date()
-  const [deadline, setDeadline] = useState(currentDate.getDate())
-  const [groupSize, setGroupSize] = useState([1, 5])
-  const handleClose = () => setShow(false)
+  const [deadline, setDeadline] = useState(deadlineDate.toISOString())
+  const [groupSize, setGroupSize] = useState(groupMinMax)
+  const handleClose = () => setEditShow(false)
 
+  console.log(`Edit Show is: ${editShow}`)
+  console.log(`DDate: ${deadlineDate.toISOString()}`)
   console.log(`Ass Name: ${assName}`)
   console.log(`Deadline: ${deadline}`)
   console.log(`Min: ${groupSize[0]}, Max: ${groupSize[1]}`)
@@ -36,22 +40,22 @@ export default function CreateAssignmentModal({ classCode, show, setShow }) {
     fontStyle: 'font-sans',
   }
 
-  const handleCancelOnClick = () => setShow(false)
+  const handleCancelOnClick = () => setEditShow(false)
 
   const handleSaveOnClick = async () => {
-    await axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}`, { deadline, maxGroupSize: groupSize[1], minGroupSize: groupSize[0] })
-    setShow(false)
+    await axios.put(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}`, { deadline, maxGroupSize: groupSize[1], minGroupSize: groupSize[0] })
+    setEditShow(false)
   }
 
   return (
     <Modal
-      open={show}
+      open={editShow}
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
     >
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mt: 2 }} className="font-sans">
-          Create Assignment
+          Edit Assignment
         </Typography>
         <FormControl fullWidth>
           <TextField id="outlined-basic" value={assName} label="Assignment Name" variant="outlined" sx={{ mt: 4 }} onChange={(e) => setAssName(e.target.value)} />
@@ -61,6 +65,8 @@ export default function CreateAssignmentModal({ classCode, show, setShow }) {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               label="Group Formation Deadline"
+              // value={deadline}
+              inputFormat="YYYY-MM-DDTHH:mm:ss. sssZ"
               onChange={(newDeadline) => {
                 const date = new Date(newDeadline)
                 setDeadline(date.toISOString())

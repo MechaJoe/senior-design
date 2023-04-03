@@ -7,6 +7,7 @@ import {
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import EditAssignmentModal from './CreateAssignmentModal'
 import config from '../config.json'
 
 function AssignmentCard({
@@ -16,6 +17,7 @@ function AssignmentCard({
   const navigate = useNavigate()
   const [groupSize, setGroupSize] = useState({})
   const [shadow, setShadow] = useState(1)
+  const [editShow, setEditShow] = useState(false)
 
   const options = {
     weekday: 'long',
@@ -37,6 +39,12 @@ function AssignmentCard({
 
   const onMouseOver = () => setShadow(20)
   const onMouseOut = () => setShadow(1)
+
+  const handleEditOnClick = () => {
+    console.log('I am editing')
+    setEditShow(true)
+    console.log(`EditShow is: ${editShow}`)
+  }
 
   useEffect(() => {
     getGroupSize().then((res) => {
@@ -86,8 +94,21 @@ function AssignmentCard({
             </div>
             <div className="text-2xl" style={{ display: 'inline-block' }}>
               {/* TODO: Add onclick later */}
+              {editShow && (
+                <EditAssignmentModal
+                  assName={assignmentId}
+                  deadlineDate={deadlineDate}
+                  groupMinMax={groupSize}
+                  classCode={classCode}
+                  editShow
+                  setEditShow={setEditShow}
+                />
+              )}
               <IconButton>
-                <EditIcon style={{ color: '#227FEC', fontSize: 40 }} />
+                <EditIcon
+                  style={{ color: '#227FEC', fontSize: 40 }}
+                  onClick={handleEditOnClick}
+                />
               </IconButton>
               <IconButton>
                 <DeleteForeverIcon style={{ color: '#CB5045', fontSize: 40 }} />
