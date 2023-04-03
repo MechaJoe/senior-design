@@ -30,13 +30,20 @@ import Header from './components/Header'
 // function Profile({ bio }) {
 function Profile() {
   const navigate = useNavigate()
-  const [emailAddress, setEmailAddress] = useState('yuanb@seas.upenn.edu')
-  const [username, setUsername] = useState('yuanb')
-  const [firstName, setFirstName] = useState('Brandy')
-  const [lastName, setLastName] = useState('Yuan')
-  const [majors, setMajors] = useState(['CIS'])
-  const [school, setSchool] = useState(['SEAS'])
-  const [year, setYear] = useState('2023')
+  // const [emailAddress, setEmailAddress] = useState('yuanb@seas.upenn.edu')
+  // const [username, setUsername] = useState('yuanb')
+  // const [firstName, setFirstName] = useState('Brandy')
+  // const [lastName, setLastName] = useState('Yuan')
+  // const [majors, setMajors] = useState(['CIS'])
+  // const [school, setSchool] = useState(['SEAS'])
+  // const [year, setYear] = useState('2023')
+  const [emailAddress, setEmailAddress] = useState('')
+  const [username, setUsername] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [majors, setMajors] = useState([''])
+  const [school, setSchool] = useState([''])
+  const [year, setYear] = useState('')
   const [profileImageUrl, setProfileImageUrl] = useState('')
   const [modal, setModal] = useState(false)
   // const [fields, setFields] = useState({})
@@ -44,6 +51,7 @@ function Profile() {
   //   emailAddress, username, firstName, lastName, year, majors, school, // profileImageUrl,
   // } = fields
   const [bio, setBio] = useState('')
+  const [bioInput, setBioInput] = useState('')
 
   const fetchData = async () => {
     const { data: [data] } = await axios.get(`http://localhost:${config.server_port}/profile`)
@@ -66,18 +74,18 @@ function Profile() {
     fetchData()
   }, [])
   const handleEditBio = async () => {
-    setBio(bio)
-    if (!bio) {
+    if (!bioInput) {
       return
     }
+    console.log(bioInput)
+
     const { data } = await axios.post(`http://${config.server_host}:${config.server_port}/profile/edit`, {
-      emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school, bio,
+      emailAddress, username, firstName, lastName, profileImageUrl, year, majors, school, bioInput,
     }, { withCredentials: true })
     if (data === 'success') {
       console.log('uploaded successfully')
-      navigate('/profile', {
-        firstName, lastName, majors, school, username, emailAddress, year, profileImageUrl, bio,
-      })
+      setBio(bioInput)
+      setBioInput('')
       // window.location.reload()
       // useNavigate('/dashboard', { replace: true })
     } else {
@@ -87,7 +95,7 @@ function Profile() {
 
   return (
     <Box
-      className="container mx-auto min-w-full bg-white"
+      className="container w-screen mx-auto min-w-full bg-white min-h-screen"
     >
       {/* // eslint-disable-next-line react/jsx-indent */}
       <Header />
@@ -100,23 +108,36 @@ function Profile() {
           year={year}
         />
         <Stack marginTop={20} marginLeft={10} spacing={6}>
-          <Stack spacing={2}>
-            {/* <div className="flex flex-col p-6"> */}
-            <Typography variant="h3" fullWidth>
-              {firstName}
-              {' '}
-              {lastName}
-            </Typography>
-            <Typography variant="h8" fullWidth>
-              Add a bio...
-              {' '}
-              <Button onClick={() => setModal(true)}>
-                {' '}
-                <ModeOutlinedIcon />
-              </Button>
+          {/* <Stack spacing={2}> */}
+          {/* <div className="flex flex-col p-6"> */}
+          <Typography variant="h3" fullWidth>
+            {firstName}
+            {' '}
+            {lastName}
+          </Typography>
+          {bio
+            ? (
+              <Typography variant="h8" fullWidth>
+                {bio}
+                <Button onClick={() => setModal(true)}>
+                  {' '}
+                  <ModeOutlinedIcon />
+                </Button>
 
-            </Typography>
-          </Stack>
+              </Typography>
+            )
+            : (
+              <Typography variant="h8" fullWidth>
+                Add a bio...
+                {' '}
+                <Button onClick={() => setModal(true)}>
+                  {' '}
+                  <ModeOutlinedIcon />
+                </Button>
+
+              </Typography>
+            )}
+          {/* </Stack> */}
 
           <Stack spacing={1}>
             <Typography variant="h6" fullWidth>
@@ -150,13 +171,13 @@ function Profile() {
         sx={{ border: 4, borderColor: 'black', borderRadius: 4 }}
       >
         <Stack fullWidth spacing={4} className="bg-white pt-10 min-h-full min-w-full rounded-xl">
-          <Typography fullWidth variant="h8" alignItems="center" justifyContent="center" className="bg-skyblue py-5 text-center w-full">
+          <Typography fullWidth variant="h8" alignItems="center" justifyContent="center" className="bg-skybluelight py-5 text-center w-full">
             Add or modify your profile bio in the text box below
           </Typography>
-          <TextField alignItems="center" value={bio} onInput={(e) => setBio(e.target.value)} justifyContent="center" placeholder="Enter bio here..." />
+          <TextField alignItems="center" value={bioInput} onInput={(e) => setBioInput(e.target.value)} justifyContent="center" placeholder="Enter bio here..." />
           <Stack direction="row" alignItems="center" justifyContent="right">
-            <Button onClick={() => setModal(false)} variant="filled" className="text-black"> Close </Button>
-            <Button onClick={handleEditBio} variant="filled"> Add </Button>
+            <Button onClick={() => { setModal(false); setBioInput(' ') }} variant="filled" className="text-black"> Close </Button>
+            <Button onClick={() => { handleEditBio(); setModal(false) }} variant="filled"> Add </Button>
           </Stack>
         </Stack>
       </Modal>
