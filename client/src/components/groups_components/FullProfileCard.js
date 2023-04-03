@@ -31,12 +31,14 @@ export default function FullProfileCard(props) {
     if (dmId) {
       navigate(`/chat/${dmId}`)
     } else {
-      const newChatId = await createChat(
+      const { chatId } = await createChat(
         classCode,
         assignmentId,
         [username, await checkUserLoggedIn()],
       )
-      navigate(`/chat/${newChatId}`)
+      console.log('here')
+      console.log(chatId)
+      navigate(`/chat/${chatId}`)
     }
   }
 
