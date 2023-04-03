@@ -3,13 +3,14 @@
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined'
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
-// import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined'
 import {
   Stack, Typography,
 } from '@mui/material'
+import Initials from './Initials'
+// import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined'
 
 function ProfileSidebar({
-  majors, school, year,
+  firstName, lastName, majors, school, year,
 }) {
   return (
 
@@ -20,17 +21,7 @@ function ProfileSidebar({
         }}
         />
         {/* <ModeEditOutlineOutlinedIcon justify="space-between" /> */}
-        <div style={{
-          padding: '60px',
-          display: 'block',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          height: '250px',
-          width: '250px',
-          backgroundColor: '#E9EFF3',
-          borderRadius: '50%',
-        }}
-        />
+        <Initials firstName={firstName} lastName={lastName} />
         <Typography variant="h7" fullWidth className="text-xl font-bold px-6 pt-2">
           <HomeOutlinedIcon />
           {' '}
