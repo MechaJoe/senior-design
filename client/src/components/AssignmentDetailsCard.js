@@ -1,20 +1,18 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import {
   Button, ButtonBase, Card, CardContent, Box, IconButton,
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import EditAssignmentModal from './CreateAssignmentModal'
+import EditAssignmentModal from './EditAssignmentModal'
 import config from '../config.json'
 
 function AssignmentCard({
   classCode, assignmentId, deadline,
 }) {
-  // eslint-disable-next-line no-unused-vars
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const [groupSize, setGroupSize] = useState({})
   const [shadow, setShadow] = useState(1)
   const [editShow, setEditShow] = useState(false)
@@ -94,16 +92,14 @@ function AssignmentCard({
             </div>
             <div className="text-2xl" style={{ display: 'inline-block' }}>
               {/* TODO: Add onclick later */}
-              {editShow && (
-                <EditAssignmentModal
-                  assName={assignmentId}
-                  deadlineDate={deadlineDate}
-                  groupMinMax={groupSize}
-                  classCode={classCode}
-                  editShow
-                  setEditShow={setEditShow}
-                />
-              )}
+              <EditAssignmentModal
+                assName={assignmentId}
+                deadlineDate={deadlineDate}
+                groupMinMax={groupSize}
+                classCode={classCode}
+                editShow={editShow}
+                setEditShow={setEditShow}
+              />
               <IconButton>
                 <EditIcon
                   style={{ color: '#227FEC', fontSize: 40 }}

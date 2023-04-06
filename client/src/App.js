@@ -5,7 +5,7 @@ import {
 import CoursesPage from './pages/CoursesPage'
 import AssignmentsPage from './pages/AssignmentsPage'
 import HomePage from './pages/HomePage'
-// import GroupsPage from './pages/GroupsPage'
+import GroupsPage from './pages/GroupsPage'
 import GroupsPageInstr from './pages/GroupsPageInstr'
 import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
@@ -49,6 +49,10 @@ const router = createBrowserRouter([
   },
   {
     path: 'courses/:classCode/assignments/:assignmentId',
+    element: <GroupsPage />,
+  },
+  {
+    path: 'instructor/courses/:classCode/assignments/:assignmentId',
     element: <GroupsPageInstr />,
   },
   {
