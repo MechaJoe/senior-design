@@ -41,9 +41,8 @@ router.get('/name', (req, res) => {
 })
 
 router.post('/logout', (req, res) => {
-  req.logout()
   req.session.username = null
-  req.session.save()
+  req.session.isInstructor = false
   res.send('Logged out')
 })
 
