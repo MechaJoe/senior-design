@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +9,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import ControlPointDuplicateRoundedIcon from '@mui/icons-material/ControlPointDuplicateRounded'
 import config from '../config.json'
+import { getChatId } from '../infoHelpers'
 
 function AssignmentCard({
   classCode, assignmentId, deadline,
@@ -17,6 +17,7 @@ function AssignmentCard({
   const navigate = useNavigate()
   const [groupInfo, setGroupInfo] = useState([])
   const [groupSize, setGroupSize] = useState({})
+  const [chatId, setChatId] = useState('')
   const [shadow, setShadow] = useState(1)
 
   const options = {
@@ -35,9 +36,14 @@ function AssignmentCard({
   const getGroupInfo = async () => {
     const { data } = await axios.get(
       `http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assignmentId}/my-group-info`,
-      { withCredentials: true },
     )
     return data
+  }
+
+  const openChat = async () => {
+    if (chatId) {
+      navigate(`/chat/${chatId}`)
+    }
   }
 
   const getGroupSize = async () => {
@@ -54,6 +60,11 @@ function AssignmentCard({
   useEffect(() => {
     getGroupInfo().then((res) => {
       setGroupInfo(res)
+      if (res.length > 1) {
+        getChatId(res.map((m) => m.username)).then((id) => {
+          setChatId(id)
+        })
+      }
     })
     getGroupSize().then((res) => {
       setGroupSize(res)
@@ -70,7 +81,7 @@ function AssignmentCard({
       }}
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
-      zDepth={shadow}
+      zdepth={shadow}
     >
       <Box sx={{ justifyContent: 'left', width: 350, height: 400 }}>
         <ButtonBase onClick={enterAssignment}>
@@ -105,7 +116,11 @@ function AssignmentCard({
             </div> */}
             {
               groupInfo ? groupInfo.map((member) => (
-                <div className="pl-8 pt-2 pb-2 pr-2" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div
+                  className="pl-8 pt-2 pb-2 pr-2"
+                  key={member.firstName + member.lastName}
+                  style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}
+                >
                   <AccountCircleOutlinedIcon />
                   <h3>
                     &nbsp;
@@ -116,15 +131,22 @@ function AssignmentCard({
                 </div>
               )) : null
             }
+            {chatId
+            && (
             <Button
               variant="contained"
               startIcon={<ChatOutlinedIcon />}
               style={{
-                margin: '15px', backgroundColor: 'white', color: 'black',
+                margin: '15px', backgroundColor: 'white', color: 'black', zIndex: 1,
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                openChat()
               }}
             >
               Open Chat
             </Button>
+            )}
             <p>
               {groupSize.maxGroupSize - groupInfo.length}
               &nbsp;
