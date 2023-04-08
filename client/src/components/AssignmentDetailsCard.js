@@ -9,7 +9,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import EditAssignmentModal from './EditAssignmentModal'
 import config from '../config.json'
 
-function AssignmentCard({
+function AssignmentDetailsCard({
   classCode, assignmentId, deadline,
 }) {
   // const navigate = useNavigate()
@@ -41,7 +41,7 @@ function AssignmentCard({
   const handleEditOnClick = () => {
     console.log('I am editing')
     setEditShow(true)
-    console.log(`EditShow is: ${editShow}`)
+    console.log(`Here: ${groupSize}`)
   }
 
   useEffect(() => {
@@ -92,14 +92,17 @@ function AssignmentCard({
             </div>
             <div className="text-2xl" style={{ display: 'inline-block' }}>
               {/* TODO: Add onclick later */}
-              <EditAssignmentModal
-                assName={assignmentId}
-                deadlineDate={deadlineDate}
-                groupMinMax={groupSize}
-                classCode={classCode}
-                editShow={editShow}
-                setEditShow={setEditShow}
-              />
+              {editShow && (
+                <EditAssignmentModal
+                  assignmentId={assignmentId}
+                  deadlineDate={deadlineDate}
+                  groupMin={groupSize.minGroupSize}
+                  groupMax={groupSize.maxGroupSize}
+                  classCode={classCode}
+                  editShow={editShow}
+                  setEditShow={setEditShow}
+                />
+              )}
               <IconButton>
                 <EditIcon
                   style={{ color: '#227FEC', fontSize: 40 }}
@@ -118,4 +121,4 @@ function AssignmentCard({
   )
 }
 
-export default AssignmentCard
+export default AssignmentDetailsCard

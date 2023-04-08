@@ -11,18 +11,26 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import config from '../config.json'
 
 export default function EditAssignmentModal({
-  assignmentId, deadlineDate, groupMinMax, classCode, editShow, setEditShow,
+  assignmentId, deadlineDate, groupMin, groupMax, classCode, editShow, setEditShow,
 }) {
   const [assName, setAssName] = useState(assignmentId)
   const currentDate = new Date()
-  const [deadline, setDeadline] = useState(deadlineDate.toISOString())
-  const [groupSize, setGroupSize] = useState(groupMinMax)
+  const [deadline, setDeadline] = useState(deadlineDate.toLocaleString())
+  const [groupSize, setGroupSize] = useState([groupMin, groupMax])
+
+  // const [assName, setAssName] = useState('')
+  // const currentDate = new Date()
+  // const [deadline, setDeadline] = useState(currentDate.getDate())
+  // const [groupSize, setGroupSize] = useState([1, 5])
+
   const handleClose = () => setEditShow(false)
 
   console.log(`Edit Show is: ${editShow}`)
   console.log(`DDate: ${deadlineDate.toISOString()}`)
   console.log(`Ass Name: ${assName}`)
+  console.log(`Ass ID: ${assignmentId}`)
   console.log(`Deadline: ${deadline}`)
+  // console.log(`MinMax Stuff: ${groupMinMax}`)
   console.log(`Min: ${groupSize[0]}, Max: ${groupSize[1]}`)
 
   const style = {
@@ -66,7 +74,8 @@ export default function EditAssignmentModal({
             <DateTimePicker
               label="Group Formation Deadline"
               // value={deadline}
-              inputFormat="YYYY-MM-DDTHH:mm:ss. sssZ"
+              // inputFormat="YYYY-MM-DDTHH:mm:ss. sssZ"
+              inputFormat="MM/DD/YY, HH:mm:ss"
               onChange={(newDeadline) => {
                 const date = new Date(newDeadline)
                 setDeadline(date.toISOString())
