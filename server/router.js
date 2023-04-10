@@ -49,19 +49,34 @@ router.get('/users/:username', async (req, res) => {
 
 // GETs all classes that a logged-in user is in
 router.get('/user/classes', async (req, res) => {
-  const { username } = req.session
-  connection.query(
-    `SELECT Class.classCode, className
-     FROM StudentOf JOIN Class ON StudentOf.classCode = Class.classCode
-     WHERE username = '${username}';`,
-    (error, results) => {
-      if (error) {
-        res.json({ error })
-      } else if (results) {
-        res.json({ results })
-      }
-    },
-  )
+  const { username, isInstructor } = req.session
+  if (!isInstructor) {
+    connection.query(
+      `SELECT Class.classCode, className
+       FROM StudentOf JOIN Class ON StudentOf.classCode = Class.classCode
+       WHERE username = '${username}';`,
+      (error, results) => {
+        if (error) {
+          res.json({ error })
+        } else if (results) {
+          res.json({ results })
+        }
+      },
+    )
+  } else {
+    connection.query(
+      `SELECT Class.classCode, className
+       FROM InstructorOf JOIN Class ON InstructorOf.classCode = Class.classCode
+       WHERE username = '${username}';`,
+      (error, results) => {
+        if (error) {
+          res.json({ error })
+        } else if (results) {
+          res.json({ results })
+        }
+      },
+    )
+  }
 })
 
 // GETs all classes that a user is in

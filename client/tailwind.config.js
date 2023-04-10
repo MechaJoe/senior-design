@@ -23,6 +23,9 @@ module.exports = {
         lilac: '#D9DFFF',
         powderblue: '#E7F5FF',
         gray: '#DFE0DF',
+        card: '#E6DCC740',
+        dark: '#212D3B',
+        orange: '#D87731',
       },
       fontFamily: {
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
