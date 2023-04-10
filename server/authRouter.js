@@ -26,24 +26,8 @@ router.get('/username', (req, res) => {
   res.json(req.session.username)
 })
 
-router.get('/name', (req, res) => {
-  const { username } = req.session
-  const sql = `SELECT first_name, last_name FROM User WHERE username = '${username}'`
-  connection.query(sql, (error, results) => {
-    if (error) {
-      res.json({ error })
-    } else if (results) {
-      res.json(results[0])
-    } else {
-      res.json({ error: 'No results' })
-    }
-  })
-})
-
 router.post('/logout', (req, res) => {
-  req.logout()
-  req.session.username = null
-  req.session.save()
+  req.session.destroy()
   res.send('Logged out')
 })
 
@@ -51,8 +35,16 @@ const verify = async (issuer, profile, cb) => {
   const username = profile.emails[0].value.split('@')[0]
   connection.query(
     `SELECT * FROM Student WHERE username = '${username}'`,
-    (error, results) => {
-      if (error || !results || results.length === 0) {
+    async (error, results) => {
+      if (error) { return cb(error) }
+      if (!results || results.length === 0) {
+        const [insResults] = await connection.promise().query(
+          `SELECT * FROM Instructor WHERE username = '${username}'`,
+        )
+        if (insResults.length > 0) {
+          const instructorProfile = { ...profile, instructor: true }
+          return cb(null, instructorProfile)
+        }
         const newProfile = profile
         newProfile.create = true
         return cb(null, newProfile)
@@ -83,6 +75,7 @@ router.get(
       (err, user) => {
         if (user) {
           const username = user.emails[0].value.split('@')[0]
+
           if (user.create) {
             const query = querystring.stringify({
               emailAddress: user.emails[0].value,
@@ -95,6 +88,7 @@ router.get(
             )
           }
           req.session.username = username
+          req.session.instructor = user.instructor
           req.session.save()
           return res.redirect(`${frontendServer}/courses`)
         }

@@ -6,12 +6,14 @@ import CoursesPage from './pages/CoursesPage'
 import AssignmentsPage from './pages/AssignmentsPage'
 import HomePage from './pages/HomePage'
 import GroupsPage from './pages/GroupsPage'
+import GroupsPageInstr from './pages/GroupsPageInstr'
 import LoginPage from './pages/LoginPage'
 import ProfileForm from './ProfileForm'
 import Profile from './Profile'
 import ChatPage from './pages/ChatPage'
 import InstructorCourses from './pages/InstructorCourses'
 import RequestsPage from './pages/RequestsPage'
+import InstructorAssignmentsPage from './pages/InstructorAssignmentsPage'
 
 const router = createBrowserRouter([
   {
@@ -51,12 +53,20 @@ const router = createBrowserRouter([
     element: <GroupsPage />,
   },
   {
+    path: 'instructor/courses/:classCode/assignments/:assignmentId',
+    element: <GroupsPageInstr />,
+  },
+  {
     path: 'chat/:initialChatId?',
     element: <ChatPage />,
   },
   {
     path: 'instructorcourses',
     element: <InstructorCourses />,
+  },
+  {
+    path: '/courses/:classCode/assignments/instructormode',
+    element: <InstructorAssignmentsPage />,
   },
 ])
 

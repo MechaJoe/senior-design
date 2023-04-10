@@ -61,6 +61,13 @@ export const getMyGroupId = async (classCode, assignmentId) => {
   return groupId
 }
 
+export const getUnassignedStudents = async (classCode, assignmentId) => {
+  const { data } = await axios.get(
+    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/unassigned`,
+  )
+  return data
+}
+
 // get group ID of a user
 export const getGroupId = async (classCode, assignmentId, username) => {
   const { data: [{ groupId }] } = await axios.get(
@@ -129,6 +136,11 @@ export const createChat = async (classCode, assignmentId, members) => {
   } catch (err) {
     throw new Error(err.message)
   }
+}
+
+export const createGroupChat = async (classCode, assignmentId, groupId, members) => {
+  const { data } = await axios.post(`${baseUrl}/chats/${classCode}/assignments/${assignmentId}/groups/${groupId}`, { members })
+  return data
 }
 
 export const getUserAllChats = async () => {

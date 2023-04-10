@@ -1,12 +1,20 @@
+import axios from 'axios'
 import { AppBar, Toolbar } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
 import ChatIcon from '@mui/icons-material/Chat'
 import NotificationsIcon from '@mui/icons-material/Notifications'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { baseUrl } from '../infoHelpers'
 
 export default function Header() {
   const { classCode, assignmentId } = useParams()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await axios.post(`${baseUrl}/logout`)
+    navigate('/login')
+  }
 
   return (
     <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{ backgroundColor: '#03254E', borderBottom: 'solid white' }}>
@@ -29,9 +37,9 @@ export default function Header() {
           <Link to="/profile">
             <AccountCircleIcon fontSize="large" />
           </Link>
-          <Link to="/logout">
+          <button type="button" onClick={handleLogout}>
             <LogoutIcon fontSize="large" />
-          </Link>
+          </button>
         </div>
       </Toolbar>
     </AppBar>

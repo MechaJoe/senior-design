@@ -31,12 +31,14 @@ export default function FullProfileCard(props) {
     if (dmId) {
       navigate(`/chat/${dmId}`)
     } else {
-      const newChatId = await createChat(
+      const { chatId } = await createChat(
         classCode,
         assignmentId,
         [username, await checkUserLoggedIn()],
       )
-      navigate(`/chat/${newChatId}`)
+      console.log('here')
+      console.log(chatId)
+      navigate(`/chat/${chatId}`)
     }
   }
 
@@ -47,7 +49,7 @@ export default function FullProfileCard(props) {
         : (
           <Avatar
             sx={{
-              width: 130, height: 130, font: 'Montserrat', fontSize: '3rem',
+              width: 130, height: 130, font: 'Montserrat', fontSize: '3rem', zIndex: -1,
             }}
             className="mx-auto"
             alt="profile"
@@ -87,7 +89,6 @@ export default function FullProfileCard(props) {
             </div>
           )}
       </div>
-
     </div>
   )
 }

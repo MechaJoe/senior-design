@@ -1,17 +1,17 @@
+/* eslint-disable no-unused-vars */
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
-import GroupsPageTabs from '../components/groups_components/GroupsPageTabs'
+import config from '../config.json'
+import GroupsPageTabsInstr from '../components/groups_components/GroupsPageTabsInstr'
 import Header from '../components/Header'
-import {
-  baseUrl, getGroupIds, getGroupSize, getMyGroupId,
-} from '../infoHelpers'
+import { getGroupIds, getGroupSize, getUnassignedStudents } from '../infoHelpers'
 
-export default function GroupsPage() {
+export default function GroupsPageInstr() {
   const navigate = useNavigate()
   const getUser = async () => {
-    const { data } = await axios.get(`${baseUrl}/username`)
+    const { data } = await axios.get(`${config.server_domain}/username`)
     if (!data) {
       navigate('/login')
     }
@@ -23,17 +23,17 @@ export default function GroupsPage() {
   const { classCode, assignmentId } = useParams()
   const [classTitle, setClassTitle] = useState('')
   const [instructors, setInstructors] = useState([])
-  const [groupMembers, setGroupMembers] = useState([])
+  //   const [groupMembers, setGroupMembers] = useState([])
   const [individuals, setIndividuals] = useState([])
   const [grouped, setGrouped] = useState([])
-  const [myGroupId, setMyGroupId] = useState('')
+  const [unassigned, setUnassigned] = useState([])
   const [groupIds, setGroupIds] = useState([])
   const [groupSize, setGroupSize] = useState({})
   const [requested, setRequested] = useState(new Set())
 
   const getInstructors = async () => {
     const { data: instructorData } = await axios.get(
-      encodeURI(`${baseUrl}/class/${classCode}/instructor`),
+      encodeURI(`${config.server_domain}/class/${classCode}/instructor`),
     )
     if (instructorData) {
       setInstructors(instructorData)
@@ -44,7 +44,7 @@ export default function GroupsPage() {
 
   const getClassTitle = async () => {
     const { data: { results: [{ className }] } } = await axios.get(
-      encodeURI(`${baseUrl}/class/${classCode}`),
+      encodeURI(`${config.server_domain}/class/${classCode}`),
     )
     if (className) {
       setClassTitle(className)
@@ -54,10 +54,10 @@ export default function GroupsPage() {
   }
 
   const getRequested = async () => {
-    const { data: groupRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/groups`)
-    const { data: individualRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/individuals`)
-    const { data: outgoingGroupRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/groups`)
-    const { data: outgoingIndividualRequested } = await axios.get(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/individuals`)
+    const { data: groupRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/groups`)
+    const { data: individualRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/individuals`)
+    const { data: outgoingGroupRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/groups`)
+    const { data: outgoingIndividualRequested } = await axios.get(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/requests/outgoing/individuals`)
     const allRequested = new Set(
       groupRequested
         .concat(individualRequested)
@@ -75,28 +75,16 @@ export default function GroupsPage() {
   }, [])
 
   // get group members of logged in user
-  const getMyGroup = async () => {
-    const groupId = await getMyGroupId(classCode, assignmentId)
-    setMyGroupId(groupId)
-    if (groupId) {
-      const { data: members } = await axios.get(
-        encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/members`),
-      )
-      if (members) {
-        setGroupMembers(members)
-      } else {
-        console.log('empty group')
-      }
-    } else {
-      console.log('no group members')
-    }
-    return groupId
+  const getUnassigned = async () => {
+    const { results } = await getUnassignedStudents(classCode, assignmentId)
+    console.log(results)
+    setUnassigned(results)
   }
 
   // get all individuals in class without a group
   const getIndividuals = async () => {
     const { data: { results } } = await axios.get(
-      encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/no-group`),
+      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/no-group`),
     )
     if (results) {
       setIndividuals(results)
@@ -108,7 +96,7 @@ export default function GroupsPage() {
   // get all individuals in class with a group
   const getGrouped = async () => {
     const { data: { results } } = await axios.get(
-      encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/grouped`),
+      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/grouped`),
     )
     if (results) {
       setGrouped(results)
@@ -118,7 +106,7 @@ export default function GroupsPage() {
   }
 
   useEffect(() => {
-    getMyGroup()
+    getUnassigned()
     getClassTitle()
     getIndividuals()
     getGrouped()
@@ -149,13 +137,12 @@ export default function GroupsPage() {
             {' '}
             {assignmentId}
           </div>
-          <GroupsPageTabs
+          <GroupsPageTabsInstr
             classCode={classCode}
             assignmentId={assignmentId}
-            groupMembers={groupMembers}
+            unassigned={unassigned}
             individuals={individuals}
             grouped={grouped}
-            myGroupId={myGroupId}
             groupIds={groupIds}
             groupSize={groupSize}
             requested={requested}
