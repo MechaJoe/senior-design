@@ -13,8 +13,7 @@ export default function GroupCard(props) {
 
   useEffect(() => {
     getMembers(classCode, assignmentId, groupId).then((data) => {
-      if (data && data !== []) {
-        console.log(data)
+      if (data && data.length > 0) {
         setGroupMembers(data)
       } else {
         console.log('no group found')

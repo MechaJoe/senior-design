@@ -9,9 +9,20 @@ import { sendRequest, getGroupId } from '../../infoHelpers'
 export default function IndividualsTab(props) {
   const {
     groupMembers, individuals, grouped, requested, classCode, assignmentId,
-    // tags, TODO: get tags from route in GroupsPage
+    tags,
   } = props
-  const students = individuals?.concat(grouped)
+
+  const compareStudent = (a, b) => {
+    if (individuals?.includes(a)) {
+      return -1
+    }
+    if (individuals?.includes(b)) {
+      return 1
+    }
+    return a.username.localeCompare(b.username)
+  }
+
+  const students = individuals?.concat(grouped).sort(compareStudent)
   const items = students.map(
     (student) => ({
       id: student.username,
@@ -24,8 +35,6 @@ export default function IndividualsTab(props) {
   const [filtersApplied, setFiltersApplied] = useState(false)
   const [toGroupId, setToGroupId] = useState('')
   const [displayed, setDisplayed] = useState(students)
-
-  const tags = ['Frontend', 'Backend', 'Fullstack', 'Design', 'UX', 'UI', 'Data Science', 'Machine Learning', 'Mobile', 'Web']
 
   const applyFilters = (filters) => {
     const newDisplayed = []

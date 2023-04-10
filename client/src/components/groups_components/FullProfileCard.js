@@ -11,6 +11,7 @@ export default function FullProfileCard(props) {
     requested,
     showModal,
     locked,
+    // TODO: tagList
   } = props
 
   const navigate = useNavigate()
