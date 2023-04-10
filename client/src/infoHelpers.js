@@ -181,3 +181,30 @@ export const getChatAllMembers = async (chatId) => {
     throw new Error(err.message)
   }
 }
+
+export const createCourse = async (classCode, className) => {
+  try {
+    const { data } = await axios.post(`${baseUrl}/instructor/class/new`, { classCode, className })
+    return data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+export const addStudent = async (username, classCode) => {
+  try {
+    const { data } = await axios.post(`${baseUrl}/instructor/class/${classCode}/${username}`)
+    return data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+export const addTag = async (classCode, content) => {
+  try {
+    const { data } = await axios.post(`${baseUrl}/instructor/class/${classCode}/tags/new`, { content })
+    return data
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}

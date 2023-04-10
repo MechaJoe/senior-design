@@ -97,7 +97,6 @@ function Profile() {
     <Box
       className="container w-screen mx-auto min-w-full bg-white min-h-screen"
     >
-      {/* // eslint-disable-next-line react/jsx-indent */}
       <Header />
       <div className="flex flex-row min-h-screen">
         <ProfileSidebar

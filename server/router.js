@@ -49,19 +49,34 @@ router.get('/users/:username', async (req, res) => {
 
 // GETs all classes that a logged-in user is in
 router.get('/user/classes', async (req, res) => {
-  const { username } = req.session
-  connection.query(
-    `SELECT Class.classCode, className
-     FROM StudentOf JOIN Class ON StudentOf.classCode = Class.classCode
-     WHERE username = '${username}';`,
-    (error, results) => {
-      if (error) {
-        res.json({ error })
-      } else if (results) {
-        res.json({ results })
-      }
-    },
-  )
+   const { username, instructor } = req.session
+   if (!instructor) {
+     connection.query(
+       `SELECT Class.classCode, className
+        FROM StudentOf JOIN Class ON StudentOf.classCode = Class.classCode
+        WHERE username = '${username}';`,
+       (error, results) => {
+         if (error) {
+           res.json({ error })
+         } else if (results) {
+           res.json({ results })
+         }
+       },
+     )
+   } else {
+     connection.query(
+       `SELECT Class.classCode, className
+        FROM InstructorOf JOIN Class ON InstructorOf.classCode = Class.classCode
+        WHERE username = '${username}';`,
+       (error, results) => {
+         if (error) {
+           res.json({ error })
+         } else if (results) {
+           res.json({ results })
+         }
+       },
+     )
+   }
 })
 
 // GETs all classes that a user is in
@@ -1167,6 +1182,55 @@ router.post('/accept-request', async (req, res) => {
   UPDATE BelongsToGroup, myGID
   SET BelongsToGroup.groupId = myGID.groupId
   WHERE classCode = '${classCode}' AND assignmentId = '${assignmentId}' AND BelongsToGroup.groupId = '${fromGroupId}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] Create a new course
+router.post('/instructor/class/new', async (req, res) => {
+  const { classCode, className } = req.body
+  const { username } = req.session
+  connection.query(
+    `INSERT INTO Class (classCode, className) VALUES ('${classCode}', '${className}');
+    INSERT INTO InstructorOf (username, classCode) VALUES ('${username}', '${classCode}')`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] Add a student to a course
+router.post('/instructor/class/:classCode/:username', async (req, res) => {
+  const { classCode, username } = req.params
+  connection.query(
+    `INSERT INTO StudentOf (username, classCode) VALUES ('${username}', '${classCode}' );`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] add a new tag for a course
+router.post('/instructor/class/:classCode/tags/new', async (req, res) => {
+  const { classCode } = req.params
+  const { content } = req.body
+  const tagId = uuidv4()
+  connection.query(
+    `INSERT INTO Tag (tagId, classCode, content) VALUES ('${tagId}', '${classCode}', '${content}');`,
     (error, results) => {
       if (error) {
         res.json({ error })
