@@ -167,9 +167,12 @@ function InstructorCourses() {
                 </Grid>
               ),
             )}
+            <Grid item md={4} style={{ marginTop: 10 }}>
+              <AddCourseCard />
+
+            </Grid>
           </Grid>
         )}
-        <AddCourseCard />
       </div>
     </div>
   )

@@ -6,18 +6,12 @@ export default function AddCourseCard() {
   // const navigate = useNavigate()
   const [show, setShow] = useState(false)
 
-  // const onConfirm = () => {
-  //   navigate('/')
-  // }
-
   return (
     <>
       {show && (
         <AddCourseModal
           show={show}
           setShow={setShow}
-        // onClose={() => setIsShowing(false)}
-        // confirm={onConfirm}
         />
       )}
       <button

@@ -1,8 +1,11 @@
 import { useState } from 'react'
 
-export default function AddTagsBar() {
+export default function AddTagsBar(props) {
+  const {
+    tags, setTags,
+  } = props
   const [input, setInput] = useState('')
-  const [tags, setTags] = useState([])
+  // const [tags, setTags] = useState([])
   const [isKeyReleased, setIsKeyReleased] = useState(false)
 
   const onChange = (e) => {

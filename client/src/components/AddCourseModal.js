@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 import { useState } from 'react'
@@ -6,26 +7,19 @@ import {
   FormControl, TextField,
 } from '@mui/material'
 import AddTagsBar from './AddTagsBar'
+import {
+  addTag, addStudent, createCourse,
+} from '../infoHelpers'
 
 export default function AddCourseModal(props) {
   const {
     show, setShow,
   } = props
   const [name, setName] = useState('')
+  const [tags, setTags] = useState([])
   const [classCode, setClassCode] = useState('')
   const [pt1, setPt1] = useState(true)
   const [pt2, setPt2] = useState(true)
-  //   const [selected, setSelected] = useState(emptyFilters)
-
-  //   const handleSelect = (item, type) => {
-  //     const newSelected = { ...selected }
-  //     if (newSelected[type].includes(item)) {
-  //       newSelected[type] = newSelected[type].filter((i) => i !== item)
-  //     } else {
-  //       newSelected[type].push(item)
-  //     }
-  //     setSelected(newSelected)
-  //   }
 
   const [file, setFile] = useState()
   const [array, setArray] = useState([])
@@ -48,11 +42,13 @@ export default function AddCourseModal(props) {
       }, {})
       return obj
     })
-    console.log('there')
-    console.log(arr)
     setArray(arr)
-    console.log('here')
-    console.log(array)
+  }
+
+  const addStudents = () => {
+    array.map((item) => (
+      addStudent(Object.values(item)[0], Object.values(item)[1])
+    ))
   }
 
   const handleOnSubmit = (e) => {
@@ -63,12 +59,17 @@ export default function AddCourseModal(props) {
         const text = event.target.result
         csvFileToArray(text)
       }
-      console.log('helllo')
-      console.log(array)
       fileReader.readAsText(file)
+      alert('Successfully submitted CSV')
     }
   }
-  const headerKeys = Object.keys(Object.assign({}, ...array))
+
+  const addTags = () => {
+    tags.map((tag) => (
+      addTag(classCode, tag)
+    ))
+  }
+
   return (
     show
     && createPortal(
@@ -88,7 +89,6 @@ export default function AddCourseModal(props) {
                       value={classCode}
                       onChange={(e) => setClassCode(e.target.value)}
                     />
-                    {/* <FormHelperText>Select your year</FormHelperText> */}
                   </FormControl>
                   <br />
                   <FormControl fullWidth>
@@ -99,7 +99,6 @@ export default function AddCourseModal(props) {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
-                    {/* <FormHelperText>Select your year</FormHelperText> */}
                   </FormControl>
                   <br />
                   <div className="flex flex-row w-full justify-between">
@@ -116,8 +115,7 @@ export default function AddCourseModal(props) {
                       onClick={() => {
                         // setShow(false)
                         setPt1(false)
-                        // applyFilters(selected)
-                        // setSelected(emptyFilters)
+                        createCourse(classCode, name)
                       }}
                     >
                       Next
@@ -140,35 +138,17 @@ export default function AddCourseModal(props) {
                         <br />
                       </form>
                       <br />
-                      <div className="flex flex-row justify-center">
+                      <div className="flex flex-row w-full justify-center">
                         <button
                           className="border border-blue-700 text-blue-700 transition hover:bg-blue-700 hover:text-white rounded-lg p-2"
                           type="button"
-                          onClick={(e) => handleOnSubmit(e)}
+                          onClick={(e) => {
+                            handleOnSubmit(e)
+                          }}
                         >
-                          Upload CSV
+                          Submit CSV
                         </button>
                       </div>
-                      <br />
-                      <table>
-                        <thead>
-                          <tr key="header">
-                            {headerKeys.map((key) => (
-                              <th>{key}</th>
-                            ))}
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          {array.map((item) => (
-                            <tr key={item.id}>
-                              {Object.values(item).map((val) => (
-                                <td>{val}</td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
                       <br />
                       <div className="flex flex-row w-full justify-between">
                         <button
@@ -184,8 +164,7 @@ export default function AddCourseModal(props) {
                           onClick={() => {
                             // setShow(false)
                             setPt2(false)
-                            // applyFilters(selected)
-                            // setSelected(emptyFilters)
+                            addStudents()
                           }}
                         >
                           Next
@@ -196,7 +175,10 @@ export default function AddCourseModal(props) {
                   : (
                     <div className="flex flex-col w-96 justify-start items-start bg-white rounded-2xl border-[6px] text-gunmetal text-xl p-6 border-gunmetal">
                       <div className="text-gunmetal font-bold pb-6">Define Useful Skills for the Course</div>
-                      <AddTagsBar />
+                      <AddTagsBar
+                        tags={tags}
+                        setTags={setTags}
+                      />
                       <br />
                       <div className="flex flex-row w-full justify-between">
                         <button
@@ -211,9 +193,7 @@ export default function AddCourseModal(props) {
                           type="button"
                           onClick={() => {
                             setShow(false)
-                            setPt1(false)
-                            // applyFilters(selected)
-                            // setSelected(emptyFilters)
+                            addTags()
                           }}
                         >
                           Create
