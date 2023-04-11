@@ -115,14 +115,18 @@ export const sendRequest = async (classCode, assignmentId, groupId) => {
 }
 
 export const getChatId = async (members) => {
-  const { data: [{ chatId }] } = await axios.get(
-    `${baseUrl}/chats/id`,
-    {
-      params: { members },
-      paramsSerializer: { serialize: (params) => qs.stringify(params, { arrayFormat: 'repeat' }) },
-    },
-  )
-  return chatId
+  try {
+    const { data: [{ chatId }] } = await axios.get(
+      `${baseUrl}/chats/id`,
+      {
+        params: { members },
+        paramsSerializer: { serialize: (params) => qs.stringify(params, { arrayFormat: 'repeat' }) },
+      },
+    )
+    return chatId
+  } catch (err) {
+    return undefined
+  }
 }
 
 export const createChat = async (classCode, assignmentId, members) => {
