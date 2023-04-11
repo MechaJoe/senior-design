@@ -56,6 +56,7 @@ export default function GroupsPageTabs(props) {
     classCode,
     assignmentId,
     groupSize,
+    myUsername,
   } = props
   const [value, setValue] = useState(0)
   const handleChange = (_, newValue) => {
@@ -100,6 +101,7 @@ export default function GroupsPageTabs(props) {
                 majors={member.majors}
                 schools={member.schools}
                 locked
+                editable={member.username === myUsername}
               />
             ))}
             <LeaveGroupCard />
@@ -114,6 +116,7 @@ export default function GroupsPageTabs(props) {
             classCode={classCode}
             assignmentId={assignmentId}
             groupMembers={groupMembers}
+            myUsername={myUsername}
           />
         </TabPanel>
         <TabPanel value={value} index={2}>

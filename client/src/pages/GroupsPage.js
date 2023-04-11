@@ -10,15 +10,6 @@ import {
 
 export default function GroupsPage() {
   const navigate = useNavigate()
-  const getUser = async () => {
-    const { data } = await axios.get(`${baseUrl}/username`)
-    if (!data) {
-      navigate('/login')
-    }
-  }
-  useEffect(() => {
-    getUser()
-  }, [])
 
   const { classCode, assignmentId } = useParams()
   const [classTitle, setClassTitle] = useState('')
@@ -27,6 +18,7 @@ export default function GroupsPage() {
   const [individuals, setIndividuals] = useState([])
   const [grouped, setGrouped] = useState([])
   const [myGroupId, setMyGroupId] = useState('')
+  const [myUsername, setMyUsername] = useState('')
   const [groupIds, setGroupIds] = useState([])
   const [groupSize, setGroupSize] = useState({})
   const [requested, setRequested] = useState(new Set())
@@ -68,7 +60,16 @@ export default function GroupsPage() {
     setRequested(allRequested)
   }
 
+  const getUser = async () => {
+    const { data } = await axios.get(`${baseUrl}/username`)
+    if (!data) {
+      navigate('/login')
+    }
+    setMyUsername(data)
+  }
+
   useEffect(() => {
+    getUser()
     getInstructors()
     getClassTitle()
     getRequested()
@@ -159,6 +160,7 @@ export default function GroupsPage() {
             groupIds={groupIds}
             groupSize={groupSize}
             requested={requested}
+            myUsername={myUsername}
           />
         </div>
       </div>
