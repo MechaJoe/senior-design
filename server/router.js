@@ -414,12 +414,14 @@ router.put('/class/:classCode/assignments/:assignmentId', async (req, res) => {
   connection.query(
     `UPDATE Assignment
     SET deadline = '${deadline}', numGroups= '${numGroups}', maxGroupSize = '${maxGroupSize}', minGroupSize = '${minGroupSize}'
-    WHERE classCode= '${classCode}' AND assignmentId = '${assignmentId};
+    WHERE classCode= '${classCode}' AND assignmentId = '${assignmentId}';
     `,
     (error, results) => {
       if (error) {
+        console.log(error)
         res.json({ error })
       } else if (results) {
+        console.log(results)
         res.json({ results })
       }
     },

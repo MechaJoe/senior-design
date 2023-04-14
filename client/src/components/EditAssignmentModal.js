@@ -53,6 +53,7 @@ export default function EditAssignmentModal({
   const handleSaveOnClick = async () => {
     await axios.put(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}`, { deadline, maxGroupSize: groupSize[1], minGroupSize: groupSize[0] })
     setEditShow(false)
+    window.location.reload()
   }
 
   return (
