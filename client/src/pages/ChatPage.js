@@ -12,6 +12,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined'
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined'
 import {
   Stack, TextField, Typography, Modal,
 } from '@mui/material'
@@ -171,7 +172,12 @@ function ChatPage() {
             </Drawer>
           </Stack>
           <Stack sx={{ borderRight: 1, borderColor: '#DFE0DF' }} direction="column" className="w-1/3 font-sans sticky top-0">
-            <Typography variant="h-4" className="pt-4 pl-5 pb-2 text-xl font-bold"> Chats </Typography>
+            <Stack direction="row">
+              <Typography variant="h-4" className="pt-4 pl-5 pb-2 text-xl font-bold"> Chats </Typography>
+              <Button>
+                <ModeEditOutlinedIcon className="mt-1" />
+              </Button>
+            </Stack>
             <List>
               <Divider />
               {chats.map((chat) => (
