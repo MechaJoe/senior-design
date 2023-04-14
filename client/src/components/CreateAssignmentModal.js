@@ -5,9 +5,9 @@ import axios from 'axios'
 import {
   FormControl, Button, TextField, Typography, Box, Modal, Slider,
 } from '@mui/material'
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+// import { LocalizationProvider } from '@mui/x-date-pickers'
 import config from '../config.json'
 
 export default function CreateAssignmentModal({ classCode, show, setShow }) {

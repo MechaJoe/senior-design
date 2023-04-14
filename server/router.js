@@ -612,6 +612,26 @@ router.get('/class/:classCode/assignments/:assignmentId/groups', async (req, res
   )
 })
 
+// GET all the non-singleton groups for a specific assignment
+router.get('/class/:classCode/assignments/:assignmentId/nonSingletonGroups', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  connection.query(
+    `SELECT GroupAss.groupId
+    FROM GroupAss JOIN BelongsToGroup ON GroupAss.groupId = BelongsToGroup.groupId
+    WHERE GroupAss.assignmentId = '${assignmentId}' AND GroupAss.classCode = '${classCode}'
+    GROUP BY GroupAss.groupId
+    HAVING COUNT(GroupAss.groupId) > 1;
+    `,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json({ results })
+      }
+    },
+  )
+})
+
 // GET metadata for a particular group
 router.get('/class/:classCode/assignments/:assignmentId/group/:groupId', async (req, res) => {
   const { classCode, assignmentId, groupId } = req.params
@@ -833,12 +853,13 @@ router.patch('/class/:classCode/assignments/:assignmentId/group/:groupId', async
   let sql = ''
   if (op === 'add') {
     sql = `
-      INSERT INTO BelongsToGroup VALUES ('${classCode}, ${assignmentId}, ${groupId}, ${username}'));
+      INSERT INTO BelongsToGroup (classCode, assignmentId, groupId, username)
+      VALUES ('${classCode}', '${assignmentId}', '${groupId}', '${username}');
         DELETE FROM GroupAss WHERE groupId NOT IN
-          (SELECT groupId FROM BelongsToGroup)
+          (SELECT groupId FROM BelongsToGroup);
           `
-  }
-  if (op === 'remove') {
+    console.log(sql)
+  } else if (op === 'remove') {
     sql = `
       DELETE FROM BelongsToGroup WHERE classCode = '${classCode}'
         AND assignmentId = '${assignmentId}'
@@ -848,13 +869,16 @@ router.patch('/class/:classCode/assignments/:assignmentId/group/:groupId', async
         (SELECT groupId FROM BelongsToGroup);`
   } else {
     res.json({ error: 'Invalid operation' })
+    return
   }
   connection.query(
     sql,
     (error, results) => {
       if (error) {
+        console.log(error)
         res.json({ error })
       } else if (results) {
+        console.log(results)
         res.json(results)
       }
     },

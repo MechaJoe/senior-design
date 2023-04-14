@@ -1,17 +1,24 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-props-no-spreading */
-import Box from '@mui/material/Box'
+// import Box from '@mui/material/Box'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+// import Tabs from '@mui/material/Tabs'
+// import Tab from '@mui/material/Tab'
+import {
+  Stack, Grid, Item, Typography, Accordion, AccordionSummary, AccordionDetails,
+} from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { useState, useEffect } from 'react'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import FullProfileCard from './FullProfileCard'
-import GroupCard from './GroupCard'
+import GroupCardInstr from './GroupCardInstr'
 // import GroupChatCard from './GroupChatCard'
 // import LeaveGroupCard from './LeaveGroupCard'
 import ConfirmModal from './ConfirmModal'
-import { sendRequest, getGroupId } from '../../infoHelpers'
+import Student from './Student'
+import { sendRequest, getGroupId, getMembers } from '../../infoHelpers'
 
 const theme = createTheme({
   palette: {
@@ -21,134 +28,135 @@ const theme = createTheme({
   },
 })
 
-function TabPanel(props) {
-  const { children, value, index } = props
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography component="div">{children}</Typography>
-        </Box>
-      )}
-    </div>
-  )
-}
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  }
-}
-
 export default function GroupsPageTabsInstr(props) {
   const {
-    // individuals,
     unassigned,
+    setUnassigned,
     grouped,
     requested,
     groupIds,
+    setGroupIds,
     classCode,
     assignmentId,
     groupSize,
   } = props
-  const [value, setValue] = useState(0)
+  // const [value, setValue] = useState(0)
   const [requestShow, setRequestShow] = useState(false)
   const [toGroupId, setToGroupId] = useState('')
+  const [groupMembers, setGroupMembers] = useState([])
+  const items = unassigned.map(
+    (student) => ({
+      id: student.username,
+      name: `${student.firstName} ${student.lastName}`,
+    }),
+  )
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
-  }
+  useEffect(() => {
+    groupIds.forEach((g, i) => {
+      let members = []
+      getMembers(classCode, assignmentId, g.groupId).then((data) => {
+        if (data && data !== []) {
+          console.log(data)
+          members = [...members, data]
+        } else {
+          console.log('no group found')
+        }
+      })
+      return { ...g, members }
+    })
+  }, [])
 
   return (
     <div className="min-w-full max-w-full pt-6">
       <ThemeProvider theme={theme}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="groups view tab selector"
-            variant="fullWidth"
-          >
-            <Tab label="Individuals" {...a11yProps(1)} />
-            <Tab label="All Groups" {...a11yProps(2)} />
-          </Tabs>
-        </Box>
-        <TabPanel value={value} index={0}>
-          {/* Individuals */}
-          {requestShow && (
+        {requestShow && (
           <ConfirmModal
             action="request"
             onClose={() => setRequestShow(false)}
             confirm={() => sendRequest(classCode, assignmentId, toGroupId)}
           />
-          )}
-          <ReactSearchAutocomplete
-            placeholder="Search by name..."
-            styling={
-            {
-              borderRadius: '16px',
-            }
-          }
-          />
-          <div className="grid laptop:grid-cols-3 grid-cols-2 gap-4 pt-4">
-            {unassigned?.map((member) => (
-              <FullProfileCard
-                classCode={classCode}
-                assignmentId={assignmentId}
-                username={member.username}
-                key={member.username}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                emailAddress={member.emailAddress}
-                profileImageUrl={member.profileImageUrl}
-                year={member.year}
-                majors={member.majors}
-                schools={member.schools}
-                showModal={async () => {
-                  setRequestShow(true)
-                  const tgid = await getGroupId(classCode, assignmentId, member.username)
-                  setToGroupId(tgid)
-                }}
-                requested={requested?.has(member.username)}
-              />
-            ))}
-            {grouped?.map((member) => (
-              <FullProfileCard
-                username={member.username}
-                key={member.username}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                emailAddress={member.emailAddress}
-                profileImageUrl={member.profileImageUrl}
-                year={member.year}
-                majors={member.majors}
-                schools={member.schools}
-                grayed
-              />
-            ))}
-          </div>
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          {/* All Groups */}
-          <div className="grid grid-cols-2 gap-4">
-            {groupIds.map((g) => (
-              <GroupCard
-                key={g}
-                groupId={g}
-                classCode={classCode}
-                assignmentId={assignmentId}
-                groupSize={groupSize}
-              />
-            ))}
-          </div>
-        </TabPanel>
+        )}
+        <Stack direction="row">
+          <Grid container spacing={2}>
+            <Grid item xs={6} md={5}>
+              <Stack spacing={2}>
+                <Typography variant="h6">
+                  Unassigned Students (
+                  {
+                    unassigned.length
+                  }
+                  )
+                </Typography>
+                <ReactSearchAutocomplete
+                  placeholder="Search by name..."
+                  items={items}
+                  styling={
+                    {
+                      borderRadius: '16px',
+                    }
+                  }
+                />
+                {unassigned?.map((student) => (
+                  <Student
+                    classCode={classCode}
+                    assignmentId={assignmentId}
+                    student={student}
+                    groupIds={groupIds}
+                    setGroupIds={setGroupIds}
+                    unassigned={unassigned}
+                    setUnassigned={setUnassigned}
+                  />
+                ))}
+              </Stack>
+            </Grid>
+            <Grid item xs={6} md={7}>
+              <Stack spacing={2}>
+                <Typography variant="h6">
+                  Groups (
+                  {groupIds.length}
+                  )
+                </Typography>
+                {groupIds.map((g, index) => {
+                  getMembers(classCode, assignmentId, g.groupId).then((data) => {
+                    if (data && data !== []) {
+                      console.log(data)
+                      setGroupMembers(data)
+                    } else {
+                      console.log('no group found')
+                    }
+                  })
+                  return (
+                    <Accordion key={g.groupId}>
+                      <AccordionSummary
+                        key={g.groupId}
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                      >
+                        <Typography key={g.groupId}>
+                          Group
+                          {' '}
+                          {index + 1}
+
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails key={g.groupId}>
+                        <GroupCardInstr
+                          key={g.groupId}
+                          groupMembers={groupMembers}
+                          groupId={g.groupId}
+                          classCode={classCode}
+                          assignmentId={assignmentId}
+                          groupSize={groupSize}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+                  )
+                })}
+              </Stack>
+            </Grid>
+          </Grid>
+        </Stack>
       </ThemeProvider>
     </div>
   )
