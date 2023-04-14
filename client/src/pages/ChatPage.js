@@ -64,7 +64,11 @@ function ChatPage() {
   }
 
   const handleClickFilter = (classCode) => {
-    setFilter(classCode)
+    if (!filter) {
+      setFilter(classCode)
+    } else {
+      setFilter('')
+    }
   }
 
   const handleAddNewMember = async () => {
