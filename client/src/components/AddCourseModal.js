@@ -47,7 +47,7 @@ export default function AddCourseModal(props) {
 
   const addStudents = () => {
     array.map((item) => (
-      addStudent(Object.values(item)[0], Object.values(item)[1])
+      addStudent(Object.values(item)[0], classCode)
     ))
   }
 
@@ -194,6 +194,7 @@ export default function AddCourseModal(props) {
                           onClick={() => {
                             setShow(false)
                             addTags()
+                            window.location.reload()
                           }}
                         >
                           Create
