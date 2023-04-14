@@ -194,6 +194,7 @@ export default function AddCourseModal(props) {
                           onClick={() => {
                             setShow(false)
                             addTags()
+                            window.location.reload()
                           }}
                         >
                           Create

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Stack, Grid,
 } from '@mui/material'
-import CourseCard from '../components/CourseCard'
+import InstructorCourseCard from '../components/InstructorCourseCard'
 import AddCourseCard from '../components/AddCourseCard'
 import CoursesSideBar from '../components/CoursesSideBar'
 import {
@@ -37,7 +37,7 @@ function InstructorCourses() {
       setInstructorCourses(response)
       setIsLoading(false)
     })
-  }, [instructorCourses])
+  }, [])
 
   return (
     <div className="container-courses-page">
@@ -52,7 +52,7 @@ function InstructorCourses() {
             {instructorCourses.map(
               (course) => (
                 <Grid item md={4} key={`my-courses: ${course.classCode}`} style={{ marginTop: 10 }}>
-                  <CourseCard
+                  <InstructorCourseCard
                     courseId={course.classCode}
                   />
                 </Grid>
