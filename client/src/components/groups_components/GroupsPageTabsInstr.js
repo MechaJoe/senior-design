@@ -1,3 +1,5 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-props-no-spreading */
 // import Box from '@mui/material/Box'
@@ -8,15 +10,15 @@ import {
   Stack, Grid, Item, Typography, Accordion, AccordionSummary, AccordionDetails,
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import FullProfileCard from './FullProfileCard'
-import GroupCard from './GroupCard'
+import GroupCardInstr from './GroupCardInstr'
 // import GroupChatCard from './GroupChatCard'
 // import LeaveGroupCard from './LeaveGroupCard'
 import ConfirmModal from './ConfirmModal'
 import Student from './Student'
-import { sendRequest, getGroupId } from '../../infoHelpers'
+import { sendRequest, getGroupId, getMembers } from '../../infoHelpers'
 
 const theme = createTheme({
   palette: {
@@ -29,9 +31,11 @@ const theme = createTheme({
 export default function GroupsPageTabsInstr(props) {
   const {
     unassigned,
+    setUnassigned,
     grouped,
     requested,
     groupIds,
+    setGroupIds,
     classCode,
     assignmentId,
     groupSize,
@@ -39,10 +43,28 @@ export default function GroupsPageTabsInstr(props) {
   // const [value, setValue] = useState(0)
   const [requestShow, setRequestShow] = useState(false)
   const [toGroupId, setToGroupId] = useState('')
+  const [groupMembers, setGroupMembers] = useState([])
+  const items = unassigned.map(
+    (student) => ({
+      id: student.username,
+      name: `${student.firstName} ${student.lastName}`,
+    }),
+  )
 
-  // const handleChange = (event, newValue) => {
-  //   setValue(newValue)
-  // }
+  useEffect(() => {
+    groupIds.forEach((g, i) => {
+      let members = []
+      getMembers(classCode, assignmentId, g.groupId).then((data) => {
+        if (data && data !== []) {
+          console.log(data)
+          members = [...members, data]
+        } else {
+          console.log('no group found')
+        }
+      })
+      return { ...g, members }
+    })
+  }, [])
 
   return (
     <div className="min-w-full max-w-full pt-6">
@@ -67,6 +89,7 @@ export default function GroupsPageTabsInstr(props) {
                 </Typography>
                 <ReactSearchAutocomplete
                   placeholder="Search by name..."
+                  items={items}
                   styling={
                     {
                       borderRadius: '16px',
@@ -79,6 +102,9 @@ export default function GroupsPageTabsInstr(props) {
                     assignmentId={assignmentId}
                     student={student}
                     groupIds={groupIds}
+                    setGroupIds={setGroupIds}
+                    unassigned={unassigned}
+                    setUnassigned={setUnassigned}
                   />
                 ))}
               </Stack>
@@ -90,70 +116,46 @@ export default function GroupsPageTabsInstr(props) {
                   {groupIds.length}
                   )
                 </Typography>
-                {groupIds.map((g, index) => (
-                  <Accordion>
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1a-content"
-                      id="panel1a-header"
-                    >
-                      <Typography>
-                        Group
-                        {' '}
-                        {index + 1}
+                {groupIds.map((g, index) => {
+                  getMembers(classCode, assignmentId, g.groupId).then((data) => {
+                    if (data && data !== []) {
+                      console.log(data)
+                      setGroupMembers(data)
+                    } else {
+                      console.log('no group found')
+                    }
+                  })
+                  return (
+                    <Accordion key={g.groupId}>
+                      <AccordionSummary
+                        key={g.groupId}
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                      >
+                        <Typography key={g.groupId}>
+                          Group
+                          {' '}
+                          {index + 1}
 
-                      </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <GroupCard
-                        key={g}
-                        groupId={g}
-                        classCode={classCode}
-                        assignmentId={assignmentId}
-                        groupSize={groupSize}
-                      />
-                    </AccordionDetails>
-                  </Accordion>
-
-                ))}
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails key={g.groupId}>
+                        <GroupCardInstr
+                          key={g.groupId}
+                          groupMembers={groupMembers}
+                          groupId={g.groupId}
+                          classCode={classCode}
+                          assignmentId={assignmentId}
+                          groupSize={groupSize}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+                  )
+                })}
               </Stack>
             </Grid>
           </Grid>
-          {/* {unassigned?.map((member) => (
-              <FullProfileCard
-                classCode={classCode}
-                assignmentId={assignmentId}
-                username={member.username}
-                key={member.username}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                emailAddress={member.emailAddress}
-                profileImageUrl={member.profileImageUrl}
-                year={member.year}
-                majors={member.majors}
-                schools={member.schools}
-                showModal={async () => {
-                  setRequestShow(true)
-                  const tgid = await getGroupId(classCode, assignmentId, member.username)
-                  setToGroupId(tgid)
-                }}
-                requested={requested?.has(member.username)}
-              />
-            ))} */}
-          {/* {grouped?.map((member) => (
-              <FullProfileCard
-                username={member.username}
-                key={member.username}
-                firstName={member.firstName}
-                lastName={member.lastName}
-                emailAddress={member.emailAddress}
-                profileImageUrl={member.profileImageUrl}
-                year={member.year}
-                majors={member.majors}
-                schools={member.schools}
-                grayed
-              />
-            ))} */}
         </Stack>
       </ThemeProvider>
     </div>

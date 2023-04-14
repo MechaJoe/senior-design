@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react'
 // import Card from '@mui/material/Card'
 // import CardHeader from '@mui/material/CardHeader'
@@ -15,12 +16,12 @@ import AddIcon from '@mui/icons-material/Add'
 import {
   Stack, Typography, Button, Grid, Popover,
 } from '@mui/material'
-import { joinGroup } from '../../infoHelpers'
+import { joinGroupInstr, getNonSingletonGroupIds } from '../../infoHelpers'
 
 export default function Student(props) {
   // const [open, setOpen] = useState(false)
   const {
-    classCode, assignmentId, student, groupIds,
+    classCode, assignmentId, student, groupIds, setGroupIds, unassigned, setUnassigned,
   } = props
   const [anchorEl, setAnchorEl] = useState(null)
 
@@ -32,9 +33,21 @@ export default function Student(props) {
     setAnchorEl(null)
   }
 
-  const handleAssignStudent = (g) => {
-    joinGroup(classCode, assignmentId, g)
+  const handleAssignStudent = async (groupId, username) => {
+    const { error } = joinGroupInstr(classCode, assignmentId, groupId, username)
+    if (error) {
+      console.log(error)
+    } else {
+      setUnassigned(unassigned.filter((stu) => stu.username !== username))
+      setGroupIds(groupIds.map((group) => {
+        if (group.id === groupId) {
+          return ({ ...group, members: [...group.groupMembers, username] })
+        }
+        return group
+      }))
+    }
   }
+
   const open = Boolean(anchorEl)
   return (
     <Stack direction="row" className="pl-4">
@@ -60,8 +73,12 @@ export default function Student(props) {
           <Stack sx={{ paddingBottom: 1 }}>
             <Typography sx={{ p: 2 }}>Add to Group</Typography>
             {groupIds.map((g, index) => (
-              <Button onClick={handleAssignStudent(g)} sx={{ paddingLeft: 1, paddingRight: 1 }}>
-                <Typography id={g}>
+              <Button
+                key={g.groupId}
+                onClick={() => handleAssignStudent(g.groupId, student.username)}
+                sx={{ paddingLeft: 1, paddingRight: 1 }}
+              >
+                <Typography id={g.groupId}>
                   Group
                   {' '}
                   {index + 1}

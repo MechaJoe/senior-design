@@ -54,6 +54,14 @@ export const getGroupIds = async (classCode, assignmentId) => {
   return results
 }
 
+// get all non-singleton group IDs in a class
+export const getNonSingletonGroupIds = async (classCode, assignmentId) => {
+  const { data: { results } } = await axios.get(
+    encodeURI(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/nonSingletonGroups`),
+  )
+  return results
+}
+
 export const getMyGroupId = async (classCode, assignmentId) => {
   const { data: [{ groupId }] } = await axios.get(
     `${baseUrl}/class/${classCode}/assignments/${assignmentId}/my-group-id`,
@@ -94,7 +102,12 @@ export const createGroup = async (classCode, assignmentId) => {
 }
 
 export const joinGroup = async (classCode, assignmentId, groupId) => {
-  const { data } = await axios.patch(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}`, { op: 'add' })
+  const { data } = await axios.patch(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/`, { op: 'add' })
+  return data
+}
+
+export const joinGroupInstr = async (classCode, assignmentId, groupId, username) => {
+  const { data } = await axios.patch(`${baseUrl}/class/${classCode}/assignments/${assignmentId}/group/${groupId}/`, { op: 'add', username })
   return data
 }
 
