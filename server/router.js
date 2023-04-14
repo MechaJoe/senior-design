@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const express = require('express')
 const mysql = require('mysql2')
 const { v4: uuidv4 } = require('uuid')
@@ -480,6 +481,115 @@ router.put('/class/:classCode/assignments/:assignmentId', async (req, res) => {
   )
 })
 
+// [DELETE] assignment
+// router.post('/delete-assignment', async (req, res) => {
+//   const {
+//     classCode, assignmentId,
+//   } = req.body
+//   // const { username } = req.session.instructor // not sure how to use this
+//   // const username = 'jasonhom'
+//   connection.query(
+//     `DELETE Assignment, GroupAss, BelongsToGroup, Request
+//     FROM Assignment
+//     LEFT JOIN GroupAss ON Assignment.classCode = GroupAss.classCode AND Assignment.assignmentId = GroupAss.assignmentId
+//     LEFT JOIN BelongsToGroup ON Assignment.classCode = BelongsToGroup.classCode AND Assignment.assignmentId = BelongsToGroup.assignmentId
+//     LEFT JOIN Request ON Assignment.classCode = Request.classCode AND Assignment.assignmentId = Request.assignmentId
+//     WHERE Assignment.classCode = "${classCode}" AND Assignment.assignmentId = "${assignmentId}";`,
+//     (error, results) => {
+//       if (error) {
+//         console.log(error)
+//         res.json({ error })
+//       } else if (results) {
+//         res.json(results)
+//       }
+//     },
+//   )
+// })
+
+// [DELETE] requests for a particular assignment
+router.post('/delete-assignment-requests', async (req, res) => {
+  const {
+    classCode, assignmentId,
+  } = req.body
+  // const { username } = req.session.instructor // not sure how to use this
+  // const username = 'jasonhom'
+  connection.query(
+    `DELETE FROM Request
+    WHERE Request.classCode = "${classCode}" AND Request.assignmentId = "${assignmentId}";`,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [DELETE] belongsToGroup for a particular assignment
+router.post('/delete-assignment-belongsToGroup', async (req, res) => {
+  const {
+    classCode, assignmentId,
+  } = req.body
+  // const { username } = req.session.instructor // not sure how to use this
+  // const username = 'jasonhom'
+  connection.query(
+    `DELETE FROM BelongsToGroup
+    WHERE BelongsToGroup.classCode = "${classCode}" AND BelongsToGroup.assignmentId = "${assignmentId}";`,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [DELETE] groupAss for a particular assignment
+router.post('/delete-assignment-groupAss', async (req, res) => {
+  const {
+    classCode, assignmentId,
+  } = req.body
+  // const { username } = req.session.instructor // not sure how to use this
+  // const username = 'jasonhom'
+  connection.query(
+    `DELETE FROM GroupAss
+    WHERE GroupAss.classCode = "${classCode}" AND GroupAss.assignmentId = "${assignmentId}";`,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [DELETE] assignment
+router.post('/delete-assignment', async (req, res) => {
+  const {
+    classCode, assignmentId,
+  } = req.body
+  // const { username } = req.session.instructor // not sure how to use this
+  // const username = 'jasonhom'
+  connection.query(
+    `DELETE FROM Assignment
+    WHERE Assignment.classCode = "${classCode}" AND Assignment.assignmentId = "${assignmentId}";`,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
 /* GROUP ROUTES */
 
 // GET all the groups for a specific assignment
@@ -653,6 +763,58 @@ router.post('/class/:classCode/assignments/:assignmentId/group', async (req, res
       if (error) {
         res.json({ error })
       } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] Create singleton groups when an assignment is created
+router.post('/class/:classCode/assignments/:assignmentId/singletongroup', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+
+  // const groupId = uuidv4()
+  console.log(`Singleotn Class code: ${classCode}`)
+  console.log(`Singleton Assignment ID: ${assignmentId}`)
+
+  connection.query(
+    `INSERT INTO GroupAss(classCode, assignmentId, leader)
+    SELECT
+           "${classCode}",
+           "${assignmentId}",
+           username
+    FROM StudentOf
+    WHERE classCode = "${classCode}";`,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        console.log('singleton here')
+        console.log(results)
+        res.json(results)
+      }
+    },
+  )
+})
+
+// [POST] Add students belonging to singleton groups when assignment is created
+router.post('/class/:classCode/assignments/:assignmentId/belongsToSingletonGroup', async (req, res) => {
+  const { classCode, assignmentId } = req.params
+  console.log(`Belongs TO Class code: ${classCode}`)
+  console.log(`Belongs To Assignment ID: ${assignmentId}`)
+  connection.query(
+    `INSERT INTO BelongsToGroup(username, groupId, classCode, assignmentId)
+    SELECT leader, groupId, classCode, assignmentId
+    FROM GroupAss
+    WHERE classCode = "${classCode}" AND assignmentId = "${assignmentId}";`,
+    (error, results) => {
+      if (error) {
+        console.log(error)
+        res.json({ error })
+      } else if (results) {
+        console.log('belongs to here')
+        console.log(results)
         res.json(results)
       }
     },
@@ -1106,7 +1268,6 @@ router.post('/request/add', async (req, res) => {
   )
 })
 
-// TODO: Add datetime attribute after discussing chat
 // [DELETE] request from another user to current user
 router.post('/reject-request', async (req, res) => {
   // const { classCode, assignmentId, requestId } = req.params

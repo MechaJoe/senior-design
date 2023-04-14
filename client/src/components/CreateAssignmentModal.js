@@ -39,8 +39,16 @@ export default function CreateAssignmentModal({ classCode, show, setShow }) {
   const handleCancelOnClick = () => setShow(false)
 
   const handleSaveOnClick = async () => {
+    // await Promise.all([
+    //   axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}`, { deadline, maxGroupSize: groupSize[1], minGroupSize: groupSize[0] }),
+    //   axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/singletongroup`),
+    //   axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/belongsToSingletonGroup`),
+    // ])
     await axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}`, { deadline, maxGroupSize: groupSize[1], minGroupSize: groupSize[0] })
+    await axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/singletongroup`)
+    await axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/belongsToSingletonGroup`)
     setShow(false)
+    window.location.reload()
   }
 
   return (
