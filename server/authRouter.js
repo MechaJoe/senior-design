@@ -90,6 +90,10 @@ router.get(
           req.session.username = username
           req.session.instructor = user.instructor
           req.session.save()
+          if (req.session.instructor) {
+            return res.redirect(`${frontendServer}/instructorcourses`)
+          }
+
           return res.redirect(`${frontendServer}/courses`)
         }
         return res.redirect(`${frontendServer}/login`)
