@@ -14,12 +14,13 @@ function InstructorAssignmentsPage() {
   const [className, setClassName] = useState('')
   const [assignments, setAssignments] = useState([])
 
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate()
 
   const getUser = async () => {
     const { data } = await axios.get('http://localhost:8080/username', { withCredentials: true })
     if (!data) {
-      navigate('/login')
+      // navigate('/login')
     }
     return data
   }
@@ -84,7 +85,7 @@ function InstructorAssignmentsPage() {
                 />
               )) : null
             }
-            <CreateAssignmentCard classCode={className} />
+            <CreateAssignmentCard classCode={classCode} />
           </div>
         </div>
       </Stack>

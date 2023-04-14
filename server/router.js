@@ -759,6 +759,8 @@ router.post('/class/:classCode/assignments/:assignmentId/singletongroup', async 
   const { classCode, assignmentId } = req.params
 
   // const groupId = uuidv4()
+  console.log(`Singleotn Class code: ${classCode}`)
+  console.log(`Singleton Assignment ID: ${assignmentId}`)
 
   connection.query(
     `INSERT INTO GroupAss(classCode, assignmentId, leader)
@@ -773,6 +775,8 @@ router.post('/class/:classCode/assignments/:assignmentId/singletongroup', async 
         console.log(error)
         res.json({ error })
       } else if (results) {
+        console.log('singleton here')
+        console.log(results)
         res.json(results)
       }
     },
@@ -782,7 +786,8 @@ router.post('/class/:classCode/assignments/:assignmentId/singletongroup', async 
 // [POST] Add students belonging to singleton groups when assignment is created
 router.post('/class/:classCode/assignments/:assignmentId/belongsToSingletonGroup', async (req, res) => {
   const { classCode, assignmentId } = req.params
-
+  console.log(`Belongs TO Class code: ${classCode}`)
+  console.log(`Belongs To Assignment ID: ${assignmentId}`)
   connection.query(
     `INSERT INTO BelongsToGroup(username, groupId, classCode, assignmentId)
     SELECT leader, groupId, classCode, assignmentId
@@ -793,6 +798,8 @@ router.post('/class/:classCode/assignments/:assignmentId/belongsToSingletonGroup
         console.log(error)
         res.json({ error })
       } else if (results) {
+        console.log('belongs to here')
+        console.log(results)
         res.json(results)
       }
     },
