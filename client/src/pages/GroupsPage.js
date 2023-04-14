@@ -10,15 +10,6 @@ import {
 
 export default function GroupsPage() {
   const navigate = useNavigate()
-  const getUser = async () => {
-    const { data } = await axios.get(`${baseUrl}/username`)
-    if (!data) {
-      navigate('/login')
-    }
-  }
-  useEffect(() => {
-    getUser()
-  }, [])
 
   const { classCode, assignmentId } = useParams()
   const [classTitle, setClassTitle] = useState('')
@@ -27,9 +18,11 @@ export default function GroupsPage() {
   const [individuals, setIndividuals] = useState([])
   const [grouped, setGrouped] = useState([])
   const [myGroupId, setMyGroupId] = useState('')
+  const [myUsername, setMyUsername] = useState('')
   const [groupIds, setGroupIds] = useState([])
   const [groupSize, setGroupSize] = useState({})
   const [requested, setRequested] = useState(new Set())
+  const [classTags, setClassTags] = useState([])
 
   const getInstructors = async () => {
     const { data: instructorData } = await axios.get(
@@ -68,11 +61,18 @@ export default function GroupsPage() {
     setRequested(allRequested)
   }
 
-  useEffect(() => {
-    getInstructors()
-    getClassTitle()
-    getRequested()
-  }, [])
+  const getUser = async () => {
+    const { data } = await axios.get(`${baseUrl}/username`)
+    if (!data) {
+      navigate('/login')
+    }
+    setMyUsername(data)
+  }
+
+  const getTags = async () => {
+    const { data } = await axios.get(`${baseUrl}/class/${classCode}/tags`)
+    setClassTags(data)
+  }
 
   // get group members of logged in user
   const getMyGroup = async () => {
@@ -118,6 +118,11 @@ export default function GroupsPage() {
   }
 
   useEffect(() => {
+    getUser()
+    getInstructors()
+    getClassTitle()
+    getRequested()
+    getTags()
     getMyGroup()
     getClassTitle()
     getIndividuals()
@@ -159,6 +164,8 @@ export default function GroupsPage() {
             groupIds={groupIds}
             groupSize={groupSize}
             requested={requested}
+            myUsername={myUsername}
+            classTags={classTags}
           />
         </div>
       </div>

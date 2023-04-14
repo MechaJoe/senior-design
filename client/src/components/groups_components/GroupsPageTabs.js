@@ -56,6 +56,8 @@ export default function GroupsPageTabs(props) {
     classCode,
     assignmentId,
     groupSize,
+    myUsername,
+    classTags,
   } = props
   const [value, setValue] = useState(0)
   const handleChange = (_, newValue) => {
@@ -89,6 +91,7 @@ export default function GroupsPageTabs(props) {
             {groupMembers?.map((member) => (
               <FullProfileCard
                 classCode={classCode}
+                classTags={classTags}
                 assignmentId={assignmentId}
                 username={member.username}
                 key={member.username}
@@ -96,10 +99,12 @@ export default function GroupsPageTabs(props) {
                 lastName={member.lastName}
                 emailAddress={member.emailAddress}
                 profileImageUrl={member.profileImageUrl}
+                bio={member.bio}
                 year={member.year}
                 majors={member.majors}
                 schools={member.schools}
                 locked
+                editable={member.username === myUsername}
               />
             ))}
             <LeaveGroupCard />
@@ -112,8 +117,10 @@ export default function GroupsPageTabs(props) {
             grouped={grouped}
             requested={requested}
             classCode={classCode}
+            classTags={classTags}
             assignmentId={assignmentId}
             groupMembers={groupMembers}
+            myUsername={myUsername}
           />
         </TabPanel>
         <TabPanel value={value} index={2}>
@@ -123,6 +130,7 @@ export default function GroupsPageTabs(props) {
               key={myGroupId}
               groupId={myGroupId}
               classCode={classCode}
+              classTags={classTags}
               assignmentId={assignmentId}
               groupSize={groupSize}
               locked
@@ -132,6 +140,7 @@ export default function GroupsPageTabs(props) {
                 key={g}
                 groupId={g}
                 classCode={classCode}
+                classTags={classTags}
                 assignmentId={assignmentId}
                 groupSize={groupSize}
               />

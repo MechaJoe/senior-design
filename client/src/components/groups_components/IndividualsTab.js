@@ -8,10 +8,21 @@ import { sendRequest, getGroupId } from '../../infoHelpers'
 
 export default function IndividualsTab(props) {
   const {
-    groupMembers, individuals, grouped, requested, classCode, assignmentId,
-    // tags, TODO: get tags from route in GroupsPage
+    groupMembers, individuals, myUsername, grouped, requested, classCode, assignmentId,
+    classTags,
   } = props
-  const students = individuals?.concat(grouped)
+
+  const compareStudent = (a, b) => {
+    if (individuals?.includes(a) && (grouped?.includes(b))) {
+      return -1
+    }
+    if (individuals?.includes(b) && (grouped?.includes(a))) {
+      return 1
+    }
+    return a.username.localeCompare(b.username)
+  }
+
+  const students = individuals?.concat(grouped).sort(compareStudent)
   const items = students.map(
     (student) => ({
       id: student.username,
@@ -24,8 +35,6 @@ export default function IndividualsTab(props) {
   const [filtersApplied, setFiltersApplied] = useState(false)
   const [toGroupId, setToGroupId] = useState('')
   const [displayed, setDisplayed] = useState(students)
-
-  const tags = ['Frontend', 'Backend', 'Fullstack', 'Design', 'UX', 'UI', 'Data Science', 'Machine Learning', 'Mobile', 'Web']
 
   const applyFilters = (filters) => {
     const newDisplayed = []
@@ -71,7 +80,7 @@ export default function IndividualsTab(props) {
       <FilterModal
         show={filterShow}
         setShow={setFilterShow}
-        tags={tags}
+        classTags={classTags}
         applyFilters={applyFilters}
       />
       <div className="grid grid-cols-4 gap-4 px-5">
@@ -116,6 +125,7 @@ export default function IndividualsTab(props) {
         {displayed?.map((member) => (
           <FullProfileCard
             classCode={classCode}
+            classTags={classTags}
             assignmentId={assignmentId}
             username={member.username}
             key={member.username}
@@ -126,6 +136,7 @@ export default function IndividualsTab(props) {
             year={member.year}
             majors={member.majors}
             schools={member.schools}
+            bio={member.bio}
             showModal={async () => {
               setRequestShow(true)
               const tgid = await getGroupId(classCode, assignmentId, member.username)
@@ -134,6 +145,7 @@ export default function IndividualsTab(props) {
             requested={requested?.has(member.username)}
             grayed={grouped?.includes(member.username)}
             locked={groupUsernames?.includes(member.username)}
+            editable={member.username === myUsername}
           />
         ))}
       </div>
