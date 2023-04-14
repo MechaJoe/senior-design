@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import TuneIcon from '@mui/icons-material/Tune'
 import ConfirmModal from './ConfirmModal'
 import FilterModal from './FilterModal'
 import FullProfileCard from './FullProfileCard'
-import { sendRequest, getGroupId } from '../../infoHelpers'
+import { sendRequest, getGroupId, getUserTags } from '../../infoHelpers'
 
 export default function IndividualsTab(props) {
   const {
@@ -36,10 +36,23 @@ export default function IndividualsTab(props) {
   const [toGroupId, setToGroupId] = useState('')
   const [displayed, setDisplayed] = useState(students)
 
+  useEffect(() => {
+    students.forEach((s) => {
+      getUserTags(classCode, s.username)
+        .then((tags) => {
+          s.tags = tags.map((t) => t.content)
+        })
+    })
+    console.log(students)
+  }, [])
+
   const applyFilters = (filters) => {
+    console.log(filters)
     const newDisplayed = []
     students.forEach((student) => {
       if (((!filters.years.length) || filters.years.includes(`${student.year}`))
+        && ((!filters.tags.length)
+          || filters.tags.filter((t) => student.tags.includes(t.content)).length)
         && ((!filters.schools.length) || filters.schools.filter((s) => student.schools.split(',').includes(s)).length)
         && ((!filters.majors.length) || filters.majors.filter((m) => student.majors.split(',').includes(m)).length)) {
         newDisplayed.push(student)
