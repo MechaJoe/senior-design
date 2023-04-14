@@ -3,13 +3,13 @@ import { createPortal } from 'react-dom'
 
 export default function FilterModal(props) {
   const {
-    show, setShow, tags, applyFilters,
+    show, setShow, classTags, applyFilters,
   } = props
   const yearList = ['2023', '2024', '2025', '2026']
   const schoolList = ['SEAS', 'SAS', 'Wharton', 'Nursing']
   const majorList = ['CIS', 'EE', 'MATH', 'ASAM', 'BE', 'FNCE']
   const emptyFilters = {
-    years: [], schools: [], majors: [], tag: [],
+    years: [], schools: [], majors: [], tags: [],
   }
   const [selected, setSelected] = useState(emptyFilters)
 
@@ -111,14 +111,30 @@ export default function FilterModal(props) {
           </div>
           <div className="pb-3">Class-Specific Tags</div>
           <div className="inline-block pb-6">
-            {tags.map((tag) => (
+            {classTags?.map((tag) => (
               <button
-                key={tag}
-                className="inline-block bg-rust rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-white mr-2 mb-2"
+                key={tag.content}
+                className={`
+                  inline-block
+                  bg-rust
+                  border
+                  ${selected.tags.includes(tag)
+                  ? 'bg-rust hover:bg-rust/90 text-white'
+                  : 'bg-white text-rust hover:bg-rust/20'}
+                  border-rust
+                  rounded-full
+                  px-3 py-1
+                  text-sm
+                  font-sans
+                  font-semibold
+                  transition
+                  active:bg-rust
+                  active:text-white
+                  mr-2 mb-2`}
                 type="button"
                 onClick={() => handleSelect(tag, 'tags')}
               >
-                {tag}
+                {tag.content}
               </button>
             ))}
           </div>

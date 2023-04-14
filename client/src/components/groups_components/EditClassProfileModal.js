@@ -1,24 +1,22 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { setUserTags } from '../../infoHelpers'
 
 export default function EditClassProfileModal(props) {
   const {
-    show, setShow, tags, applyFilters,
+    show, setShow, classTags, userTags, classCode, username,
   } = props
-  const yearList = ['2023', '2024', '2025', '2026']
-  const emptyFilters = {
-    years: [], schools: [], majors: [], tag: [],
-  }
-  const [selected, setSelected] = useState(emptyFilters)
 
-  const handleSelect = (item, type) => {
-    const newSelected = { ...selected }
-    if (newSelected[type].includes(item)) {
-      newSelected[type] = newSelected[type].filter((i) => i !== item)
+  const [selectedTags, setSelectedTags] = useState(userTags)
+
+  const handleSelect = (item) => {
+    let newSelected = [...selectedTags]
+    if (newSelected.includes(item)) {
+      newSelected = newSelected.filter((i) => i !== item)
     } else {
-      newSelected[type].push(item)
+      newSelected.push(item)
     }
-    setSelected(newSelected)
+    setSelectedTags(newSelected)
   }
 
   return (
@@ -29,42 +27,32 @@ export default function EditClassProfileModal(props) {
       >
         <div className="flex flex-col w-96 justify-start items-start bg-white rounded-2xl border-[6px] text-gunmetal text-xl p-6 border-gunmetal">
           <div className="text-gunmetal font-bold pb-6">Edit Class Profile</div>
-          <div className="pb-3">Year</div>
-          <div className="inline-block pb-6">
-            {yearList.map((year) => (
-              <button
-                key={year}
-                className={`
-                inline-block
-                rounded-full
-                px-3 py-1
-                mr-2 mb-2
-                text-sm
-                font-sans
-                font-semibold
-                transition
-                ${selected.years.includes(year) ? 'bg-gunmetal text-white' : 'bg-tan text-gunmetal'}
-                hover:bg-gunmetal/80
-                hover:text-white
-                active:bg-gunmetal
-                `}
-                type="button"
-                onClick={() => handleSelect(year, 'years')}
-              >
-                {year}
-              </button>
-            ))}
-          </div>
           <div className="pb-3">Class-Specific Tags</div>
           <div className="inline-block pb-6">
-            {tags?.map((tag) => (
+            {classTags?.map((tag) => (
               <button
-                key={tag}
-                className="inline-block bg-rust rounded-full px-3 py-1 text-sm font-sans font-semibold transition hover:bg-gunmetal hover:text-white text-white mr-2 mb-2"
+                key={tag.tagId}
+                className={`
+                  inline-block
+                  bg-rust
+                  border
+                  ${selectedTags.includes(tag)
+                  ? 'bg-rust hover:bg-rust/90 text-white'
+                  : 'bg-white text-rust hover:bg-rust/20'}
+                  border-rust
+                  rounded-full
+                  px-3 py-1
+                  text-sm
+                  font-sans
+                  font-semibold
+                  transition
+                  active:bg-rust
+                  active:text-white
+                  mr-2 mb-2`}
                 type="button"
                 onClick={() => handleSelect(tag, 'tags')}
               >
-                {tag}
+                {tag.content}
               </button>
             ))}
           </div>
@@ -81,8 +69,7 @@ export default function EditClassProfileModal(props) {
               type="button"
               onClick={() => {
                 setShow(false)
-                applyFilters(selected)
-                setSelected(emptyFilters)
+                setUserTags(classCode, username, selectedTags.map((t) => parseInt(t.tagId, 10)))
               }}
             >
               Apply

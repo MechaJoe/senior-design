@@ -33,7 +33,7 @@ export default function GroupChatCard({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-2xl w-[330px] h-[360px] p-6 text-center text-2xl text-white font-sans border-[6px] bg-gunmetal border-gunmetal"
+      className="rounded-2xl w-[330px] h-[426px] p-6 text-center text-2xl text-white font-sans border-[6px] bg-gunmetal border-gunmetal"
     >
       Open Group Chat
       {' '}

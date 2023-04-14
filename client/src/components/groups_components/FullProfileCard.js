@@ -3,18 +3,21 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EditIcon from '@mui/icons-material/Edit'
 import EditClassProfileModal from './EditClassProfileModal'
-import { getChatId, createChat, checkUserLoggedIn } from '../../infoHelpers'
+import {
+  getChatId, createChat, checkUserLoggedIn, getUserTags,
+} from '../../infoHelpers'
 
 export default function FullProfileCard(props) {
   const {
     classCode,
+    classTags,
     assignmentId,
-    username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, grayed,
+    username, firstName, lastName, emailAddress, profileImageUrl, bio, year, majors, schools,
+    grayed,
     requested,
     showModal,
     locked,
     editable,
-    // TODO: tagList
   } = props
 
   const navigate = useNavigate()
@@ -23,12 +26,15 @@ export default function FullProfileCard(props) {
   const schoolList = schools.split(',')
   const [dmId, setDmId] = useState('')
   const [editing, setEditing] = useState(false)
+  const [userTags, setUserTags] = useState([])
 
   useEffect(() => {
     checkUserLoggedIn()
       .then((user) => {
         getChatId([user, username])
           .then((chatId) => setDmId(chatId))
+        getUserTags(classCode, username)
+          .then((tags) => setUserTags(tags))
       })
   }, [])
 
@@ -47,8 +53,15 @@ export default function FullProfileCard(props) {
 
   return (
     <>
-      <EditClassProfileModal show={editing} setShow={setEditing} />
-      <div className={`rounded-2xl w-[330px] h-[360px] p-6 text-center border-[6px] ${grayed ? 'bg-gray-200 border-gray-300' : 'bg-tan/5 border-gunmetal'}`}>
+      <EditClassProfileModal
+        show={editing}
+        setShow={setEditing}
+        classTags={classTags}
+        userTags={userTags}
+        classCode={classCode}
+        username={username}
+      />
+      <div className={`rounded-2xl w-[330px] p-6 text-center border-[6px] ${grayed ? 'bg-gray-200 border-gray-300' : 'bg-tan/5 border-gunmetal'}`}>
         <div className="relative">
           {profileImageUrl
             ? <img className="w-32 h-32 mx-auto" src={profileImageUrl} alt="profile" />
@@ -63,6 +76,7 @@ export default function FullProfileCard(props) {
                 {firstName[0] + lastName[0]}
               </Avatar>
             )}
+          <div className="pt-3 font-sans">{bio}</div>
           {editable && (
           <button type="button" className="absolute top-0 right-14" onClick={() => setEditing(true)}>
             <EditIcon />
@@ -76,6 +90,9 @@ export default function FullProfileCard(props) {
           ))}
           {majorList.map((major) => (
             <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
+          ))}
+          {userTags.map((tag) => (
+            <span key={tag.content} className="inline-block bg-rust rounded-full px-3 py-1 text-sm font-sans font-semibold text-white mr-2 mb-2">{tag.content}</span>
           ))}
         </div>
         <div className="">

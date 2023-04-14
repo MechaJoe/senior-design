@@ -25,7 +25,7 @@ export default function LeaveGroupCard({ assignmentId, classCode, groupId }) {
       <button
         type="button"
         onClick={() => setIsShowing(true)}
-        className="rounded-2xl w-[330px] h-[360px] p-6 text-center text-2xl text-red-700 font-sans border-[3px] bg-white border-red-700 border-dashed"
+        className="rounded-2xl w-[330px] h-[426px] p-6 text-center text-2xl text-red-700 font-sans border-[3px] bg-white border-red-700 border-dashed"
       >
         Leave Group
         {' '}

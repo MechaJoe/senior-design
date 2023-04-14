@@ -107,7 +107,6 @@ router.get('/class/:classCode/assignments', async (req, res) => {
       if (error) {
         res.json({ error })
       } else if (results) {
-        // res.json({ results })
         res.json(results)
       }
     },
@@ -157,7 +156,7 @@ router.get('/class/:classCode/assignments/:assignmentId/no-group', async (req, r
       SELECT Student.username FROM Student JOIN StudentOf ON StudentOf.username = Student.username
       WHERE StudentOf.classCode = '${classCode}'
     )
-      SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
+      SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools, bio FROM all_students
           JOIN Student ON all_students.username = Student.username
           JOIN BelongsToGroup ON BelongsToGroup.username = all_students.username
         WHERE assignmentId = '${assignmentId}'
@@ -183,13 +182,13 @@ router.get('/class/:classCode/assignments/:assignmentId/grouped', async (req, re
       WHERE StudentOf.classCode = '${classCode}'
     ),
     singletons AS (
-      SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
+      SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools, bio FROM all_students
         JOIN Student ON all_students.username = Student.username
         JOIN BelongsToGroup ON BelongsToGroup.username = all_students.username
         WHERE assignmentId = '${assignmentId}'
         GROUP BY groupId
         HAVING COUNT(groupId) = 1)
-    SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools FROM all_students
+    SELECT all_students.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools, bio FROM all_students
     JOIN Student ON all_students.username = Student.username
     WHERE all_students.username NOT IN (SELECT username FROM singletons);
     `,
@@ -584,7 +583,7 @@ router.get('/class/:classCode/assignments/:assignmentId/unassigned', async (req,
         SELECT username FROM studentsInClass 
         WHERE username NOT IN (SELECT username FROM studentsInGroup)
       )
-      SELECT Student.username, emailAddress, firstName, lastName, year, majors, schools FROM unassignedStudents
+      SELECT Student.username, emailAddress, firstName, lastName, year, majors, bio, schools FROM unassignedStudents
           JOIN Student ON unassignedStudents.username = Student.username;
     `,
     (error, results) => {
@@ -618,7 +617,7 @@ router.get('/class/:classCode/assignments/:assignmentId/group-id/:username', asy
 router.get('/class/:classCode/assignments/:assignmentId/group/:groupId/members', async (req, res) => {
   const { classCode, assignmentId, groupId } = req.params
   connection.query(
-    `SELECT S.username, emailAddress, firstName, lastName, year, profileImageUrl, majors, schools
+    `SELECT S.username, emailAddress, firstName, lastName, year, profileImageUrl, bio, majors, schools
       FROM BelongsToGroup
       JOIN GroupAss ON GroupAss.classCode = BelongsToGroup.classCode
         AND BelongsToGroup.groupId = GroupAss.groupId
@@ -645,10 +644,9 @@ router.post('/class/:classCode/assignments/:assignmentId/group', async (req, res
   if (!leader || leader === '') {
     leader = req.session
   }
-  const groupId = uuidv4()
   connection.query(
-    `INSERT INTO GroupAss (classCode, groupId, assignmentId, leader) VALUES ('${classCode}', '${groupId}', '${assignmentId}', '${leader}');
-     INSERT INTO BelongsToGroup VALUES ('${leader}', '${groupId}', '${classCode}', '${assignmentId}');`,
+    `INSERT INTO GroupAss (classCode, assignmentId, leader) VALUES ('${classCode}', '${assignmentId}', '${leader}');
+     INSERT INTO BelongsToGroup VALUES ('${leader}', last_insert_id(), '${classCode}', '${assignmentId}');`,
     (error, results) => {
       if (error) {
         res.json({ error })
@@ -951,7 +949,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/individuals', a
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) = 1
   )
-  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, groupId
+  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, bio, schools, groupId
   FROM individuals JOIN Student ON individuals.username = Student.username;`,
     (error, results) => {
       if (error) {
@@ -990,7 +988,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/groups', async 
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) > 1
   )
-  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
+  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, bio, BelongsToGroup.groupId
   FROM groupReqs JOIN BelongsToGroup ON groupReqs.groupId = BelongsToGroup.groupId JOIN Student ON BelongsToGroup.username = Student.username;`,
     (error, results) => {
       if (error) {
@@ -1070,7 +1068,7 @@ router.get('/class/:classCode/assignments/:assignmentId/requests/outgoing/groups
   GROUP BY BelongsToGroup.groupId, BelongsToGroup.classCode, BelongsToGroup.assignmentId
   HAVING COUNT(*) > 1
   )
-  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, BelongsToGroup.groupId
+  SELECT Student.username, firstName, lastName, emailAddress, profileImageUrl, year, majors, schools, bio, BelongsToGroup.groupId
   FROM groupReqs JOIN BelongsToGroup ON groupReqs.groupId = BelongsToGroup.groupId JOIN Student ON BelongsToGroup.username = Student.username;`,
     (error, results) => {
       if (error) {
@@ -1242,3 +1240,52 @@ router.post('/instructor/class/:classCode/tags/new', async (req, res) => {
 })
 
 module.exports = router
+
+router.get('/class/:classCode/tags', async (req, res) => {
+  const { classCode } = req.params
+  connection.query(
+    `SELECT tagId, content FROM Tag WHERE classCode = '${classCode}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+router.get('/class/:classCode/student/:username/tags', async (req, res) => {
+  const { classCode, username } = req.params
+  connection.query(
+    `SELECT content FROM Tag JOIN UserToTag UTT on Tag.tagId = UTT.tagId
+    WHERE classCode = '${classCode}' AND username = '${username}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+router.post('/class/:classCode/student/:username/tags', async (req, res) => {
+  const { classCode, username } = req.params
+  const { tagIds } = req.body
+  const values = []
+  tagIds.forEach((t) => values.push([username, t]))
+  connection.query(
+    `DELETE FROM UserToTag WHERE username = '${username}' AND tagId IN
+      (SELECT tagId FROM Tag WHERE classCode = '${classCode}');
+    INSERT INTO UserToTag (username, tagId) VALUES ? `,
+    [values],
+    (error, results) => {
+      if (error) {
+        res.status(500).json(error)
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})

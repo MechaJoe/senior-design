@@ -208,3 +208,16 @@ export const addTag = async (classCode, content) => {
     throw new Error(err.message)
   }
 }
+
+export const getUserTags = async (classCode, username) => {
+  const { data } = await axios.get(`${baseUrl}/class/${classCode}/student/${username}/tags`)
+  return data
+}
+
+export const setUserTags = async (classCode, username, tagIds) => {
+  const { data } = await axios.post(
+    `${baseUrl}/class/${classCode}/student/${username}/tags`,
+    { tagIds },
+  )
+  return data
+}
