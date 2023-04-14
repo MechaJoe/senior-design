@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -6,7 +7,7 @@ import Sidebar from '../components/Sidebar'
 import config from '../config.json'
 import GroupsPageTabsInstr from '../components/groups_components/GroupsPageTabsInstr'
 import Header from '../components/Header'
-import { getGroupIds, getGroupSize, getUnassignedStudents } from '../infoHelpers'
+import { getNonSingletonGroupIds, getGroupSize, getUnassignedStudents } from '../infoHelpers'
 
 export default function GroupsPageInstr() {
   const navigate = useNavigate()
@@ -67,17 +68,10 @@ export default function GroupsPageInstr() {
     )
     setRequested(allRequested)
   }
-
-  useEffect(() => {
-    getInstructors()
-    getClassTitle()
-    getRequested()
-  }, [])
-
   // get group members of logged in user
   const getUnassigned = async () => {
     const { results } = await getUnassignedStudents(classCode, assignmentId)
-    console.log(results)
+    // console.log(results)
     setUnassigned(results)
   }
 
@@ -94,25 +88,27 @@ export default function GroupsPageInstr() {
   }
 
   // get all individuals in class with a group
-  const getGrouped = async () => {
-    const { data: { results } } = await axios.get(
-      encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/grouped`),
-    )
-    if (results) {
-      setGrouped(results)
-    } else {
-      console.log('no grouped individuals found')
-    }
-  }
+  // const getGrouped = async () => {
+  //   const { data: { results } } = await axios.get(
+  //     encodeURI(`${config.server_domain}/class/${classCode}/assignments/${assignmentId}/grouped`),
+  //   )
+  //   if (results) {
+  //     setGrouped(results)
+  //   } else {
+  //     console.log('no grouped individuals found')
+  //   }
+  // }
 
   useEffect(() => {
     getUnassigned()
+    getInstructors()
+    getRequested()
     getClassTitle()
     getIndividuals()
-    getGrouped()
-    getGroupIds(classCode, assignmentId).then((data) => {
+    // getGrouped()
+    getNonSingletonGroupIds(classCode, assignmentId).then((data) => {
       if (data) {
-        setGroupIds(data.map((group) => group.groupId))
+        setGroupIds(data)
       } else {
         console.log('no grouped individuals found')
       }
@@ -125,6 +121,14 @@ export default function GroupsPageInstr() {
       }
     })
   }, [])
+
+  // kinda
+  useEffect(() => {
+    const intervalID = setInterval(async () => {
+      getUnassigned()
+    }, 500)
+    return () => clearInterval(intervalID)
+  }, [unassigned])
 
   return (
     <>

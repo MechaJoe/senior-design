@@ -6,16 +6,18 @@ import {
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import DeleteAssignmentModal from './DeleteAssignmentModal'
 import EditAssignmentModal from './EditAssignmentModal'
 import config from '../config.json'
 
-function AssignmentCard({
+function AssignmentDetailsCard({
   classCode, assignmentId, deadline,
 }) {
   // const navigate = useNavigate()
   const [groupSize, setGroupSize] = useState({})
   const [shadow, setShadow] = useState(1)
   const [editShow, setEditShow] = useState(false)
+  const [deleteShow, setDeleteShow] = useState(false)
 
   const options = {
     weekday: 'long',
@@ -39,9 +41,17 @@ function AssignmentCard({
   const onMouseOut = () => setShadow(1)
 
   const handleEditOnClick = () => {
-    console.log('I am editing')
     setEditShow(true)
-    console.log(`EditShow is: ${editShow}`)
+  }
+
+  const onConfirm = async () => {
+    await Promise.all([
+      axios.post(`http://${config.server_host}:${config.server_port}/delete-assignment-requests`, { classCode, assignmentId }),
+      axios.post(`http://${config.server_host}:${config.server_port}/delete-assignment-belongsToGroup`, { classCode, assignmentId }),
+      axios.post(`http://${config.server_host}:${config.server_port}/delete-assignment-groupAss`, { classCode, assignmentId }),
+      axios.post(`http://${config.server_host}:${config.server_port}/delete-assignment`, { classCode, assignmentId }),
+    ])
+    window.location.reload()
   }
 
   useEffect(() => {
@@ -92,22 +102,35 @@ function AssignmentCard({
             </div>
             <div className="text-2xl" style={{ display: 'inline-block' }}>
               {/* TODO: Add onclick later */}
-              <EditAssignmentModal
-                assName={assignmentId}
-                deadlineDate={deadlineDate}
-                groupMinMax={groupSize}
-                classCode={classCode}
-                editShow={editShow}
-                setEditShow={setEditShow}
-              />
+              {editShow && (
+                <EditAssignmentModal
+                  assignmentId={assignmentId}
+                  deadlineDate={deadlineDate}
+                  groupMin={groupSize.minGroupSize}
+                  groupMax={groupSize.maxGroupSize}
+                  classCode={classCode}
+                  editShow={editShow}
+                  setEditShow={setEditShow}
+                />
+              )}
               <IconButton>
                 <EditIcon
                   style={{ color: '#227FEC', fontSize: 40 }}
                   onClick={handleEditOnClick}
                 />
               </IconButton>
+              {deleteShow && (
+                <DeleteAssignmentModal
+                  action="deleteAssignment"
+                  onClose={() => setDeleteShow(false)}
+                  confirm={onConfirm}
+                />
+              )}
               <IconButton>
-                <DeleteForeverIcon style={{ color: '#CB5045', fontSize: 40 }} />
+                <DeleteForeverIcon
+                  style={{ color: '#CB5045', fontSize: 40 }}
+                  onClick={() => setDeleteShow(true)}
+                />
               </IconButton>
             </div>
           </CardContent>
@@ -118,4 +141,4 @@ function AssignmentCard({
   )
 }
 
-export default AssignmentCard
+export default AssignmentDetailsCard

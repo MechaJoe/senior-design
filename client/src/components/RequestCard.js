@@ -1,6 +1,4 @@
 import { Button } from '@mui/material'
-// import CloseIcon from '@mui/icons-material/Close'
-// import Avatar from '@mui/material/Avatar'
 import axios from 'axios'
 import IconButton from '@mui/material/IconButton'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -90,14 +88,14 @@ export default function RequestCard({
             backgroundColor: '#CB5045', color: 'white', borderRadius: '180px', width: '10px',
           }}
         /> */}
-        <Button
+        {/* <Button
           variant="contained"
           style={{
             margin: '15px', backgroundColor: '#162368', color: 'white',
           }}
         >
           Chat
-        </Button>
+        </Button> */}
       </div>
     </div>
   )

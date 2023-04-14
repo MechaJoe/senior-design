@@ -5,9 +5,9 @@ import axios from 'axios'
 import {
   FormControl, Button, TextField, Typography, Box, Modal, Slider,
 } from '@mui/material'
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+// import { LocalizationProvider } from '@mui/x-date-pickers'
 import config from '../config.json'
 
 export default function CreateAssignmentModal({ classCode, show, setShow }) {
@@ -39,8 +39,16 @@ export default function CreateAssignmentModal({ classCode, show, setShow }) {
   const handleCancelOnClick = () => setShow(false)
 
   const handleSaveOnClick = async () => {
+    // await Promise.all([
+    //   axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}`, { deadline, maxGroupSize: groupSize[1], minGroupSize: groupSize[0] }),
+    //   axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/singletongroup`),
+    //   axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/belongsToSingletonGroup`),
+    // ])
     await axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}`, { deadline, maxGroupSize: groupSize[1], minGroupSize: groupSize[0] })
+    await axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/singletongroup`)
+    await axios.post(`http://${config.server_host}:${config.server_port}/class/${classCode}/assignments/${assName}/belongsToSingletonGroup`)
     setShow(false)
+    window.location.reload()
   }
 
   return (

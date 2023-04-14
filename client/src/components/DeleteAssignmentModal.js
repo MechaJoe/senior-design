@@ -1,13 +1,15 @@
 /* eslint-disable indent */
 import { createPortal } from 'react-dom'
 
-export default function ConfirmModal({ action, confirm, onClose }) {
+export default function DeleteAssignmentModal({ action, confirm, onClose }) {
   const generateMessage = (a) => {
     if (a === 'leave') {
       return 'Are you sure you want to leave your group?'
     } if (a === 'groupRequest') {
       return 'Are you sure you want to leave your current group and request to join this group?'
-    } // if (a === 'individualRequest')
+    } if (a === 'deleteAssignment') {
+      return 'Are you sure you want to delete this assignment?'
+    }
     return 'Are you sure you would like to request this individual to join your group?'
   }
 
