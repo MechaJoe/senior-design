@@ -941,6 +941,10 @@ router.get('/chats/all', async (req, res) => {
 // [GET] the chat id (if it exists) for the given users
 router.get('/chats/id', async (req, res) => {
   const { members } = req.query
+  if (!members) {
+    res.status(500).send('No chat exists')
+    return
+  }
   connection.query(
     `WITH relevant_groups AS (
       SELECT chatId, username FROM BelongsToChat
@@ -1445,8 +1449,6 @@ router.post('/instructor/class/:classCode/tags/new', async (req, res) => {
   )
 })
 
-module.exports = router
-
 router.get('/class/:classCode/tags', async (req, res) => {
   const { classCode } = req.params
   connection.query(
@@ -1509,3 +1511,5 @@ router.post('/class/:classCode/student/:username/tags', async (req, res) => {
     },
   )
 })
+
+module.exports = router

@@ -69,7 +69,7 @@ export default function EditClassProfileModal(props) {
               type="button"
               onClick={() => {
                 setShow(false)
-                setUserTags(classCode, username, selectedTags.map((t) => parseInt(t.tagId, 10)))
+                setUserTags(classCode, username, selectedTags.map((t) => t.tagId))
               }}
             >
               Apply
