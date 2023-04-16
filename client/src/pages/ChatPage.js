@@ -13,6 +13,7 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined'
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
   Stack, TextField, Typography, Modal,
 } from '@mui/material'
@@ -21,7 +22,7 @@ import {
 // import ChatSideBar from '../components/ChatSideBar'
 import Header from '../components/Header'
 import {
-  getUserAllChats, getChatAllMessages, getUserFilteredChats, getChatAllMembers, getLoggedInUserAllCourses,
+  getUserAllChats, checkUserLoggedIn, getChatAllMessages, getUserFilteredChats, getChatAllMembers, getLoggedInUserAllCourses,
 } from '../infoHelpers'
 
 const drawerWidth = 240
@@ -35,12 +36,20 @@ function ChatPage() {
   // const [newMsg, setNewMsg] = useState('')
   const [filter, setFilter] = useState('')
   const [selectedChatId, setSelectedChatId] = useState('') // selected chatId
+  const [selectedChatName, setSelectedChatName] = useState('') // selected chatId
   const [modal, setModal] = useState(false)
   const [newMember, setNewMember] = useState('')
   const { initialChatId } = useParams()
 
   const [chatMembers, setChatMembers] = useState([])
-  const curr = 'lejiaz'
+  const [curr, setCurr] = useState('')
+
+  useEffect(() => {
+    checkUserLoggedIn()
+      .then((user) => {
+        setCurr(user)
+      })
+  }, [])
 
   const updateChatMembers = (id) => {
     getChatAllMembers(id).then((response) => {
@@ -52,8 +61,9 @@ function ChatPage() {
     })
   }
 
-  const handleClickChat = (id) => {
+  const handleClickChat = (id, name) => {
     setSelectedChatId(id)
+    setSelectedChatName(name)
     console.log(`chat id is ${id}`)
     getChatAllMessages(id).then((response) => {
       console.log('response')
@@ -175,14 +185,14 @@ function ChatPage() {
             <Stack direction="row">
               <Typography variant="h-4" className="pt-4 pl-5 pb-2 text-xl font-bold"> Chats </Typography>
               <Button>
-                <ModeEditOutlinedIcon className="mt-1" />
+                <AddCircleOutlineIcon className="mt-1 float-right" style={{ color: 'black' }} />
               </Button>
             </Stack>
             <List>
               <Divider />
               {chats.map((chat) => (
                 <ListItem key={chat.chatId} className={chat.chatId === selectedChatId ? 'border-b bg-skybluelight border-gray' : 'border-b border-gray'} disablePadding>
-                  <ListItemButton onClick={() => handleClickChat(chat.chatId)}>
+                  <ListItemButton onClick={() => handleClickChat(chat.chatId, chat.name)}>
                     <ListItemText primary={chat.name} />
                   </ListItemButton>
                 </ListItem>
@@ -190,14 +200,24 @@ function ChatPage() {
             </List>
           </Stack>
           <Stack direction="column" className="w-screen p-0">
-            <div className="block">
-              <Typography className="mt-15 p-5 ml-4 float-left" variant="caption">
-                {chatMembers.join(', ')}
-              </Typography>
-              <Button className="mt-4 mr-4 float-right" onClick={() => setModal(true)}>
-                <PersonAddAltOutlinedIcon fontSize="large" />
-              </Button>
-            </div>
+            {selectedChatName
+              ? (
+                <div className="block">
+                  <Stack direction="row" className="mt-1" justifyContent="space-between">
+                    <Stack direction="row">
+                      <Typography className="pl-5 pt-5 ml-4 float-left font-bold" variant="h7">
+                        {selectedChatName}
+                      </Typography>
+                      <Button>
+                        <ModeEditOutlinedIcon className="mt-3" style={{ color: 'black' }} fontSize="small" />
+                      </Button>
+                    </Stack>
+                    <Button className="mr-4 float-right" onClick={() => setModal(true)}>
+                      <PersonAddAltOutlinedIcon fontSize="large" style={{ color: 'black' }} />
+                    </Button>
+                  </Stack>
+                </div>
+              ) : <> </>}
             <Box className="mt-20 p-5">
               {selected.map((m) => (
                 <Stack direction="column" className="py-2">

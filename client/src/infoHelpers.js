@@ -227,6 +227,11 @@ export const getUserTags = async (classCode, username) => {
   return data
 }
 
+export const getAllUserTags = async () => {
+  const { data } = await axios.get(`${baseUrl}/student/tags`)
+  return data
+}
+
 export const setUserTags = async (classCode, username, tagIds) => {
   const { data } = await axios.post(
     `${baseUrl}/class/${classCode}/student/${username}/tags`,

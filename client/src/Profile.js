@@ -11,32 +11,10 @@ import { useNavigate } from 'react-router-dom'
 import config from './config.json'
 import ProfileSidebar from './ProfileSidebar'
 import Header from './components/Header'
-// import { createTheme } from '@mui/material/styles'
-// const theme = createTheme({
-//   palette: {
-//     primary: {
-//       main: purple[500],
-//     },
-//     secondary: {
-//       main: '#f44336',
-//     },
-//   },
-// })
-// eslint-disable-next-line react/prop-types
-// eslint-disable-next-line no-unused-vars
-// function Profile({
-//  firstName, lastName, username, emailAddress, year,
-// }) {
-// function Profile({ bio }) {
+import { getAllUserTags } from './infoHelpers'
+
 function Profile() {
   const navigate = useNavigate()
-  // const [emailAddress, setEmailAddress] = useState('yuanb@seas.upenn.edu')
-  // const [username, setUsername] = useState('yuanb')
-  // const [firstName, setFirstName] = useState('Brandy')
-  // const [lastName, setLastName] = useState('Yuan')
-  // const [majors, setMajors] = useState(['CIS'])
-  // const [school, setSchool] = useState(['SEAS'])
-  // const [year, setYear] = useState('2023')
   const [emailAddress, setEmailAddress] = useState('')
   const [username, setUsername] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -46,12 +24,9 @@ function Profile() {
   const [year, setYear] = useState('')
   const [profileImageUrl, setProfileImageUrl] = useState('')
   const [modal, setModal] = useState(false)
-  // const [fields, setFields] = useState({})
-  // const {
-  //   emailAddress, username, firstName, lastName, year, majors, school, // profileImageUrl,
-  // } = fields
   const [bio, setBio] = useState('')
   const [bioInput, setBioInput] = useState('')
+  const [userTags, setUserTags] = useState([])
 
   const fetchData = async () => {
     const { data: [data] } = await axios.get(`http://localhost:${config.server_port}/profile`)
@@ -68,6 +43,8 @@ function Profile() {
     } else {
       console.log(data)
     }
+    getAllUserTags().then((tags) => setUserTags(tags))
+    console.log(userTags)
   }
 
   useEffect(() => {
@@ -137,7 +114,11 @@ function Profile() {
               </Typography>
             )}
           {/* </Stack> */}
-
+          <Stack direction="row">
+            {userTags.map((tag) => (
+              <div key={tag.content} className="inline-block bg-rust rounded-full px-3 py-1 text-sm font-sans font-semibold text-white mr-2 mb-2">{tag.content}</div>
+            ))}
+          </Stack>
           <Stack spacing={1}>
             <Typography variant="h6" fullWidth>
               Username

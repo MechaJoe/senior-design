@@ -1028,6 +1028,7 @@ router.post('/chats/:chatId', async (req, res) => {
 router.post('/chats/:classCode/assignments/:assignmentId', async (req, res) => {
   const { classCode, assignmentId } = req.params
   const { members } = req.body
+  members.filter((m) => m !== req.session.username)
   const chatId = uuidv4()
   const response = {
     message: '',
@@ -1447,6 +1448,20 @@ router.get('/class/:classCode/student/:username/tags', async (req, res) => {
   connection.query(
     `SELECT content FROM Tag JOIN UserToTag UTT on Tag.tagId = UTT.tagId
     WHERE classCode = '${classCode}' AND username = '${username}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json(results)
+      }
+    },
+  )
+})
+
+router.get('/student/tags', async (req, res) => {
+  connection.query(
+    `SELECT content FROM Tag JOIN UserToTag UTT on Tag.tagId = UTT.tagId
+    WHERE username = '${req.session.username}';`,
     (error, results) => {
       if (error) {
         res.json({ error })
