@@ -41,6 +41,7 @@ export default function IndividualsTab(props) {
     students.forEach((s) => {
       getUserTags(classCode, s.username)
         .then((tags) => {
+          // eslint-disable-next-line no-param-reassign
           s.tags = tags.map((t) => t.content)
         })
     })
