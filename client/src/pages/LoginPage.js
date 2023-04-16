@@ -20,7 +20,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="flex container mx-auto bg-porcelain min-w-full min-h-screen pb-4 justify-center items-center"
+      className="flex container mx-auto bg-gunmetal min-w-full min-h-screen pb-4 justify-center items-center"
     >
       <div className="flex flex-col justify-center items-center rounded-lg bg-white max-w-xl p-6 text-center">
         <div className="text-4xl font-sans p-6 pt-12 pb-12">
