@@ -22,7 +22,7 @@ import {
 // import ChatSideBar from '../components/ChatSideBar'
 import Header from '../components/Header'
 import {
-  getUserAllChats, checkUserLoggedIn, getChatAllMessages, getUserFilteredChats, getChatAllMembers, getLoggedInUserAllCourses,
+  getUserAllChats, checkUserLoggedIn, getChatAllMessages, getUserFilteredChats, getChatAllMembers, getLoggedInUserAllCourses, changeChatName,
 } from '../infoHelpers'
 
 const drawerWidth = 240
@@ -38,7 +38,9 @@ function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState('') // selected chatId
   const [selectedChatName, setSelectedChatName] = useState('') // selected chatId
   const [modal, setModal] = useState(false)
+  const [renameModal, setRenameModal] = useState(false)
   const [newMember, setNewMember] = useState('')
+  const [newName, setNewName] = useState('')
   const { initialChatId } = useParams()
 
   const [chatMembers, setChatMembers] = useState([])
@@ -61,7 +63,16 @@ function ChatPage() {
     })
   }
 
+  const updateChats = () => {
+    getUserAllChats(curr).then((response) => {
+      console.log('response')
+      console.log(response)
+      setChats(response)
+    })
+  }
+
   const handleClickChat = (id, name) => {
+    updateChats()
     setSelectedChatId(id)
     setSelectedChatName(name)
     console.log(`chat id is ${id}`)
@@ -70,7 +81,6 @@ function ChatPage() {
       console.log(response)
       setSelected(response)
     })
-
     updateChatMembers(id)
   }
 
@@ -99,6 +109,24 @@ function ChatPage() {
       updateChatMembers(selectedChatId)
     }
   }
+
+  const handleChangeChatName = async () => {
+    if (!newName) {
+      console.log('no new name typed')
+      setRenameModal(false)
+      return
+    }
+    setNewName('')
+    const { error, results } = await changeChatName(selectedChatId, newName)
+    if (!error) {
+      setSelectedChatName(newName)
+    } else {
+      console.log(results)
+      updateChats()
+    }
+    setRenameModal(false)
+  }
+
   const handleSendMessage = async () => {
     console.log(selectedChatId)
     if (!messageContent || !selectedChatId) {
@@ -191,11 +219,20 @@ function ChatPage() {
             <List>
               <Divider />
               {chats.map((chat) => (
-                <ListItem key={chat.chatId} className={chat.chatId === selectedChatId ? 'border-b bg-skybluelight border-gray' : 'border-b border-gray'} disablePadding>
-                  <ListItemButton onClick={() => handleClickChat(chat.chatId, chat.name)}>
-                    <ListItemText primary={chat.name} />
-                  </ListItemButton>
-                </ListItem>
+                chat.chatId === selectedChatId ? (
+                  <ListItem key={chat.chatId} className={chat.chatId === selectedChatId ? 'border-b bg-skybluelight border-gray' : 'border-b border-gray'} disablePadding>
+                    <ListItemButton onClick={() => handleClickChat(chat.chatId, chat.name)}>
+                      <ListItemText primary={selectedChatName} />
+                    </ListItemButton>
+                  </ListItem>
+                ) : (
+                  <ListItem key={chat.chatId} className={chat.chatId === selectedChatId ? 'border-b bg-skybluelight border-gray' : 'border-b border-gray'} disablePadding>
+                    <ListItemButton onClick={() => handleClickChat(chat.chatId, chat.name)}>
+                      <ListItemText primary={chat.name} />
+                    </ListItemButton>
+                  </ListItem>
+                )
+
               ))}
             </List>
           </Stack>
@@ -209,7 +246,7 @@ function ChatPage() {
                         {selectedChatName}
                       </Typography>
                       <Button>
-                        <ModeEditOutlinedIcon className="mt-3" style={{ color: 'black' }} fontSize="small" />
+                        <ModeEditOutlinedIcon className="mt-3" style={{ color: 'black' }} fontSize="small" onClick={() => setRenameModal(true)} />
                       </Button>
                     </Stack>
                     <Button className="mr-4 float-right" onClick={() => setModal(true)}>
@@ -264,6 +301,25 @@ function ChatPage() {
           <Stack direction="row" alignItems="center" justifyContent="right">
             <Button onClick={() => setModal(false)} variant="filled" className="text-black"> Close </Button>
             <Button onClick={handleAddNewMember} variant="filled"> Add </Button>
+          </Stack>
+        </Stack>
+      </Modal>
+
+      <Modal
+        open={renameModal}
+        onClose={() => setRenameModal(false)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '200px', marginRight: '200px',
+        }}
+      >
+        <Stack spacing={4} className="bg-white p-5 rounded-xl">
+          <Typography fullWidth variant="h8">
+            Change Chat Name
+          </Typography>
+          <input value={newName} onInput={(e) => setNewName(e.target.value)} className="mx-5" placeholder={selectedChatName} />
+          <Stack direction="row" alignItems="center" justifyContent="right">
+            <Button onClick={() => setRenameModal(false)} variant="filled" className="text-black"> Cancel </Button>
+            <Button onClick={handleChangeChatName} variant="filled"> Save </Button>
           </Stack>
         </Stack>
       </Modal>

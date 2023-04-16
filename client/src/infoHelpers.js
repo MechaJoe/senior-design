@@ -76,6 +76,10 @@ export const getUnassignedStudents = async (classCode, assignmentId) => {
   return data
 }
 
+export const changeChatName = async (id, chatName) => {
+  const { data } = await axios.post(`${baseUrl}/chats/${id}`, { chatName })
+  return data
+}
 // get group ID of a user
 export const getGroupId = async (classCode, assignmentId, username) => {
   const { data: [{ groupId }] } = await axios.get(

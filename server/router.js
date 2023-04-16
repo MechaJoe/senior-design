@@ -366,6 +366,24 @@ WHERE emailAddress = '${emailAddress}';`,
   }
 })
 
+// [POST] update chat name
+router.post('/chats/:chatId', async (req, res) => {
+  const { chatId } = req.params
+  const { chatName } = req.body
+  connection.query(
+    `UPDATE Chat
+SET name = '${chatName}'
+WHERE chatId = '${chatId}';`,
+    (error, results) => {
+      if (error) {
+        res.json({ error })
+      } else if (results) {
+        res.json({ results })
+      }
+    },
+  )
+})
+
 /* ASSIGNMENT ROUTES */
 
 // POST new assignment
