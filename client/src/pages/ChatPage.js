@@ -176,6 +176,18 @@ function ChatPage() {
     }
   }, [filter])
 
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
   return (
     <Box
       className="container w-screen mx-auto min-w-full bg-white min-h-screen"
@@ -242,7 +254,7 @@ function ChatPage() {
                 <div className="block">
                   <Stack direction="row" className="mt-1" justifyContent="space-between">
                     <Stack direction="row">
-                      <Typography className="pl-5 pt-5 ml-4 float-left font-bold" variant="h7">
+                      <Typography className="text-skyblue pl-5 pt-5 ml-4 float-left font-bold" fontSize="large" variant="h7">
                         {selectedChatName}
                       </Typography>
                       <Button>
@@ -253,6 +265,9 @@ function ChatPage() {
                       <PersonAddAltOutlinedIcon fontSize="large" style={{ color: 'black' }} />
                     </Button>
                   </Stack>
+                  <Typography className="pl-5 ml-4 float-left font-bold" variant="caption">
+                    {chatMembers.join(', ')}
+                  </Typography>
                 </div>
               ) : <> </>}
             <Box className="mt-20 p-5">
@@ -289,11 +304,8 @@ function ChatPage() {
       <Modal
         open={modal}
         onClose={() => setModal(false)}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '200px', marginRight: '200px',
-        }}
       >
-        <Stack spacing={4} className="bg-white p-5 rounded-xl">
+        <Stack sx={style} spacing={4} className="bg-white p-5 rounded-xl">
           <Typography fullWidth variant="h8">
             Add People
           </Typography>
@@ -308,11 +320,8 @@ function ChatPage() {
       <Modal
         open={renameModal}
         onClose={() => setRenameModal(false)}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: '200px', marginBottom: '200px', marginLeft: '200px', marginRight: '200px',
-        }}
       >
-        <Stack spacing={4} className="bg-white p-5 rounded-xl">
+        <Stack sx={style} spacing={4} className="p-5 rounded-xl">
           <Typography fullWidth variant="h8">
             Change Chat Name
           </Typography>
