@@ -367,7 +367,7 @@ WHERE emailAddress = '${emailAddress}';`,
 })
 
 // [POST] update chat name
-router.post('/chats/:chatId', async (req, res) => {
+router.post('/chats/rename/:chatId', async (req, res) => {
   const { chatId } = req.params
   const { chatName } = req.body
   connection.query(
