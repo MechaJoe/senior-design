@@ -6,7 +6,7 @@ export default function ConfirmModal({ action, confirm, onClose }) {
     if (a === 'leave') {
       return 'Are you sure you want to leave your group?'
     } if (a === 'groupRequest') {
-      return 'Are you sure you want to leave your current group and request to join this group?'
+      return 'Are you sure you want to request to merge your current group with this group?'
     } // if (a === 'individualRequest')
     return 'Are you sure you would like to request this individual to join your group?'
   }

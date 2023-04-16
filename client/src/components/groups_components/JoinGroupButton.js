@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { leaveGroup, sendRequest } from '../../infoHelpers'
+import { sendRequest } from '../../infoHelpers'
 import ConfirmModal from './ConfirmModal'
 
 export default function JoinGroupButton(props) {
@@ -7,7 +7,7 @@ export default function JoinGroupButton(props) {
   const [isShowing, setIsShowing] = useState(false)
 
   const onConfirm = () => {
-    leaveGroup(classCode, assignmentId, groupId)
+    // leaveGroup(classCode, assignmentId, groupId)
     sendRequest(classCode, assignmentId, groupId)
   }
 
