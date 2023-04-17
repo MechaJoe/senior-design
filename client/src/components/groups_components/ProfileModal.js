@@ -45,7 +45,7 @@ function ProfileModal(props) {
         tabIndex={0}
       >
         <div
-          className="rounded-2xl w-[330px] h-[360px] p-6 text-center z-3 border-[6px] bg-cardstock border-gunmetal cursor-default"
+          className="rounded-2xl w-[330px] p-6 text-center z-3 border-[6px] bg-cardstock border-gunmetal cursor-default"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
           role="button"

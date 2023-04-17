@@ -941,8 +941,8 @@ router.get('/chats/all', async (req, res) => {
 // [GET] the chat id (if it exists) for the given users
 router.get('/chats/id', async (req, res) => {
   const { members } = req.query
-  if (!members) {
-    res.status(500).send('No chat exists')
+  if (!members || !members.length) {
+    res.status(200).send('No chat exists')
     return
   }
   connection.query(
