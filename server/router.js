@@ -1466,7 +1466,7 @@ router.get('/class/:classCode/tags', async (req, res) => {
 router.get('/class/:classCode/student/:username/tags', async (req, res) => {
   const { classCode, username } = req.params
   connection.query(
-    `SELECT content FROM Tag JOIN UserToTag UTT on Tag.tagId = UTT.tagId
+    `SELECT Tag.tagId, content FROM Tag JOIN UserToTag UTT on Tag.tagId = UTT.tagId
     WHERE classCode = '${classCode}' AND username = '${username}';`,
     (error, results) => {
       if (error) {
@@ -1497,19 +1497,33 @@ router.post('/class/:classCode/student/:username/tags', async (req, res) => {
   const { tagIds } = req.body
   const values = []
   tagIds.forEach((t) => values.push([username, t]))
-  connection.query(
-    `DELETE FROM UserToTag WHERE username = '${username}' AND tagId IN
-      (SELECT tagId FROM Tag WHERE classCode = '${classCode}');
-    INSERT INTO UserToTag (username, tagId) VALUES ? `,
-    [values],
-    (error, results) => {
-      if (error) {
-        res.status(500).json(error)
-      } else if (results) {
-        res.json(results)
-      }
-    },
-  )
+  if (values.length) {
+    connection.query(
+      `DELETE FROM UserToTag WHERE username = '${username}' AND tagId IN
+        (SELECT tagId FROM Tag WHERE classCode = '${classCode}');
+        INSERT INTO UserToTag (username, tagId) VALUES ? `,
+      [values],
+      (error, results) => {
+        if (error) {
+          res.status(500).json(error)
+        } else if (results) {
+          res.json(results)
+        }
+      },
+    )
+  } else {
+    connection.query(
+      `DELETE FROM UserToTag WHERE username = '${username}' AND tagId IN
+        (SELECT tagId FROM Tag WHERE classCode = '${classCode}');`,
+      (error, results) => {
+        if (error) {
+          res.status(500).json(error)
+        } else if (results) {
+          res.json(results)
+        }
+      },
+    )
+  }
 })
 
 module.exports = router

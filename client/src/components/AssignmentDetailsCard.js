@@ -5,6 +5,7 @@ import {
   Button, ButtonBase, Card, CardContent, Box, IconButton,
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
+import { useNavigate } from 'react-router-dom'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import DeleteAssignmentModal from './DeleteAssignmentModal'
 import EditAssignmentModal from './EditAssignmentModal'
@@ -13,7 +14,7 @@ import config from '../config.json'
 function AssignmentDetailsCard({
   classCode, assignmentId, deadline,
 }) {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const [groupSize, setGroupSize] = useState({})
   const [shadow, setShadow] = useState(1)
   const [editShow, setEditShow] = useState(false)
@@ -96,7 +97,7 @@ function AssignmentDetailsCard({
                   {groupSize.maxGroupSize}
                 </h2>
               </div>
-              <Button>
+              <Button onClick={() => navigate(`/instructor/courses/${classCode}/assignments/${assignmentId}`)}>
                 View Groups
               </Button>
             </div>

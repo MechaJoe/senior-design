@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { setUserTags } from '../../infoHelpers'
 
@@ -9,10 +9,14 @@ export default function EditClassProfileModal(props) {
 
   const [selectedTags, setSelectedTags] = useState(userTags)
 
+  useEffect(() => {
+    setSelectedTags(userTags)
+  }, [userTags])
+
   const handleSelect = (item) => {
     let newSelected = [...selectedTags]
-    if (newSelected.includes(item)) {
-      newSelected = newSelected.filter((i) => i !== item)
+    if (newSelected.map((t) => t.tagId).includes(item.tagId)) {
+      newSelected = newSelected.filter((i) => i.tagId !== item.tagId)
     } else {
       newSelected.push(item)
     }
@@ -36,7 +40,7 @@ export default function EditClassProfileModal(props) {
                   inline-block
                   bg-rust
                   border
-                  ${selectedTags.includes(tag)
+                  ${selectedTags.map((t) => t.tagId).includes(tag.tagId)
                   ? 'bg-rust hover:bg-rust/90 text-white'
                   : 'bg-white text-rust hover:bg-rust/20'}
                   border-rust
@@ -50,7 +54,7 @@ export default function EditClassProfileModal(props) {
                   active:text-white
                   mr-2 mb-2`}
                 type="button"
-                onClick={() => handleSelect(tag, 'tags')}
+                onClick={() => handleSelect(tag)}
               >
                 {tag.content}
               </button>
@@ -70,6 +74,7 @@ export default function EditClassProfileModal(props) {
               onClick={() => {
                 setShow(false)
                 setUserTags(classCode, username, selectedTags.map((t) => t.tagId))
+                window.location.reload()
               }}
             >
               Apply

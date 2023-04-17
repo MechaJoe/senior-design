@@ -71,7 +71,7 @@ export const getMyGroupId = async (classCode, assignmentId) => {
 
 export const getUnassignedStudents = async (classCode, assignmentId) => {
   const { data } = await axios.get(
-    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/unassigned`,
+    `${baseUrl}/class/${classCode}/assignments/${assignmentId}/no-group`,
   )
   return data
 }

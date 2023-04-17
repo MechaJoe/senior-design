@@ -34,7 +34,9 @@ export default function FullProfileCard(props) {
         getChatId([user, username])
           .then((chatId) => setDmId(chatId))
         getUserTags(classCode, username)
-          .then((tags) => setUserTags(tags))
+          .then((tags) => {
+            setUserTags(tags)
+          })
       })
   }, [])
 
