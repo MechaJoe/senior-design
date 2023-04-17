@@ -2,14 +2,16 @@ import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Avatar } from '@mui/material'
-import { getChatId, createChat, checkUserLoggedIn } from '../../infoHelpers'
+import {
+  getChatId, getUserTags, createChat, checkUserLoggedIn,
+} from '../../infoHelpers'
 
 function ProfileModal(props) {
   const {
-    locked, requested, onClose, profile,
+    locked, requested, onClose, profile, classCode, assignmentId,
   } = props
   const {
-    classCode, assignmentId, username, firstName, lastName, emailAddress, profileImageUrl, year,
+    username, firstName, lastName, emailAddress, profileImageUrl, year,
     majors,
     schools,
   } = profile
@@ -18,9 +20,18 @@ function ProfileModal(props) {
   const navigate = useNavigate()
 
   const [dmId, setDmId] = useState('')
+  const [tags, setTags] = useState([])
 
   useEffect(() => {
-    getChatId(username).then((chatId) => setDmId(chatId))
+    checkUserLoggedIn()
+      .then((user) => {
+        getChatId([user, username])
+          .then((chatId) => setDmId(chatId))
+      })
+    getUserTags(classCode, username)
+      .then((tagArr) => {
+        setTags(tagArr)
+      })
   }, [])
 
   const openChat = async (chatId) => {
@@ -77,6 +88,9 @@ function ProfileModal(props) {
               ))}
               {majorList.map((major) => (
                 <span key={major} className="inline-block bg-tan rounded-full px-3 py-1 text-sm font-sans font-semibold text-gunmetal mr-2 mb-2">{major}</span>
+              ))}
+              {tags.map((tag) => (
+                <span key={tag.content} className="inline-block bg-rust rounded-full px-3 py-1 text-sm font-sans font-semibold text-white mr-2 mb-2">{tag.content}</span>
               ))}
             </div>
             <div className="font-sans text-l pb-4">
